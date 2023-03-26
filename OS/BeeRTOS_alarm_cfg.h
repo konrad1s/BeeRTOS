@@ -1,6 +1,6 @@
 /******************************************************************************************
- * @brief 
- * @file h_template.h
+ * @brief OS alarm configuration header file
+ * @file BeeRTOS_alarm_cfg.h
  * ****************************************************************************************/
 
 #ifndef __BEERTOS_ALARM_CFG_H__
@@ -14,9 +14,26 @@
  *                                         DEFINES                                        *
  ******************************************************************************************/
 
+#define BEERTOS_ALARM_LIST \
+    BEERTOS_ALARM(ALARM_ONE,      alarm1_callback) \
+    BEERTOS_ALARM(ALARM_TWO,      alarm2_callback) \
+    BEERTOS_ALARM(ALARM_THREE,    alarm3_callback)
+
+
+#ifdef BEERTOS_ALARM 
+#undef BEERTOS_ALARM
+#endif
+#define BEERTOS_ALARM(name, callback) name,
+
 /******************************************************************************************
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
+
+typedef enum
+{
+    BEERTOS_ALARM_LIST
+    ALARM_ID_MAX
+} alarm_id_t;
 
 /******************************************************************************************
  *                                    GLOBAL VARIABLES                                    *
@@ -29,23 +46,6 @@
 extern void alarm1_callback(void);
 extern void alarm2_callback(void);
 extern void alarm3_callback(void);
-
-#define BEERTOS_ALARM_LIST \
-    BEERTOS_ALARM(ONE,      alarm1_callback) \
-    BEERTOS_ALARM(TWO,      alarm2_callback) \
-    BEERTOS_ALARM(THREE,    alarm3_callback)
-
-
-#ifdef BEERTOS_ALARM 
-#undef BEERTOS_ALARM
-#endif
-#define BEERTOS_ALARM(name, callback) ALARM_##name,
-
-typedef enum
-{
-    BEERTOS_ALARM_LIST
-    ALARM_ID_MAX
-} alarm_id_t;
 
 
 #endif /* __BEERTOS_ALARM_CFG_H__ */
