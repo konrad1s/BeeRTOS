@@ -1,0 +1,63 @@
+# Prerequisites
+*.d
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Include makefiles
+!Makefile
+*~
+
+# Eclipse CDT project files
+.cproject
+.project
+.settings/
+
+# Project specific files
+Output/*
+build/*
+Drivers/*
+*.ioc
+*.s
+*.ld
+*.jlink
+*.jdebug
+*icf
+
+# TODO: delete
+gitos/*
+Core/*
+SEGGER/*

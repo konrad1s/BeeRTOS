@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "segger_sysview.h": "c",
+        "stdint.h": "c",
+        "stdbool.h": "c",
+        "beertos.h": "c",
+        "beertos_mutex.h": "c",
+        "mutex": "cpp",
+        "__mutex_base": "cpp",
+        "bitset": "c",
+        "chrono": "c",
+        "unordered_map": "c",
+        "stddef.h": "c",
+        "beertos_task_cfg.h": "c",
+        "typeinfo": "c"
+    }
+}
