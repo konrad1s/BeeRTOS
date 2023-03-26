@@ -22,16 +22,35 @@
  *                                        VARIABLES                                       *
  ******************************************************************************************/
 
+/*! X-Macro to create task stack array for all tasks */
 #undef BEERTOS_TASK
-#define BEERTOS_TASK(task_name, task_cb, task_prio, task_stack, task_autostart, task_arg) \
-    static uint32_t task_name##_stack[task_stack];
+#define BEERTOS_TASK(name, cb, prio, stack, autostart, argv) \
+    static uint32_t name ## _stack[stack];
 
-BEERTOS_TASK_LIST
+#define BEERTOS_STACK_VAR BEERTOS_TASK_LIST
+
+BEERTOS_STACK_VAR;
+
+/*! X-Macro to create task control structure for all tasks */
+#undef BEERTOS_TASK
+#define BEERTOS_TASK(name, cb, prio, stack, autostart, argv) \
+    static os_task name ## _control;
+
+#define BEERTOS_TASK_CONTROL_VAR BEERTOS_TASK_LIST
+
+BEERTOS_TASK_CONTROL_VAR;
 
 /******************************************************************************************
  *                                        FUNCTIONS                                       *
  ******************************************************************************************/
-void os_create_all_tasks(void)
+void os_create_tasks(void)
 {
-    return 0;
+    /*! X-Macro to call os_task_create for all tasks */
+    #undef BEERTOS_TASK
+    #define BEERTOS_TASK(name, cb, prio, stack, autostart, argv) \
+        os_task_create(&name##_control, cb, name##_stack, sizeof(name##_stack), prio);
+
+    #define BEERTOS_TASK_INIT BEERTOS_TASK_LIST
+
+    BEERTOS_TASK_INIT;
 }

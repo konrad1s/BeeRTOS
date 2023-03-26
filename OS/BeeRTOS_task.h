@@ -26,4 +26,6 @@
  *                                   FUNCTION PROTOTYPES                                  *
  ******************************************************************************************/
 
+void os_create_tasks(void);
+
 #endif /* __BEERTOS_TASK_H__ */
