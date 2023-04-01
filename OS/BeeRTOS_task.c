@@ -9,6 +9,7 @@
 
 #include "BeeRTOS.h"
 #include "BeeRTOS_task_cfg.h"
+#include <stdbool.h>
 
 /******************************************************************************************
  *                                         DEFINES                                        *
@@ -43,7 +44,7 @@ BEERTOS_TASK_CONTROL_VAR;
 /******************************************************************************************
  *                                        FUNCTIONS                                       *
  ******************************************************************************************/
-void os_create_tasks(void)
+void os_task_init_all(void)
 {
     /*! X-Macro to call os_task_create for all tasks */
     #undef BEERTOS_TASK
@@ -53,4 +54,14 @@ void os_create_tasks(void)
     #define BEERTOS_TASK_INIT BEERTOS_TASK_LIST
 
     BEERTOS_TASK_INIT;
+}
+
+bool os_task_start(OS_TASK_ID task_id)
+{
+    /* TODO */
+}
+
+bool os_task_stop(OS_TASK_ID task_id)
+{
+    /* TODO */
 }

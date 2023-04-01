@@ -60,6 +60,7 @@ OS/BeeRTOS.c	\
 OS/BeeRTOS_semaphore.c	\
 OS/BeeRTOS_alarm.c	\
 OS/BeeRTOS_task.c	\
+OS/portable/GCC/ARM_CM4/port_CM4.c	\
 Core/Src/stm32f4xx_hal_timebase_tim.c	\
 SEGGER/SEGGER_RTT.c	\
 SEGGER/SEGGER_RTT_printf.c	\

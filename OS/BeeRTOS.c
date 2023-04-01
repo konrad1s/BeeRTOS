@@ -8,6 +8,7 @@
  ******************************************************************************************/
 
 #include "BeeRTOS.h"
+#include "BeeRTOS_internal.h"
 #include "stm32f4xx.h"
 #include "SEGGER_SYSVIEW.h"
 
@@ -26,14 +27,14 @@
  *                                        VARIABLES                                       *
  ******************************************************************************************/
 
-static os_task *volatile os_task_current;
-static os_task *volatile os_task_next;
+os_task *volatile os_task_current;
+os_task *volatile os_task_next;
 
 static os_task *os_tasks[OS_MAS_TASK_NB + 1];
-uint32_t os_ready_mask;
-uint32_t os_delay_mask;
+static uint32_t os_ready_mask;
+static uint32_t os_delay_mask;
 
-uint32_t os_isr_cnt = 0U;
+static uint32_t os_isr_cnt = 0U;
 
 /******************************************************************************************
  *                                        FUNCTIONS                                       *
@@ -57,8 +58,6 @@ void os_init(void)
 void os_run(void)
 {
     os_sched();
-
-    /* shall never be reached */
 }
 
 void os_disable_all_interrupts(void)
@@ -140,7 +139,6 @@ void os_sched(void)
 
     if(os_task_current != os_task_next)
     {
-        // SEGGER_SYSVIEW_OnTaskStopExec();
         os_task_next->priority ? SEGGER_SYSVIEW_OnTaskStartExec(os_task_next->priority) : SEGGER_SYSVIEW_OnIdle();
         SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
     }
@@ -163,22 +161,22 @@ void os_task_create(os_task *task, os_task_handler task_handler,
     uint32_t *stack_ptr = (uint32_t *)((((uint32_t)stack + stack_size) / 8) * 8); //todo align
     uint32_t *stack_limit;
 
-    *(--stack_ptr) = 0x01000000;               /*!< xPSR - THUMB bit set*/
-    *(--stack_ptr) = (uint32_t)task_handler; /*!< PC */
+    *(--stack_ptr) = 0x01000000;                /*!< xPSR - THUMB bit set*/
+    *(--stack_ptr) = (uint32_t)task_handler;    /*!< PC */
     *(--stack_ptr) = 0x0000000EU;               /*!< LR */
-    *(--stack_ptr) = 0x12121212;               /*!< R12 */
-    *(--stack_ptr) = 0x03030303;               /*!< R3 */
-    *(--stack_ptr) = 0x02020202;               /*!< R2 */
-    *(--stack_ptr) = 0x01010101;               /*!< R1 */
-    *(--stack_ptr) = 0x00000000;               /*!< R0 */
-    *(--stack_ptr) = 0x11111111;               /*!< R11 */
-    *(--stack_ptr) = 0x10101010;               /*!< R10 */
-    *(--stack_ptr) = 0x09090909;               /*!< R9 */
-    *(--stack_ptr) = 0x08080808;               /*!< R8 */
-    *(--stack_ptr) = 0x07070707;               /*!< R7 */
-    *(--stack_ptr) = 0x06060606;               /*!< R6 */
-    *(--stack_ptr) = 0x05050505;               /*!< R5 */
-    *(--stack_ptr) = 0x04040404;               /*!< R4 */
+    *(--stack_ptr) = 0x12121212;                /*!< R12 */
+    *(--stack_ptr) = 0x03030303;                /*!< R3 */
+    *(--stack_ptr) = 0x02020202;                /*!< R2 */
+    *(--stack_ptr) = 0x01010101;                /*!< R1 */
+    *(--stack_ptr) = 0x00000000;                /*!< R0 */
+    *(--stack_ptr) = 0x11111111;                /*!< R11 */
+    *(--stack_ptr) = 0x10101010;                /*!< R10 */
+    *(--stack_ptr) = 0x09090909;                /*!< R9 */
+    *(--stack_ptr) = 0x08080808;                /*!< R8 */
+    *(--stack_ptr) = 0x07070707;                /*!< R7 */
+    *(--stack_ptr) = 0x06060606;                /*!< R6 */
+    *(--stack_ptr) = 0x05050505;                /*!< R5 */
+    *(--stack_ptr) = 0x04040404;                /*!< R4 */
 
     /* Set stack pointer */
     task->sp = (void *)stack_ptr;
@@ -208,60 +206,8 @@ os_task* os_get_current_task(void)
     return os_task_current;
 }
 
-__attribute__ ((naked, optimize("-fno-stack-protector")))
-void PendSV_Handler(void)
-{
-__asm volatile
-(
-    // __ASM volatile ("cpsid i" : : : "memory");
-    "CPSID          i \n" /* Disable interrupts */
-
-    // if(os_task_current != (os_task *) 0)
-    "LDR            R3, =os_task_current \n"
-    "LDR            R3, [R3] \n"
-    "CMP            R3, #0 \n"
-    "BEQ            PendSV_restore \n"
-
-    /* push registers */
-    "PUSH           {R4-R11} \n"
-    
-    "LDR            R3, =os_task_current \n"
-    "LDR            R3, [R3] \n"
-    // os_task_current->sp = sp;
-    "STR            sp, [R3] \n"
-    
-"PendSV_restore: \n"
-    // sp = os_task_next->sp;
-    "LDR            R3, =os_task_next \n"
-    "LDR            R3, [R3] \n"
-    "LDR            sp, [R3] \n"
-
-    // os_task_current = os_task_next;
-    "LDR            R3, =os_task_next \n"
-    "LDR            R3, [R3] \n"
-    "LDR            R2, =os_task_current \n"
-    "STR            R3, [R2] \n"
-
-    // pop registers
-    "POP            {r4-r11} \n"
-
-    // __ASM volatile ("cpsie i" : : : "memory");
-    "CPSIE          i \n"
-
-    /* return to the next task */
-    " BX            lr                \n"
-);
-}
-
 void SysTick_Handler(void)
 {
-  /* USER CODE BEGIN SysTick_IRQn 0 */
-  //SEGGER_SYSVIEW_RecordEnterISR();
   os_tick();
   os_sched();
-  //SEGGER_SYSVIEW_RecordExitISR();
-  /* USER CODE END SysTick_IRQn 0 */
-  /* USER CODE BEGIN SysTick_IRQn 1 */
-
-  /* USER CODE END SysTick_IRQn 1 */
 }
