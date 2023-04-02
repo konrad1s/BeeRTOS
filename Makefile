@@ -69,8 +69,9 @@ SEGGER/SEGGER_RTT_Syscalls_GCC.c	\
 SEGGER/SEGGER_SYSVIEW_Config_NoOS.c	\
 Unity/unity.c	\
 UnitTests/ut_main.c	\
-UnitTests/ut_00_semaphore.c	\
-UnitTests/ut_01_alarm.c
+UnitTests/ut_00_task.c	\
+UnitTests/ut_01_semaphore.c	\
+UnitTests/ut_02_alarm.c
 
 
 # ASM sources

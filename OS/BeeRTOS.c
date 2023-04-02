@@ -34,7 +34,9 @@ static os_task *os_tasks[OS_MAS_TASK_NB + 1];
 static uint32_t os_ready_mask;
 static uint32_t os_delay_mask;
 
-static uint32_t os_isr_cnt = 0U;
+static uint32_t os_isr_counter;
+
+static volatile uint32_t os_tick_counter;
 
 /******************************************************************************************
  *                                        FUNCTIONS                                       *
@@ -51,6 +53,9 @@ void os_init(void)
     os_ready_mask = 0U;
     os_delay_mask = 0U;
 
+    os_isr_counter = 0U;
+    os_tick_counter = 0U;
+
     NVIC_SetPriority(PendSV_IRQn, 0xff);  /* Lowest possible priority */
     NVIC_SetPriority(SysTick_IRQn, 0x00); /* Highest possible priority */
 }
@@ -63,13 +68,13 @@ void os_run(void)
 void os_disable_all_interrupts(void)
 {
     __disable_irq();
-    os_isr_cnt++;
+    os_isr_counter++;
 }
 
 void os_enable_all_interrupts(void)
 {
-    os_isr_cnt--;
-    if (os_isr_cnt == 0U)
+    os_isr_counter--;
+    if (os_isr_counter == 0U)
     {
         __enable_irq();
     }
@@ -121,7 +126,14 @@ void os_tick(void)
          }
             mask &= ~(1 << (task->priority - 1U));
     }
+
+    os_tick_counter++;
     os_alarm_tick();
+}
+
+uint32_t os_get_tick_count(void)
+{
+    return os_tick_counter;
 }
 
 void os_sched(void)

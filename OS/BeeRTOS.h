@@ -53,4 +53,6 @@ void os_enable_all_interrupts(void);
 os_task* os_get_current_task(void);
 void os_task_release(uint32_t task_id);
 
+uint32_t os_get_tick_count(void);
+
 #endif /* __BEERTOS_H__ */
