@@ -51,9 +51,17 @@ void os_semaphores_init(void)
 }
 
 #if (BEERTOS_USE_GET_CONTROL_BLOCK_API == true)
-void os_semaphore_get_control_block_info(os_sem_id_t id, os_sem_t **sem)
+bool os_semaphore_get_control_block_info(os_sem_id_t id, os_sem_t **sem)
 {
-    *sem = &semaphores[id];
+    bool ret = false;
+
+    if (sem != NULL)
+    {
+        *sem = &semaphores[id];
+        ret = true;
+    }
+
+    return ret;
 }
 #endif
 

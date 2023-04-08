@@ -56,11 +56,11 @@ Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c \
 Core/Src/system_stm32f4xx.c \
 Core/Src/gpio.c \
-OS/BeeRTOS.c	\
-OS/BeeRTOS_semaphore.c	\
-OS/BeeRTOS_alarm.c	\
-OS/BeeRTOS_task.c	\
-OS/portable/GCC/ARM_CM4/port_CM4.c	\
+BeeRTOS/Src/BeeRTOS.c	\
+BeeRTOS/Src/BeeRTOS_semaphore.c	\
+BeeRTOS/Src/BeeRTOS_alarm.c	\
+BeeRTOS/Src/BeeRTOS_task.c	\
+BeeRTOS/Src/Portable/GCC/ARM_CM4/port_CM4.c	\
 Core/Src/stm32f4xx_hal_timebase_tim.c	\
 SEGGER/SEGGER_RTT.c	\
 SEGGER/SEGGER_RTT_printf.c	\
@@ -135,7 +135,8 @@ C_INCLUDES =  \
 -IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy \
 -IDrivers/CMSIS/Device/ST/STM32F4xx/Include \
 -IDrivers/CMSIS/Include \
--IOS/	\
+-IBeeRTOS/Src	\
+-IBeeRTOS/Cfg	\
 -ISEGGER/	\
 -ISEGGER/Config/	\
 -IUnity/	\
