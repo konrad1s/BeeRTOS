@@ -27,10 +27,10 @@
  *                                        VARIABLES                                       *
  ******************************************************************************************/
 
-os_task *volatile os_task_current;
-os_task *volatile os_task_next;
+os_task_t *volatile os_task_current;
+os_task_t *volatile os_task_next;
 
-static os_task *os_tasks[OS_MAS_TASK_NB + 1];
+static os_task_t *os_tasks[OS_MAS_TASK_NB + 1];
 static uint32_t os_ready_mask;
 static uint32_t os_delay_mask;
 
@@ -116,7 +116,7 @@ void os_tick(void)
 
     while (mask)
     {
-       os_task *task = os_tasks[LOG2(mask)];
+       os_task_t *task = os_tasks[LOG2(mask)];
 
         task->ticks--;
          if (task->ticks == 0)
@@ -167,7 +167,7 @@ void os_task_delete(void)
     os_enable_all_interrupts();
 }
 
-void os_task_create(os_task *task, os_task_handler task_handler,
+void os_task_create(os_task_t *task, os_task_handler task_handler,
                     void *stack, uint32_t stack_size, uint8_t priority)
 {
     uint32_t *stack_ptr = (uint32_t *)((((uint32_t)stack + stack_size) / 8) * 8); //todo align
@@ -213,7 +213,7 @@ void os_task_create(os_task *task, os_task_handler task_handler,
     }
 }
 
-os_task* os_get_current_task(void)
+os_task_t* os_get_current_task(void)
 {
     return os_task_current;
 }

@@ -35,7 +35,7 @@ BEERTOS_STACK_VAR;
 /*! X-Macro to create task control structure for all tasks */
 #undef BEERTOS_TASK
 #define BEERTOS_TASK(name, cb, prio, stack, autostart, argv) \
-    static os_task name ## _control;
+    static os_task_t name ## _control;
 
 #define BEERTOS_TASK_CONTROL_VAR BEERTOS_TASK_LIST
 
@@ -56,12 +56,12 @@ void os_task_init_all(void)
     BEERTOS_TASK_INIT;
 }
 
-bool os_task_start(OS_TASK_ID task_id)
+bool os_task_start(os_task_id_t task_id)
 {
     /* TODO */
 }
 
-bool os_task_stop(OS_TASK_ID task_id)
+bool os_task_stop(os_task_id_t task_id)
 {
     /* TODO */
 }

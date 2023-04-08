@@ -30,7 +30,7 @@ typedef enum
 {
     BEERTOS_ALARM_LIST
     ALARM_ID_MAX
-} alarm_id_t;
+} os_alarm_id_t;
 
 /******************************************************************************************
  *                                    GLOBAL VARIABLES                                    *

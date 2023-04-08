@@ -1,7 +1,7 @@
 #include "BeeRTOS.h"
 
-extern os_task *volatile os_task_current;
-extern os_task *volatile os_task_next;
+extern os_task_t *volatile os_task_current;
+extern os_task_t *volatile os_task_next;
 
 __attribute__ ((naked, optimize("-fno-stack-protector")))
 void PendSV_Handler(void)

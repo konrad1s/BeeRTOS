@@ -26,7 +26,7 @@
     /* period, periodic, callback */  \
     { 0,       false,    callback },
 
-static alarm_t alarms[] = {
+static os_alarm_t alarms[] = {
     BEERTOS_ALARM_LIST
 };
 
@@ -38,9 +38,7 @@ static uint32_t os_alarm_active_mask;
  ******************************************************************************************/
 void os_alarms_init(void)
 {
-    alarm_id_t i;
-
-    for (i = 0U; i < ALARM_ID_MAX; i++)
+    for (os_alarm_id_t i = 0U; i < ALARM_ID_MAX; i++)
     {
         alarms[i].period = 0U;
         alarms[i].periodic = false;
@@ -49,7 +47,7 @@ void os_alarms_init(void)
     os_alarm_active_mask = 0U;
 }
 
-void os_alarm_start(alarm_id_t alarm_id, uint32_t period, bool periodic)
+void os_alarm_start(os_alarm_id_t alarm_id, uint32_t period, bool periodic)
 {
     if (alarm_id < ALARM_ID_MAX)
     {
@@ -60,7 +58,7 @@ void os_alarm_start(alarm_id_t alarm_id, uint32_t period, bool periodic)
     }
 }
 
-void os_alarm_cancel(alarm_id_t alarm_id)
+void os_alarm_cancel(os_alarm_id_t alarm_id)
 {
     if (alarm_id < ALARM_ID_MAX)
     {
@@ -73,7 +71,7 @@ void os_alarm_tick(void)
 {
     if (0U != os_alarm_active_mask)
     {
-        for (alarm_id_t i = 0U; i < ALARM_ID_MAX; i++)
+        for (os_alarm_id_t i = 0U; i < ALARM_ID_MAX; i++)
         {
             if (ticks[i] > 0U && 0U != (os_alarm_active_mask & (1U << i)))
             {
