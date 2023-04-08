@@ -21,32 +21,59 @@
  *                                        VARIABLES                                       *
  ******************************************************************************************/
 
+#undef BEERTOS_SEMAPHORE
+#define BEERTOS_SEMAPHORE(name, initial_count) \
+    /* count, tasks_blocked */                 \
+    { 0U, 0U },
+
+static os_sem_t semaphores[BEERTOS_SEMAPHORE_ID_MAX];
+
 /******************************************************************************************
  *                                        FUNCTIONS                                       *
  ******************************************************************************************/
 
-void os_semaphore_init(os_semaphore_t *semaphore, uint32_t count)
+static inline void os_semaphore_init(os_sem_t *sem, uint32_t count)
 {
-    semaphore->count = count;
-    semaphore->tasks_blocked = 0U;
+    sem->count = count;
+    sem->tasks_blocked = 0U;
 }
 
-bool os_semaphore_wait(os_semaphore_t *semaphore, uint32_t timeout)
+void os_semaphores_init(void)
+{
+    /*! X-Macro to call os_semaphore_init for all semaphores */
+    #undef BEERTOS_SEMAPHORE
+    #define BEERTOS_SEMAPHORE(name, initial_count) \
+        os_semaphore_init(&semaphores[name], initial_count);
+
+    #define BEERTOS_SEMPAPHORES_INIT BEERTOS_SEMAPHORE_LIST
+
+    BEERTOS_SEMPAPHORES_INIT
+}
+
+#if (BEERTOS_USE_GET_CONTROL_BLOCK_API == true)
+void os_semaphore_get_control_block_info(os_sem_id_t id, os_sem_t **sem)
+{
+    *sem = &semaphores[id];
+}
+#endif
+
+bool os_semaphore_wait(os_sem_id_t id, uint32_t timeout)
 {
     bool ret = false;
+    os_sem_t *sem = &semaphores[id];
 
     os_disable_all_interrupts();
 
-    if (semaphore->count > 0U)
+    if (sem->count > 0U)
     {
-        semaphore->count++;
+        sem->count++;
         /* ret already set to false */
     }
     else
     {
         const os_task const *current_task = os_get_current_task();
-        semaphore->tasks_blocked |= (1U << current_task->priority);
-        semaphore->count++;
+        sem->tasks_blocked |= (1U << current_task->priority);
+        sem->count++;
         os_delay(timeout);
         ret = true;
     }
@@ -73,28 +100,29 @@ uint32_t os_get_task_id_from_mask(uint32_t mask)
     return 0U;
 }
 
-bool os_semaphore_signal(os_semaphore_t *semaphore)
+bool os_semaphore_signal(os_sem_id_t id)
 {
     bool ret = false;
+    os_sem_t *sem = &semaphores[id];
 
     os_disable_all_interrupts();
 
-    if (semaphore->count > 0U)
+    if (sem->count > 0U)
     {
-        semaphore->count--;
+        sem->count--;
         ret = false;
     }
     else
     {
         uint32_t idx = 0U;
-        uint32_t mask = semaphore->tasks_blocked;
+        uint32_t mask = sem->tasks_blocked;
 
         while (mask)
         {
             if (mask & 1)
             {
                 os_task_release(idx);
-                semaphore->tasks_blocked &= ~(1U << idx);
+                sem->tasks_blocked &= ~(1U << idx);
                 ret = true;
             }
             mask >>= 1U;

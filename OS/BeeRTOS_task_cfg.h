@@ -22,12 +22,12 @@
     BEERTOS_TASK( OS_TASK_PRIO_3, ut_task_priority_3, 3, 128, 1, NULL )  \
     BEERTOS_TASK( OS_TASK_UT_MAIN, ut_beertos_main_task, 4, 256, 1, NULL )
 
-#undef  BEERTOS_TASK
-#define BEERTOS_TASK(task_name, task_cb, task_prio, task_stack, task_autostart, task_arg) task_name,
-
 /******************************************************************************************
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
+
+#undef  BEERTOS_TASK
+#define BEERTOS_TASK(task_name, task_cb, task_prio, task_stack, task_autostart, task_arg) task_name,
 
 typedef enum {
     BEERTOS_TASK_LIST

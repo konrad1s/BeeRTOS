@@ -1,10 +1,10 @@
 /******************************************************************************************
- * @brief OS alarm configuration header file
- * @file BeeRTOS_alarm_cfg.h
+ * @brief BeeRTOS Semaphore Configuration File
+ * @file  BeeRTOS_semaphore_cfg.h
  * ****************************************************************************************/
 
-#ifndef __BEERTOS_ALARM_CFG_H__
-#define __BEERTOS_ALARM_CFG_H__
+#ifndef __BEERTOS_SEMAPHORE_CFG_H__
+#define __BEERTOS_SEMAPHORE_CFG_H__
 
 /******************************************************************************************
  *                                        INCLUDES                                        *
@@ -14,23 +14,25 @@
  *                                         DEFINES                                        *
  ******************************************************************************************/
 
-#define BEERTOS_ALARM_LIST \
-    BEERTOS_ALARM(ALARM_ONE,      alarm1_callback) \
-    BEERTOS_ALARM(ALARM_TWO,      alarm2_callback) \
-    BEERTOS_ALARM(ALARM_THREE,    alarm3_callback)
+#define BEERTOS_USE_GET_CONTROL_BLOCK_API  (true)
+
+#define BEERTOS_SEMAPHORE_LIST               \
+    /* NAME, INITIAL_COUT */                 \
+    BEERTOS_SEMAPHORE(SEMAPHORE_UT,      0U) \
+    BEERTOS_SEMAPHORE(SEMAPHORE_ONE,     0U) \
+    BEERTOS_SEMAPHORE(SEMAPHORE_TWO,     0U)
 
 /******************************************************************************************
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
 
-#undef BEERTOS_ALARM
-#define BEERTOS_ALARM(name, callback) name,
+#undef BEERTOS_SEMAPHORE
+#define BEERTOS_SEMAPHORE(name, initial_count) name,
 
-typedef enum
-{
-    BEERTOS_ALARM_LIST
-    ALARM_ID_MAX
-} alarm_id_t;
+typedef enum {
+    BEERTOS_SEMAPHORE_LIST
+    BEERTOS_SEMAPHORE_ID_MAX
+} os_sem_id_t; 
 
 /******************************************************************************************
  *                                    GLOBAL VARIABLES                                    *
@@ -40,9 +42,4 @@ typedef enum
  *                                   FUNCTION PROTOTYPES                                  *
  ******************************************************************************************/
 
-extern void alarm1_callback(void);
-extern void alarm2_callback(void);
-extern void alarm3_callback(void);
-
-
-#endif /* __BEERTOS_ALARM_CFG_H__ */
+#endif /* __BEERTOS_SEMAPHORE_CFG_H__ */
