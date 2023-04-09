@@ -26,7 +26,7 @@
     /* period, periodic, callback */  \
     { 0,       false,    callback },
 
-static os_alarm_t alarms[] = {
+static os_alarm_t alarms[ALARM_ID_MAX] = {
     BEERTOS_ALARM_LIST
 };
 
