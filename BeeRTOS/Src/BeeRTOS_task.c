@@ -8,9 +8,8 @@
  ******************************************************************************************/
 
 #include "BeeRTOS.h"
-#include "BeeRTOS_task_cfg.h"
+#include "BeeRTOS_task.h"
 #include "BeeRTOS_assert.h"
-#include <stdbool.h>
 
 /******************************************************************************************
  *                                         DEFINES                                        *
@@ -55,6 +54,20 @@ void os_task_init_all(void)
     #define BEERTOS_TASK_INIT BEERTOS_TASK_LIST
 
     BEERTOS_TASK_INIT;
+
+    /*! X-Macro to call os_task_start for all tasks */
+    uint32_t task_id = 0;
+    #undef BEERTOS_TASK
+    #define BEERTOS_TASK(name, cb, prio, stack, autostart, argv)    \
+        if (autostart)                                              \
+        {                           \
+            os_task_start(task_id); \
+        }                           \
+        task_id++;
+    
+    #define BEERTOS_TASK_START BEERTOS_TASK_LIST
+
+    BEERTOS_TASK_START;
 }
 
 bool os_task_start(os_task_id_t task_id)
