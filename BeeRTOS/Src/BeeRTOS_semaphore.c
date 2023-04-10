@@ -8,6 +8,7 @@
  ******************************************************************************************/
 
 #include "BeeRTOS_semaphore.h"
+#include "BeeRTOS_assert.h"
 
 /******************************************************************************************
  *                                         DEFINES                                        *
@@ -34,6 +35,8 @@ static os_sem_t semaphores[BEERTOS_SEMAPHORE_ID_MAX];
 
 static inline void os_semaphore_init(os_sem_t *sem, uint32_t count)
 {
+    BEERTOS_ASSERT(sem != NULL, OS_MODULE_ID_SEMAPHORE, OS_ERROR_NULLPTR);
+
     sem->count = count;
     sem->tasks_blocked = 0U;
 }
@@ -53,13 +56,13 @@ void os_semaphores_init(void)
 #if (BEERTOS_USE_GET_CONTROL_BLOCK_API == true)
 bool os_semaphore_get_control_block_info(os_sem_id_t id, os_sem_t **sem)
 {
+    BEERTOS_ASSERT(sem != NULL, OS_MODULE_ID_SEMAPHORE, OS_ERROR_NULLPTR);
+    BEERTOS_ASSERT(id < BEERTOS_SEMAPHORE_ID_MAX, OS_MODULE_ID_SEMAPHORE, OS_ERROR_INVALID_PARAM);
+
     bool ret = false;
 
-    if (sem != NULL)
-    {
-        *sem = &semaphores[id];
-        ret = true;
-    }
+    *sem = &semaphores[id];
+    ret = true;
 
     return ret;
 }
@@ -67,6 +70,8 @@ bool os_semaphore_get_control_block_info(os_sem_id_t id, os_sem_t **sem)
 
 bool os_semaphore_wait(os_sem_id_t id, uint32_t timeout)
 {
+    BEERTOS_ASSERT(id < BEERTOS_SEMAPHORE_ID_MAX, OS_MODULE_ID_SEMAPHORE, OS_ERROR_INVALID_PARAM);
+
     bool ret = false;
     os_sem_t *sem = &semaphores[id];
 
@@ -110,6 +115,8 @@ uint32_t os_get_task_id_from_mask(uint32_t mask)
 
 bool os_semaphore_signal(os_sem_id_t id)
 {
+    BEERTOS_ASSERT(id < BEERTOS_SEMAPHORE_ID_MAX, OS_MODULE_ID_SEMAPHORE, OS_ERROR_INVALID_PARAM);
+
     bool ret = false;
     os_sem_t *sem = &semaphores[id];
 

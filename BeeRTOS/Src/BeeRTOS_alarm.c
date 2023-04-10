@@ -8,6 +8,7 @@
  ******************************************************************************************/
 
 #include "BeeRTOS_alarm.h"
+#include "BeeRTOS_assert.h"
 
 /******************************************************************************************
  *                                         DEFINES                                        *
@@ -49,22 +50,20 @@ void os_alarms_init(void)
 
 void os_alarm_start(os_alarm_id_t alarm_id, uint32_t period, bool periodic)
 {
-    if (alarm_id < ALARM_ID_MAX)
-    {
-        alarms[alarm_id].period = period;
-        alarms[alarm_id].periodic = periodic;
-        ticks[alarm_id] = period;
-        os_alarm_active_mask |= (1U << alarm_id);
-    }
+    BEERTOS_ASSERT(alarm_id < ALARM_ID_MAX, OS_MODULE_ID_ALARM, OS_ERROR_INVALID_PARAM);
+
+    alarms[alarm_id].period = period;
+    alarms[alarm_id].periodic = periodic;
+    ticks[alarm_id] = period;
+    os_alarm_active_mask |= (1U << alarm_id);
 }
 
 void os_alarm_cancel(os_alarm_id_t alarm_id)
 {
-    if (alarm_id < ALARM_ID_MAX)
-    {
-        ticks[alarm_id] = 0U;
-        os_alarm_active_mask &= ~(1U << alarm_id);
-    }
+    BEERTOS_ASSERT(alarm_id < ALARM_ID_MAX, OS_MODULE_ID_ALARM, OS_ERROR_INVALID_PARAM);
+
+    ticks[alarm_id] = 0U;
+    os_alarm_active_mask &= ~(1U << alarm_id);
 }
 
 void os_alarm_tick(void)

@@ -9,6 +9,7 @@
 
 #include "BeeRTOS.h"
 #include "BeeRTOS_task_cfg.h"
+#include "BeeRTOS_assert.h"
 #include <stdbool.h>
 
 /******************************************************************************************
@@ -59,9 +60,11 @@ void os_task_init_all(void)
 bool os_task_start(os_task_id_t task_id)
 {
     /* TODO */
+    BEERTOS_ASSERT(task_id < OS_TASK_MAX, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
 }
 
 bool os_task_stop(os_task_id_t task_id)
 {
     /* TODO */
+    BEERTOS_ASSERT(task_id < OS_TASK_MAX, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
 }
