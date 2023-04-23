@@ -138,6 +138,7 @@ C_INCLUDES =  \
 -IDrivers/CMSIS/Include \
 -IBeeRTOS/Src	\
 -IBeeRTOS/Cfg	\
+-IBeeRTOS/Src/Portable/GCC/ARM_CM4	\
 -ISEGGER/	\
 -ISEGGER/Config/	\
 -IUnity/	\

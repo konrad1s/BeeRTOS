@@ -56,10 +56,10 @@ void os_task_init_all(void)
     BEERTOS_TASK_INIT;
 
     /*! X-Macro to call os_task_start for all tasks */
-    uint32_t task_id = 0;
+    uint32_t task_id = 0U;
     #undef BEERTOS_TASK
     #define BEERTOS_TASK(name, cb, prio, stack, autostart, argv)    \
-        if (autostart)                                              \
+        if (true == autostart)                                      \
         {                           \
             os_task_start(task_id); \
         }                           \
