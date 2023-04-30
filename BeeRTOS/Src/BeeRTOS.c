@@ -45,8 +45,9 @@ void os_init(void)
     os_isr_counter = 0U;
     os_tick_counter = 0U;
 
-    os_task_init_all();
+    os_task_init();
     os_cpu_init();
+    os_semaphores_init();
 }
 
 void os_run(void)

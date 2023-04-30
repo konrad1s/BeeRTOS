@@ -94,7 +94,7 @@ static inline void os_task_stack_mon2(void)
     }
 }
 
-void os_task_init_all(void)
+void os_task_init(void)
 {
     os_ready_mask = 0U;
     os_delay_mask = 0U;
@@ -127,20 +127,6 @@ void os_task_init_all(void)
     BEERTOS_TASK_START;
 }
 
-bool os_task_start(os_task_id_t task_id)
-{
-    /* TODO */
-    BEERTOS_ASSERT(task_id < OS_TASK_MAX, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
-    BEERTOS_ASSERT(task_id < 255U, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
-}
-
-bool os_task_stop(os_task_id_t task_id)
-{
-    /* TODO */
-    BEERTOS_ASSERT(task_id < OS_TASK_MAX, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
-    BEERTOS_ASSERT(task_id < 255U, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
-}
-
 void os_task_create(os_task_t *task, os_task_handler task_handler,
                     void *stack, uint32_t stack_size, uint8_t priority)
 {
@@ -163,13 +149,27 @@ void os_task_create(os_task_t *task, os_task_handler task_handler,
     }
 }
 
-void os_delay(uint32_t ticks)
+bool os_task_start(os_task_id_t task_id)
+{
+    /* TODO */
+    BEERTOS_ASSERT(task_id < OS_TASK_MAX, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
+    BEERTOS_ASSERT(task_id < 255U, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
+}
+
+bool os_task_stop(os_task_id_t task_id)
+{
+    /* TODO */
+    BEERTOS_ASSERT(task_id < OS_TASK_MAX, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
+    BEERTOS_ASSERT(task_id < 255U, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
+}
+
+void os_task_delete(void)
 {
     os_disable_all_interrupts();
 
-    os_task_current->ticks = ticks;
     os_ready_mask &= ~(1 << (os_task_current->priority - 1U));
-    os_delay_mask |= (1 << (os_task_current->priority - 1U));
+    os_delay_mask &= ~(1 << (os_task_current->priority - 1U));
+    os_tasks[os_task_current->priority] = NULL;
     os_sched();
 
     os_enable_all_interrupts();
@@ -186,21 +186,39 @@ void os_task_release(uint32_t task_id)
     os_enable_all_interrupts();
 }
 
-void os_task_delete(void)
+os_task_t* os_get_current_task(void)
+{
+    return os_task_current;
+}
+
+void os_delay(uint32_t ticks)
 {
     os_disable_all_interrupts();
 
+    os_task_current->ticks = ticks;
     os_ready_mask &= ~(1 << (os_task_current->priority - 1U));
-    os_delay_mask &= ~(1 << (os_task_current->priority - 1U));
-    os_tasks[os_task_current->priority] = NULL;
+    os_delay_mask |= (1 << (os_task_current->priority - 1U));
     os_sched();
 
     os_enable_all_interrupts();
 }
 
-os_task_t* os_get_current_task(void)
+void os_task_tick(void)
 {
-    return os_task_current;
+    uint32_t mask = os_delay_mask;
+
+    while (mask)
+    {
+       os_task_t* const task = os_tasks[OS_LOG2(mask)];
+
+        task->ticks--;
+         if (task->ticks == 0)
+         {
+              os_ready_mask |= (1 << (task->priority - 1U));
+              os_delay_mask &= ~(1 << (task->priority - 1U));
+         }
+            mask &= ~(1 << (task->priority - 1U));
+    }
 }
 
 void os_sched(void)
@@ -222,22 +240,4 @@ void os_sched(void)
     }
 
     os_enable_all_interrupts();
-}
-
-void os_task_tick(void)
-{
-    uint32_t mask = os_delay_mask;
-
-    while (mask)
-    {
-       os_task_t *task = os_tasks[OS_LOG2(mask)];
-
-        task->ticks--;
-         if (task->ticks == 0)
-         {
-              os_ready_mask |= (1 << (task->priority - 1U));
-              os_delay_mask &= ~(1 << (task->priority - 1U));
-         }
-            mask &= ~(1 << (task->priority - 1U));
-    }
 }
