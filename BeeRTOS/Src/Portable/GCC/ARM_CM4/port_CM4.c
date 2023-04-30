@@ -14,9 +14,6 @@
 *                                         DEFINES                                        *
 ******************************************************************************************/
 
-#define OS_STACK_PATTERN (0xA5A5A5A5U)
-
-
 #define PORT_NVIC_PENDSV_IRQ_NB             (-2)
 #define PORT_NVIC_SYSTICK_IRQ_NB            (-1)
 
@@ -125,15 +122,12 @@ uint32_t* os_port_task_stack_init(void (*task)(void *), void *arg, void *stack_p
     *(--stk) = 0x04040404;                /*!< R4 */
 
     uint32_t* user_stack = stk;
-    /* Round up the bottom of the stack to the 8 byte boundary */
-    uint32_t* stack_limit = (uint32_t*)(((uint32_t)stack_ptr + 7U) & ~0x7U);
     /* Fill the unused stack space with a known value */
-    while (user_stack > stack_limit)
+    while (user_stack > (uint32_t *)stack_ptr)
     {
-        *(--user_stack) = OS_STACK_PATTERN;
+        *(--user_stack) = OS_TASK_STACK_PATTERN;
     }
 
-    /* Return  stack pointer */
     return stk;
 }
 

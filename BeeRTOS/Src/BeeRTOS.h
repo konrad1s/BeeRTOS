@@ -12,6 +12,8 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include "BeeRTOS_task.h"
+#include "os_portable.h"
 
 /******************************************************************************************
  *                                         DEFINES                                        *
@@ -26,7 +28,7 @@
 /*! OS Thread control block */
 typedef struct
 {
-    void *sp; /*!< stack pointer */
+    volatile void *sp; /*!< stack pointer */
     uint32_t ticks; /*!< ticks */
     uint8_t priority; /*!< priority */
 } os_task_t;

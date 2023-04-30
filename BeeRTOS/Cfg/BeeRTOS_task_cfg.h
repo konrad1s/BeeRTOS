@@ -14,6 +14,8 @@
  *                                         DEFINES                                        *
  ******************************************************************************************/
 
+#define BEERTOS_USE_TASK_STACK_MONITOR    (true)
+
 #define BEERTOS_TASK_LIST \
     /* task_name, callback, priority, stacksize, autostart, task_arg */ \
     BEERTOS_TASK( OS_TASK_IDLE,     Idle_Task,              0, 64,  1, NULL ) \

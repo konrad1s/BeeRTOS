@@ -82,10 +82,6 @@ void os_enable_all_interrupts(void)
     }
 }
 
-void os_stack_monitor(void)
-{
-
-}
 
 void os_delay(uint32_t ticks)
 {
