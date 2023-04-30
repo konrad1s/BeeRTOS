@@ -45,9 +45,9 @@
 /******************************************************************************************
  *                                   FUNCTION PROTOTYPES                                  *
  ******************************************************************************************/
-extern void ut_task_priority_1(void);
-extern void ut_task_priority_2(void);
-extern void ut_task_priority_3(void);
-extern void ut_beertos_main_task(void);
+extern void ut_task_priority_1(void *arg);
+extern void ut_task_priority_2(void *arg);
+extern void ut_task_priority_3(void *arg);
+extern void ut_beertos_main_task(void *arg);
 
 #endif /* __BEE_RTOS_TASK_CFG_H__ */

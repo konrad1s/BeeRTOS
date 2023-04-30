@@ -13,7 +13,7 @@ static void ut_task_block_delay(uint32_t delay)
     }
 }
 
-void ut_task_priority_1(void)
+void ut_task_priority_1(void *arg)
 {
     tasks_cnt[0]++;
 
@@ -24,7 +24,7 @@ void ut_task_priority_1(void)
     os_task_delete();
 }
 
-void ut_task_priority_2(void)
+void ut_task_priority_2(void *arg)
 {
     tasks_cnt[1]++;
 
@@ -35,7 +35,7 @@ void ut_task_priority_2(void)
     os_task_delete();
 }
 
-void ut_task_priority_3(void)
+void ut_task_priority_3(void *arg)
 {
     tasks_cnt[2]++;
 

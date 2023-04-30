@@ -35,7 +35,7 @@ BEERTOS_STACK_VAR;
 
 /*! X-Macro to create array of pointers to stack arrays for all tasks */
 #undef BEERTOS_TASK
-#define BEERTOS_TASK(name, cb, stack, autostart, argv) \
+#define BEERTOS_TASK(name, ...) \
     name ## _stack,
 
 #define BEERTOS_STACK_PTR_VAR BEERTOS_TASK_LIST
@@ -47,7 +47,7 @@ static os_stack_t* task_stacks[] = {
 
 /*! X-Macro to create task control structure for all tasks */
 #undef BEERTOS_TASK
-#define BEERTOS_TASK(name, cb, stack, autostart, argv) \
+#define BEERTOS_TASK(name, ...) \
     static os_task_t name ## _control;
 
 #define BEERTOS_TASK_CONTROL_VAR BEERTOS_TASK_LIST
@@ -98,11 +98,11 @@ static inline void os_task_stack_mon2(void)
 }
 
 static void os_task_create(os_task_t *task, os_task_handler task_handler,
-                    void *stack, uint32_t stack_size, uint8_t priority)
+                    void *stack, uint32_t stack_size, uint8_t priority, void *argv)
 {
     BEERTOS_ASSERT(os_tasks[priority] == NULL, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
 
-    uint32_t *stack_ptr = os_port_task_stack_init(task_handler, NULL, stack, stack_size);
+    uint32_t *stack_ptr = os_port_task_stack_init(task_handler, argv, stack, stack_size);
 
     /* Set stack pointer */
     task->sp = (void *)stack_ptr;
@@ -116,7 +116,7 @@ static void os_task_create(os_task_t *task, os_task_handler task_handler,
     }
 }
 
-static void BeeRTOS_Idle_Task(void)
+static void BeeRTOS_Idle_Task(void *argv)
 {
     BEERTOS_IDLE_TASK_INIT();
 
@@ -140,12 +140,12 @@ void os_task_init(void)
     uint8_t prio = OS_TASK_MAX - 1U;
     #undef BEERTOS_TASK
     #define BEERTOS_TASK(name, cb, stack, autostart, argv) \
-        os_task_create(&name##_control, cb, name##_stack, sizeof(name##_stack), prio); \
+        os_task_create(&name##_control, cb, name##_stack, sizeof(name##_stack), prio, argv); \
         prio--;
 
     #define BEERTOS_TASK_INIT BEERTOS_TASK_LIST
 
-    os_task_create(&os_idle_task_control, BeeRTOS_Idle_Task, os_idle_task_stack, sizeof(os_idle_task_stack), 0U);
+    os_task_create(&os_idle_task_control, BeeRTOS_Idle_Task, os_idle_task_stack, sizeof(os_idle_task_stack), 0U, NULL);
     BEERTOS_TASK_INIT;
 
     /* X-Macro to call os_task_start for all tasks */

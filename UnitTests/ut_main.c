@@ -5,7 +5,7 @@ extern void TEST_Task(void);
 extern void TEST_RecursiveMutex(void);
 extern void TEST_Alarms(void);
 
-void ut_beertos_main_task(void)
+void ut_beertos_main_task(void *arg)
 {
     UnityBegin("ut_00_semaphore.c");
 

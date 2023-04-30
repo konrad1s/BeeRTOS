@@ -33,10 +33,10 @@ typedef struct
     uint8_t priority; /*!< priority */
 } os_task_t;
 
-typedef void (*os_task_handler)();
+typedef void (*os_task_handler)(void *args);
 
 #undef  BEERTOS_TASK
-#define BEERTOS_TASK(task_name, task_cb, task_stack, task_autostart, task_arg) task_name,
+#define BEERTOS_TASK(task_name, ...) task_name,
 typedef enum {
     OS_TASK_IDLE = 0, /* Reserved for idle task! */
     BEERTOS_TASK_LIST
