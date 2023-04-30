@@ -35,6 +35,14 @@ typedef struct
 
 typedef void (*os_task_handler)();
 
+#undef  BEERTOS_TASK
+#define BEERTOS_TASK(task_name, task_cb, task_stack, task_autostart, task_arg) task_name,
+typedef enum {
+    OS_TASK_IDLE = 0, /* Reserved for idle task! */
+    BEERTOS_TASK_LIST
+    OS_TASK_MAX
+} os_task_id_t;
+
 /******************************************************************************************
  *                                    GLOBAL VARIABLES                                    *
  ******************************************************************************************/
@@ -43,8 +51,6 @@ typedef void (*os_task_handler)();
  *                                   FUNCTION PROTOTYPES                                  *
  ******************************************************************************************/
 void os_task_init(void);
-void os_task_create(os_task_t *task, os_task_handler task_handler,
-                    void *stack, uint32_t stack_size, uint8_t priority);
 bool os_task_start(os_task_id_t task_id);
 bool os_task_stop(os_task_id_t task_id);
 void os_task_delete(void);
