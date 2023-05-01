@@ -66,36 +66,39 @@ static uint32_t os_delay_mask;
  *                                        FUNCTIONS                                       *
  ******************************************************************************************/
 
-static inline void os_task_stack_mon(void)
-{
-    const os_task_t* const task = os_get_current_task();
-    const os_stack_t pattern = OS_TASK_STACK_PATTERN;
-
-    if((task_stacks[task->priority][0] != pattern) ||
-        (task_stacks[task->priority][1] != pattern) ||
-        (task_stacks[task->priority][2] != pattern) ||
-        (task_stacks[task->priority][3] != pattern))
-    {
-        /* TODO - handle stack overflow */
-        while(1);
-    }
-}
-
-#define OS_TASK_STACK_CHECK_BYTE_COUNT 10U
-static inline void os_task_stack_mon2(void)
-{
-    const os_task_t* const task = os_get_current_task();
-    const os_stack_t pattern = OS_TASK_STACK_PATTERN;
-
-    for(uint32_t i = 0U; i < OS_TASK_STACK_CHECK_BYTE_COUNT; i++)
-    {
-        if(task_stacks[task->priority][i] != pattern)
+#if (BEERTOS_USE_TASK_STACK_MONITOR == true)
+    #if (BEERTOS_USE_FAST_STACK_MONITOR == true)
+        static inline void os_task_stack_mon(void)
         {
-            /* TODO - handle stack overflow */
-            while(1);
+            const os_task_t* const task = os_task_current;
+            const os_stack_t pattern = OS_TASK_STACK_PATTERN;
+
+            if((task_stacks[task->priority][0] != pattern) ||
+               (task_stacks[task->priority][1] != pattern) ||
+               (task_stacks[task->priority][2] != pattern) ||
+               (task_stacks[task->priority][3] != pattern))
+            {
+                /* TODO - handle stack overflow */
+                while(1);
+            }
         }
-    }
-}
+    #elif (BEERTOS_USE_USER_STACK_MONITOR == true)
+        static inline void os_task_stack_mon(void)
+        {
+            const os_task_t* const task = os_task_current;
+            const os_stack_t pattern = OS_TASK_STACK_PATTERN;
+
+            for(uint32_t i = 0U; i < OS_TASK_STACK_CHECK_BYTE_COUNT; i++)
+            {
+                if(task_stacks[task->priority][i] != pattern)
+                {
+                    /* TODO - handle stack overflow */
+                    while(1);
+                }
+            }
+        }
+    #endif /* BEERTOS_USE_USER_STACK_MONITOR */
+#endif /* BEERTOS_USE_TASK_STACK_MONITOR */
 
 static void os_task_create(os_task_t *task, os_task_handler task_handler,
                     void *stack, uint32_t stack_size, uint8_t priority, void *argv)
@@ -118,11 +121,11 @@ static void os_task_create(os_task_t *task, os_task_handler task_handler,
 
 static void BeeRTOS_Idle_Task(void *argv)
 {
-    BEERTOS_IDLE_TASK_INIT();
+    BEERTOS_IDLE_TASK_INIT_CB();
 
     while (1)
     {
-        BEERTOS_IDLE_TASK();
+        BEERTOS_IDLE_TASK_CB();
     }
 }
 
@@ -258,6 +261,11 @@ void os_sched(void)
     else
     {
         os_task_next = os_tasks[OS_LOG2(os_ready_mask)];
+    }
+
+    if(NULL != os_task_current)
+    {
+        os_task_stack_mon();
     }
 
     if(os_task_current != os_task_next)

@@ -14,12 +14,24 @@
  *                                         DEFINES                                        *
  ******************************************************************************************/
 
-#define BEERTOS_IDLE_TASK_STACK_SIZE    (64U)
-#define BEERTOS_IDLE_TASK_INIT()        {}
-#define BEERTOS_IDLE_TASK()             {}
+/* Stack size of the idle task in bytes - if callbacks not used you can set 16 bytes */
+#define BEERTOS_IDLE_TASK_STACK_SIZE    (32U)
+/* Callback when idle task is initialized (before entering the idle loop) */
+#define BEERTOS_IDLE_TASK_INIT_CB()     {}
+/* Callback when idle task is running (in the idle loop) */
+#define BEERTOS_IDLE_TASK_CB()          {}
 
 
-#define BEERTOS_USE_TASK_STACK_MONITOR    (true)
+/* Enable this option to use the stack overflow detection feature. 
+ * When tasks is created, the stack is filled with a pattern. Each context switch
+ * the pattern is checked. If the pattern is not the same, then we can assume that
+ * the stack has overflowed. */
+#define BEERTOS_USE_TASK_STACK_MONITOR  (true)
+/* Fast metod checks only the last 4 bytes of the stack each context switch. */
+#define BEERTOS_USE_FAST_STACK_MONITOR  (true)
+/* This method checks the OS_TASK_STACK_CHECK_BYTE_COUNT bytes of the stack each context switch. */
+#define BEERTOS_USE_USER_STACK_MONITOR  (false)
+#define OS_TASK_STACK_CHECK_BYTE_COUNT  (10U)
 
 /* Define your tasks here! */
 /* In the current implementation all tasks are created statically.

@@ -21,6 +21,12 @@
 
 #define OS_TASK_STACK_PATTERN ((os_stack_t)0xA5A5A5A5U)
 
+#if (BEERTOS_USE_TASK_STACK_MONITOR == true) && \
+    (BEERTOS_USE_FAST_STACK_MONITOR == true) && \
+    (BEERTOS_USE_USER_STACK_MONITOR == true)
+    #error "Only one stack monitor can be used at a time!"
+#endif
+
 /******************************************************************************************
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/

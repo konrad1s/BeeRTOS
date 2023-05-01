@@ -156,7 +156,7 @@ void SysTick_Handler(void)
 {
     extern void os_tick(void);
     extern void os_sched(void);
-    
+
     os_tick();
     os_sched();
 }
