@@ -104,7 +104,7 @@ void os_port_enable_interrupts(void)
     );
 }
 
-uint32_t* os_port_task_stack_init(void (*task)(void *), void *arg, void *stack_ptr, uint32_t stack_size)
+os_stack_t* os_port_task_stack_init(void (*task)(void *), void *arg, void *stack_ptr, uint32_t stack_size)
 {
     /* Align the stack to 8 bytes */
     uint32_t *stk = (uint32_t *)(((uint32_t)stack_ptr + stack_size) & ~0x7U);

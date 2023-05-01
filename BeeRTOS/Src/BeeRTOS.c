@@ -9,10 +9,6 @@
 
 #include "BeeRTOS.h"
 #include "BeeRTOS_internal.h"
-#include "stm32f4xx.h"
-#include "os_portable.h"
-#include "BeeRTOS_task.h"
-#include "BeeRTOS_alarm.h"
 
 /******************************************************************************************
  *                                         DEFINES                                        *
@@ -33,12 +29,9 @@ static volatile uint32_t os_tick_counter;
 /******************************************************************************************
  *                                        FUNCTIONS                                       *
  ******************************************************************************************/
-extern uint32_t* os_port_task_stack_init(void (*task)(void *), void *arg, void *stack_ptr, uint32_t stack_size);
 extern void os_cpu_init(void);
 extern void os_port_disable_interrupts(void);
 extern void os_port_enable_interrupts(void);
-extern void os_port_context_switch(void);
-extern void os_sched(void);
 
 void os_init(void)
 {

@@ -7,7 +7,6 @@
  *                                        INCLUDES                                        *
  ******************************************************************************************/
 
-#include "BeeRTOS.h"
 #include "BeeRTOS_task.h"
 #include "BeeRTOS_assert.h"
 
@@ -66,6 +65,9 @@ static uint32_t os_delay_mask;
  *                                        FUNCTIONS                                       *
  ******************************************************************************************/
 
+extern os_stack_t* os_port_task_stack_init(void (*task)(void *), void *arg, void *stack_ptr, uint32_t stack_size);
+extern void os_port_context_switch(void);
+
 #if (BEERTOS_USE_TASK_STACK_MONITOR == true)
     #if (BEERTOS_USE_FAST_STACK_MONITOR == true)
         static inline void os_task_stack_mon(void)
@@ -105,7 +107,7 @@ static void os_task_create(os_task_t *task, os_task_handler task_handler,
 {
     BEERTOS_ASSERT(os_tasks[priority] == NULL, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
 
-    uint32_t *stack_ptr = os_port_task_stack_init(task_handler, argv, stack, stack_size);
+    os_stack_t *stack_ptr = os_port_task_stack_init(task_handler, argv, stack, stack_size);
 
     /* Set stack pointer */
     task->sp = (void *)stack_ptr;

@@ -8,6 +8,7 @@
  ******************************************************************************************/
 
 #include "BeeRTOS_semaphore.h"
+#include "BeeRTOS_task.h"
 #include "BeeRTOS_assert.h"
 
 /******************************************************************************************
@@ -84,7 +85,7 @@ bool os_semaphore_wait(os_sem_id_t id, uint32_t timeout)
     }
     else
     {
-        const os_task_t const *current_task = os_get_current_task();
+        const os_task_t *current_task = os_get_current_task();
         sem->tasks_blocked |= (1U << current_task->priority);
         sem->count++;
         os_delay(timeout);

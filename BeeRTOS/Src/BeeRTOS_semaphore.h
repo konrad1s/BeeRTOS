@@ -10,10 +10,7 @@
 *                                        INCLUDES                                        *
 ******************************************************************************************/
 
-#include <stddef.h>
-#include <stdbool.h>
-
-#include "BeeRTOS.h"
+#include "Beertos_internal.h"
 #include "BeeRTOS_semaphore_cfg.h"
 
 /******************************************************************************************

@@ -1,6 +1,5 @@
 #include "unity.h"
 #include "BeeRTOS.h"
-#include "BeeRTOS_semaphore.h"
 
 void TEST_RecursiveMutex(void) 
 {

@@ -10,10 +10,10 @@
  *                                        INCLUDES                                        *
  ******************************************************************************************/
 
-#include <stdint.h>
-#include <stddef.h>
+#include "BeeRTOS_internal.h"
 #include "BeeRTOS_task.h"
-#include "os_portable.h"
+#include "BeeRTOS_alarm.h"
+#include "BeeRTOS_semaphore.h"
 
 /******************************************************************************************
  *                                         DEFINES                                        *
@@ -31,12 +31,12 @@
  *                                   FUNCTION PROTOTYPES                                  *
  ******************************************************************************************/
 
-void os_init(void);
-void os_run(void);
+extern void os_init(void);
+extern void os_run(void);
 
-void os_disable_all_interrupts(void);
-void os_enable_all_interrupts(void);
+extern void os_disable_all_interrupts(void);
+extern void os_enable_all_interrupts(void);
 
-uint32_t os_get_tick_count(void);
+extern uint32_t os_get_tick_count(void);
 
 #endif /* __BEERTOS_H__ */

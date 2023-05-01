@@ -10,7 +10,7 @@
  *                                        INCLUDES                                        *
  ******************************************************************************************/
 
-#include <stdbool.h>
+#include "Beertos_internal.h"
 #include "BeeRTOS_task_cfg.h"
 
 /******************************************************************************************
@@ -64,5 +64,6 @@ void os_task_release(uint32_t task_id);
 os_task_t* os_get_current_task(void);
 void os_delay(uint32_t ticks);
 void os_task_tick(void);
+void os_sched(void);
 
 #endif /* __BEERTOS_TASK_H__ */

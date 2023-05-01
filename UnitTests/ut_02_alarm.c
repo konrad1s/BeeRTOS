@@ -1,5 +1,5 @@
-#include "BeeRTOS_alarm.h"
 #include "unity.h"
+#include "BeeRTOS.h"
 
 uint32_t alarms_cnt[ALARM_ID_MAX];
 
