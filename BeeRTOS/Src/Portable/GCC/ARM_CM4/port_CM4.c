@@ -13,14 +13,21 @@
 /******************************************************************************************
 *                                         DEFINES                                        *
 ******************************************************************************************/
+/* Register addresses */
+#define PORT_NVIC_SYSTICK_CTRL              (*((volatile uint32_t *)0xE000E010U))
+#define PORT_NVIC_SYSTICK_LOAD              (*((volatile uint32_t *)0xE000E014U))
+#define PORT_NVIC_SYSTICK_VAL               (*((volatile uint32_t *)0xE000E018U))
+#define PORT_NVIC_SYSPRI2                   (*((volatile uint32_t *)0xE000ED20U))
 
-#define PORT_NVIC_PENDSV_IRQ_NB             (-2)
-#define PORT_NVIC_SYSTICK_IRQ_NB            (-1)
+#define PORT_NVIC_INT_CTRL                  (*((volatile uint32_t *)0xE000ED04U))
+#define PORT_NVIC_PENDSV_SET_MSK            (1UL << 28U)
 
-/*!< SCB ICSR: PENDSVSET Position */
-#define PORT_NVICPENDSVSET_Pos              (28U)
-/*!< SCB ICSR: PENDSVSET Mask */
-#define PORT_NVIC_PENDSVSET_Msk             (1UL << SCB_ICSR_PENDSVSET_Pos)                
+/* Interrupt priority mask */
+#define PORT_LOWEST_INTERRUPT_PRIORITY      (0xFFU)
+#define PORT_HIGHEST_INTERRUPT_PRIORITY     (0x00U)
+
+#define PORT_NVIC_PENDSV_PRI                (PORT_LOWEST_INTERRUPT_PRIORITY << 16U)
+#define PORT_NVIC_SYSTICK_PRI               (PORT_HIGHEST_INTERRUPT_PRIORITY << 24U)
 
 /******************************************************************************************
 *                                        TYPEDEFS                                        *
@@ -134,15 +141,15 @@ uint32_t* os_port_task_stack_init(void (*task)(void *), void *arg, void *stack_p
 void os_cpu_init(void)
 {
     /* PendSV_IRQn lowest possible priority */
-    NVIC_SetPriority(PendSV_IRQn, 0xFF);
+    PORT_NVIC_SYSPRI2 |= PORT_NVIC_PENDSV_PRI;
     /* SysTick_IRQn highest possible priority */
-    NVIC_SetPriority(SysTick_IRQn, 0x00);
+    PORT_NVIC_SYSPRI2 |= PORT_NVIC_SYSTICK_PRI;
 }
 
 void os_port_context_switch(void)
 {
     /* Trigger PendSV */
-    SCB->ICSR |= PORT_NVIC_PENDSVSET_Msk;
+    PORT_NVIC_INT_CTRL |= PORT_NVIC_PENDSV_SET_MSK;
 }
 
 void SysTick_Handler(void)

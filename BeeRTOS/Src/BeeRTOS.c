@@ -33,7 +33,7 @@ static volatile uint32_t os_tick_counter;
 /******************************************************************************************
  *                                        FUNCTIONS                                       *
  ******************************************************************************************/
-extern uint32_t* os_port_task_stack_init(void (*task)(void *), void *arg, void *stack_ptr, uint32_t stack_size, void *argv);
+extern uint32_t* os_port_task_stack_init(void (*task)(void *), void *arg, void *stack_ptr, uint32_t stack_size);
 extern void os_cpu_init(void);
 extern void os_port_disable_interrupts(void);
 extern void os_port_enable_interrupts(void);
