@@ -113,27 +113,21 @@ os_stack_t* os_port_task_stack_init(void (*task)(void *), void *arg, void *stack
     *(--stk) = 0x01000000;                /*!< xPSR - THUMB bit set*/
     *(--stk) = (uint32_t)task;            /*!< PC */
     *(--stk) = 0x0000000EU;               /*!< LR */
-    *(--stk) = 0x12121212;                /*!< R12 */
-    *(--stk) = 0x03030303;                /*!< R3 */
-    *(--stk) = 0x02020202;                /*!< R2 */
-    *(--stk) = 0x01010101;                /*!< R1 */
+
+    stk -= 4U;                            /*!< R12, R3-R1 */
+
     *(--stk) = (uint32_t)arg;             /*!< R0 */
 
-    *(--stk) = 0x11111111;                /*!< R11 */
-    *(--stk) = 0x10101010;                /*!< R10 */
-    *(--stk) = 0x09090909;                /*!< R9 */
-    *(--stk) = 0x08080808;                /*!< R8 */
-    *(--stk) = 0x07070707;                /*!< R7 */
-    *(--stk) = 0x06060606;                /*!< R6 */
-    *(--stk) = 0x05050505;                /*!< R5 */
-    *(--stk) = 0x04040404;                /*!< R4 */
+    stk -= 8U;                            /*!< R11-R4 */
 
-    uint32_t* user_stack = stk;
-    /* Fill the unused stack space with a known value */
-    while (user_stack > (uint32_t *)stack_ptr)
-    {
-        *(--user_stack) = OS_TASK_STACK_PATTERN;
-    }
+    #if (BEERTOS_USE_TASK_STACK_MONITOR == true)
+        uint32_t* user_stack = stk;
+        /* Fill the unused stack space with a known value */
+        while (user_stack > (uint32_t *)stack_ptr)
+        {
+            *(--user_stack) = OS_TASK_STACK_PATTERN;
+        }
+    #endif
 
     return stk;
 }

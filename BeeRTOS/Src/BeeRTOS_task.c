@@ -270,7 +270,7 @@ void os_sched(void)
 
     if (os_ready_mask == 0U)
     {
-        os_task_next = os_tasks[0];
+        os_task_next = os_tasks[OS_TASK_IDLE];
     }
     else
     {
