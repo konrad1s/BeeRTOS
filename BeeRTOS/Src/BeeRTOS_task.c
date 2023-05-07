@@ -14,6 +14,15 @@
  *                                         DEFINES                                        *
  ******************************************************************************************/
 
+#define BEERTOS_BIT_SET(var, bit)           (var |= (1U << bit))
+#define BEERTOS_BIT_CLEAR(var, bit)         (var &= ~(1U << bit))
+
+#define BEERTOS_TASK_START(task_id)         (BEERTOS_BIT_SET(os_ready_mask, (task_id - 1U)))
+#define BEERTOS_TASK_STOP(task_id)          (BEERTOS_BIT_CLEAR(os_ready_mask, (task_id - 1U)))
+
+#define BEERTOS_TASK_DELAY_SET(task_id)     (BEERTOS_BIT_SET(os_delay_mask, (task_id - 1U)))
+#define BEERTOS_TASK_DELAY_CLEAR(task_id)   (BEERTOS_BIT_CLEAR(os_delay_mask, (task_id - 1U)))
+
 /******************************************************************************************
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
@@ -106,19 +115,19 @@ static void os_task_create(os_task_t *task, os_task_handler task_handler,
                     void *stack, uint32_t stack_size, uint8_t priority, void *argv)
 {
     BEERTOS_ASSERT(os_tasks[priority] == NULL, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
+    BEERTOS_ASSERT(task != NULL, OS_MODULE_ID_TASK, OS_ERROR_NULLPTR);
+    BEERTOS_ASSERT(task_handler != NULL, OS_MODULE_ID_TASK, OS_ERROR_NULLPTR);
+    BEERTOS_ASSERT(stack != NULL, OS_MODULE_ID_TASK, OS_ERROR_NULLPTR);
+    BEERTOS_ASSERT(priority < OS_TASK_MAX, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
 
     os_stack_t *stack_ptr = os_port_task_stack_init(task_handler, argv, stack, stack_size);
 
     /* Set stack pointer */
     task->sp = (void *)stack_ptr;
-
     task->priority = priority;
     task->ticks = 0U;
 
-    if(priority < OS_TASK_MAX)
-    {
-        os_tasks[priority] = task; //TODO: assert
-    }
+    os_tasks[priority] = task;
 }
 
 static void BeeRTOS_Idle_Task(void *argv)
@@ -148,10 +157,10 @@ void os_task_init(void)
         os_task_create(&name##_control, cb, name##_stack, sizeof(name##_stack), prio, argv); \
         prio--;
 
-    #define BEERTOS_TASK_INIT BEERTOS_TASK_LIST
+    #define BEERTOS_TASK_INIT_ALL() BEERTOS_TASK_LIST
 
     os_task_create(&os_idle_task_control, BeeRTOS_Idle_Task, os_idle_task_stack, sizeof(os_idle_task_stack), 0U, NULL);
-    BEERTOS_TASK_INIT;
+    BEERTOS_TASK_INIT_ALL();
 
     /* X-Macro to call os_task_start for all tasks */
     uint8_t task_id = 1U; /* 0 is idle task */
@@ -163,10 +172,10 @@ void os_task_init(void)
         }                           \
         task_id++;
     
-    #define BEERTOS_TASK_START BEERTOS_TASK_LIST
+    #define BEERTOS_TASK_START_ALL() BEERTOS_TASK_LIST
 
-    os_task_start(0U);
-    BEERTOS_TASK_START;
+    os_task_start(OS_TASK_IDLE);
+    BEERTOS_TASK_START_ALL();
 }
 
 bool os_task_start(os_task_id_t task_id)
@@ -176,9 +185,12 @@ bool os_task_start(os_task_id_t task_id)
 
     os_disable_all_interrupts();
 
-    os_ready_mask |= (1 << (task_id - 1U));
+    BEERTOS_TASK_START(task_id);
+    BEERTOS_TASK_DELAY_CLEAR(task_id);
 
     os_enable_all_interrupts();
+
+    return true;
 }
 
 bool os_task_stop(os_task_id_t task_id)
@@ -188,18 +200,19 @@ bool os_task_stop(os_task_id_t task_id)
 
     os_disable_all_interrupts();
 
-    os_ready_mask &= ~(1 << (task_id - 1U));
-    os_delay_mask &= ~(1 << (task_id - 1U));
-    
+    BEERTOS_TASK_STOP(task_id);
+    BEERTOS_TASK_DELAY_CLEAR(task_id);
+
     os_enable_all_interrupts();
+
+    return true;
 }
 
 void os_task_delete(void)
 {
     os_disable_all_interrupts();
 
-    os_ready_mask &= ~(1 << (os_task_current->priority - 1U));
-    os_delay_mask &= ~(1 << (os_task_current->priority - 1U));
+    os_task_stop(os_task_current->priority);
     os_tasks[os_task_current->priority] = NULL;
     os_sched();
 
@@ -210,8 +223,7 @@ void os_task_release(uint32_t task_id)
 {
     os_disable_all_interrupts();
 
-    os_ready_mask |= (1 << (task_id - 1U));
-    os_delay_mask &= ~(1 << (task_id - 1U));
+    (void)os_task_start(task_id);
     os_sched();
 
     os_enable_all_interrupts();
@@ -227,8 +239,8 @@ void os_delay(uint32_t ticks)
     os_disable_all_interrupts();
 
     os_task_current->ticks = ticks;
-    os_ready_mask &= ~(1 << (os_task_current->priority - 1U));
-    os_delay_mask |= (1 << (os_task_current->priority - 1U));
+    BEERTOS_TASK_DELAY_SET(os_task_current->priority);
+    BEERTOS_TASK_STOP(os_task_current->priority);
     os_sched();
 
     os_enable_all_interrupts();
@@ -245,8 +257,8 @@ void os_task_tick(void)
         task->ticks--;
          if (task->ticks == 0)
          {
-              os_ready_mask |= (1 << (task->priority - 1U));
-              os_delay_mask &= ~(1 << (task->priority - 1U));
+            BEERTOS_TASK_START(task->priority);
+            BEERTOS_TASK_DELAY_CLEAR(task->priority);
          }
             mask &= ~(1 << (task->priority - 1U));
     }
