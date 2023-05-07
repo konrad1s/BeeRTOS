@@ -14,9 +14,24 @@
  *                                         DEFINES                                        *
  ******************************************************************************************/
 
+#if ALARM_ID_MAX > 32U
+    #error "ALARM_ID_MAX must be less than or equal to 32"
+#endif
+
+#define OS_ALARM_ENABLE(alarm_id)   (os_alarm_active_mask |= (1U << alarm_id))
+#define OS_ALARM_DISABLE(alarm_id)  (os_alarm_active_mask &= ~(1U << alarm_id))
+
 /******************************************************************************************
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
+
+#if (ALARM_ID_MAX <= 8U)
+    typedef uint8_t os_alarm_active_mask_t;
+#elif (ALARM_ID_MAX <= 16U)
+    typedef uint16_t os_alarm_active_mask_t;
+#else
+    typedef uint32_t os_alarm_active_mask_t;
+#endif
 
 /******************************************************************************************
  *                                        VARIABLES                                       *
@@ -32,7 +47,7 @@ static os_alarm_t alarms[ALARM_ID_MAX] = {
 };
 
 static uint32_t ticks[ALARM_ID_MAX];
-static uint32_t os_alarm_active_mask;
+static os_alarm_active_mask_t os_alarm_active_mask;
 
 /******************************************************************************************
  *                                        FUNCTIONS                                       *
@@ -55,7 +70,7 @@ void os_alarm_start(os_alarm_id_t alarm_id, uint32_t period, bool periodic)
     alarms[alarm_id].period = period;
     alarms[alarm_id].periodic = periodic;
     ticks[alarm_id] = period;
-    os_alarm_active_mask |= (1U << alarm_id);
+    OS_ALARM_ENABLE(alarm_id);
 }
 
 void os_alarm_cancel(os_alarm_id_t alarm_id)
@@ -63,7 +78,7 @@ void os_alarm_cancel(os_alarm_id_t alarm_id)
     BEERTOS_ASSERT(alarm_id < ALARM_ID_MAX, OS_MODULE_ID_ALARM, OS_ERROR_INVALID_PARAM);
 
     ticks[alarm_id] = 0U;
-    os_alarm_active_mask &= ~(1U << alarm_id);
+    OS_ALARM_DISABLE(alarm_id);
 }
 
 void os_alarm_tick(void)
@@ -86,7 +101,7 @@ void os_alarm_tick(void)
                     }
                     else
                     {
-                        os_alarm_active_mask &= ~(1U << i);
+                        OS_ALARM_DISABLE(i);
                     }
                 }
             }

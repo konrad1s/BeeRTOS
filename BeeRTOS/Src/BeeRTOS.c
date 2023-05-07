@@ -22,8 +22,7 @@
  *                                        VARIABLES                                       *
  ******************************************************************************************/
 
-static uint32_t os_isr_counter;
-
+static volatile uint32_t os_isr_counter;
 static volatile uint32_t os_tick_counter;
 
 /******************************************************************************************
