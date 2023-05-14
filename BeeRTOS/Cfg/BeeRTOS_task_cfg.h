@@ -15,7 +15,7 @@
  ******************************************************************************************/
 
 /* Stack size of the idle task in bytes - if callbacks not used you can set 16 bytes */
-#define BEERTOS_IDLE_TASK_STACK_SIZE    (32U)
+#define BEERTOS_IDLE_TASK_STACK_SIZE    (64U)
 /* Callback when idle task is initialized (before entering the idle loop) */
 #define BEERTOS_IDLE_TASK_INIT_CB()     {}
 /* Callback when idle task is running (in the idle loop) */

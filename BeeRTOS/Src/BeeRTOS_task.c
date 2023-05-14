@@ -9,6 +9,7 @@
 
 #include "BeeRTOS_task.h"
 #include "BeeRTOS_assert.h"
+#include "BeeRTOS_trace_cfg.h"
 
 /******************************************************************************************
  *                                         DEFINES                                        *
@@ -128,6 +129,16 @@ static void os_task_create(os_task_t *task, os_task_handler task_handler,
     task->ticks = 0U;
 
     os_tasks[priority] = task;
+
+    #undef BEERTOS_TASK
+    #define BEERTOS_TASK(name, cb, stack, autostart, argv) \
+        if (task == &name##_control) \
+        { \
+            BEERTOS_TRACE_TASK_CREATE(task, #name, stack); \
+        }
+
+    #define BEERTOS_TASK_TRACE_INIT() BEERTOS_TASK_LIST
+    BEERTOS_TASK_TRACE_INIT();
 }
 
 static void BeeRTOS_Idle_Task(void *argv)
@@ -160,6 +171,8 @@ void os_task_init(void)
     #define BEERTOS_TASK_INIT_ALL() BEERTOS_TASK_LIST
 
     os_task_create(&os_idle_task_control, BeeRTOS_Idle_Task, os_idle_task_stack, sizeof(os_idle_task_stack), 0U, NULL);
+    BEERTOS_TRACE_TASK_CREATE(&os_idle_task_control, "IDLE", sizeof(os_idle_task_stack));
+
     BEERTOS_TASK_INIT_ALL();
 
     /* X-Macro to call os_task_start for all tasks */

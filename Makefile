@@ -62,6 +62,7 @@ BeeRTOS/Src/BeeRTOS_alarm.c	\
 BeeRTOS/Src/BeeRTOS_task.c	\
 BeeRTOS/Src/BeeRTOS_assert.c	\
 BeeRTOS/Src/BeeRTOS_mutex.c	\
+BeeRTOS/Cfg/BeeRTOS_trace_cfg.c	\
 BeeRTOS/Src/Portable/GCC/ARM_CM4/port_CM4.c	\
 Core/Src/stm32f4xx_hal_timebase_tim.c	\
 SEGGER/SEGGER_RTT.c	\

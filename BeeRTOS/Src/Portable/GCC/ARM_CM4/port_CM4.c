@@ -8,6 +8,7 @@
 ******************************************************************************************/
 
 #include "BeeRTOS.h"
+#include "BeeRTOS_trace_cfg.h"
 #include "os_portable.h"
 
 /******************************************************************************************
@@ -43,6 +44,11 @@ extern os_task_t *volatile os_task_next;
 /******************************************************************************************
 *                                        FUNCTIONS                                       *
 ******************************************************************************************/
+void test(void)
+{
+    BEERTOS_TRACE_TASK_SWITCHED(os_task_next);
+}
+
 __attribute__ ((naked, optimize("-fno-stack-protector")))
 void PendSV_Handler(void)
 {
@@ -80,12 +86,18 @@ void PendSV_Handler(void)
         /* Restore registers */
         "POP            {r4-r11}                \n"
 
+    #ifdef BEERTOS_TRACE_TASK_SWITCHED
+        "stmdb          sp!, {r4-r11, lr}       \n"
+        "bl             test                    \n"
+        "ldmia          sp!, {r4-r11, lr}       \n"
+    #endif /* BEERTOS_TRACE_TASK_SWITCHED */
+
         /* Enable interrupts */
         "CPSIE          i                       \n"
 
         /* Return */
-        " BX            lr                      \n"
-    );
+        " BX            r14                      \n"
+        );
 }
 
 void os_port_disable_interrupts(void)
@@ -142,15 +154,20 @@ void os_cpu_init(void)
 
 void os_port_context_switch(void)
 {
+    BEERTOS_TRACE_EXIT_ISR_SCHEDULER();
     /* Trigger PendSV */
     PORT_NVIC_INT_CTRL |= PORT_NVIC_PENDSV_SET_MSK;
 }
 
 void SysTick_Handler(void)
 {
+    BEERTOS_TRACE_ENTER_ISR();
+
     extern void os_tick(void);
     extern void os_sched(void);
 
     os_tick();
     os_sched();
+
+    BEERTOS_TRACE_EXIT_ISR();
 }

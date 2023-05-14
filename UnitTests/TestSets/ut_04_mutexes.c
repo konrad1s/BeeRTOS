@@ -14,11 +14,7 @@ void ut_task_mutex_1(void *arg)
     os_mutex_unlock(MUTEX_ONE);
 
     tasks_cnt[0]++;
-    
-    while(1)
-    {
-
-    }
+    os_task_delete();
 }
 
 /* Medium priority task */
