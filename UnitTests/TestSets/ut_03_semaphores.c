@@ -1,9 +1,9 @@
-#include "unity.h"
-#include "BeeRTOS.h"
+#include "ut_utils.h"
 
-void TEST_RecursiveMutex(void) 
+void TEST_semaphores(void)
 {
-    UnityPrint("TEST_RecursiveMutex\n");
+    PRINT_UT_BEGIN();
+
     os_sem_t *test_sem;
 
      for (int i = 0; i < 10; i++)

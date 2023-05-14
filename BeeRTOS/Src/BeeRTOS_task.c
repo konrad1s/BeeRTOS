@@ -66,7 +66,7 @@ BEERTOS_TASK_CONTROL_VAR;
 os_task_t *volatile os_task_current;
 os_task_t *volatile os_task_next;
 
-static os_task_t *os_tasks[OS_TASK_MAX];
+os_task_t *os_tasks[OS_TASK_MAX];
 static uint32_t os_ready_mask;
 static uint32_t os_delay_mask;
 

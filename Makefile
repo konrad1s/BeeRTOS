@@ -61,6 +61,7 @@ BeeRTOS/Src/BeeRTOS_semaphore.c	\
 BeeRTOS/Src/BeeRTOS_alarm.c	\
 BeeRTOS/Src/BeeRTOS_task.c	\
 BeeRTOS/Src/BeeRTOS_assert.c	\
+BeeRTOS/Src/BeeRTOS_mutex.c	\
 BeeRTOS/Src/Portable/GCC/ARM_CM4/port_CM4.c	\
 Core/Src/stm32f4xx_hal_timebase_tim.c	\
 SEGGER/SEGGER_RTT.c	\
@@ -70,9 +71,12 @@ SEGGER/SEGGER_RTT_Syscalls_GCC.c	\
 SEGGER/SEGGER_SYSVIEW_Config_NoOS.c	\
 Unity/unity.c	\
 UnitTests/ut_main.c	\
-UnitTests/ut_00_task.c	\
-UnitTests/ut_01_semaphore.c	\
-UnitTests/ut_02_alarm.c
+UnitTests/ut_utils.c	\
+UnitTests/TestSets/ut_00_kernel.c	\
+UnitTests/TestSets/ut_01_tasks.c	\
+UnitTests/TestSets/ut_02_alarms.c	\
+UnitTests/TestSets/ut_03_semaphores.c	\
+UnitTests/TestSets/ut_04_mutexes.c	\
 
 
 # ASM sources

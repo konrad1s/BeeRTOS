@@ -40,11 +40,16 @@
  * You can create up to 32 tasks, but one is reserved for the idle task.
  * The structure of the task definition is as follows:
  * BEERTOS_TASK( task_name, function, stacksize, autostart, task_arg ) */
-#define BEERTOS_TASK_LIST                                                   \
-    BEERTOS_TASK( OS_TASK_UT_MAIN,  ut_beertos_main_task,   256, 1, NULL )  \
-    BEERTOS_TASK( OS_TASK_PRIO_3,   ut_task_priority_3,     128, 1, NULL )  \
-    BEERTOS_TASK( OS_TASK_PRIO_2,   ut_task_priority_2,     128, 1, NULL )  \
-    BEERTOS_TASK( OS_TASK_PRIO_1,   ut_task_priority_1,     128, 1, NULL )
+#define BEERTOS_TASK_LIST                                                           \
+    BEERTOS_TASK( OS_TASK_UT_MAIN,      ut_beertos_main_task,       256, 1, NULL )  \
+    /* Priority test tasks */                                                       \
+    BEERTOS_TASK( OS_TASK_PRIO_3,   ut_task_priority_highest,    128, 1, NULL )     \
+    BEERTOS_TASK( OS_TASK_PRIO_2,   ut_task_priority_medium,     128, 1, NULL )     \
+    BEERTOS_TASK( OS_TASK_PRIO_1,   ut_task_priority_lowest,     128, 1, NULL )     \
+    /* Mutex test tasks */                                                          \
+    BEERTOS_TASK( OS_TASK_MUTEX_3,   ut_task_mutex_3,       128, 1, NULL )          \
+    BEERTOS_TASK( OS_TASK_MUTEX_2,   ut_task_mutex_2,       128, 1, NULL )          \
+    BEERTOS_TASK( OS_TASK_MUTEX_1,   ut_task_mutex_1,       128, 1, NULL )
 
 /******************************************************************************************
  *                                        TYPEDEFS                                        *
@@ -57,9 +62,14 @@
 /******************************************************************************************
  *                                   FUNCTION PROTOTYPES                                  *
  ******************************************************************************************/
-extern void ut_task_priority_1(void *arg);
-extern void ut_task_priority_2(void *arg);
-extern void ut_task_priority_3(void *arg);
 extern void ut_beertos_main_task(void *arg);
+
+extern void ut_task_priority_lowest(void *arg);
+extern void ut_task_priority_medium(void *arg);
+extern void ut_task_priority_highest(void *arg);
+
+extern void ut_task_mutex_1(void *arg);
+extern void ut_task_mutex_2(void *arg);
+extern void ut_task_mutex_3(void *arg);
 
 #endif /* __BEE_RTOS_TASK_CFG_H__ */

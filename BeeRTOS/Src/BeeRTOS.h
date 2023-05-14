@@ -14,6 +14,7 @@
 #include "BeeRTOS_task.h"
 #include "BeeRTOS_alarm.h"
 #include "BeeRTOS_semaphore.h"
+#include "BeeRTOS_mutex.h"
 
 /******************************************************************************************
  *                                         DEFINES                                        *
