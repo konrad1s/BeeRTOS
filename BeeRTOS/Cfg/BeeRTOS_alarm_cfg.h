@@ -23,15 +23,6 @@
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
 
-#undef BEERTOS_ALARM
-#define BEERTOS_ALARM(name, callback) name,
-
-typedef enum
-{
-    BEERTOS_ALARM_LIST
-    ALARM_ID_MAX
-} os_alarm_id_t;
-
 /******************************************************************************************
  *                                    GLOBAL VARIABLES                                    *
  ******************************************************************************************/
@@ -43,6 +34,5 @@ typedef enum
 extern void alarm1_callback(void);
 extern void alarm2_callback(void);
 extern void alarm3_callback(void);
-
 
 #endif /* __BEERTOS_ALARM_CFG_H__ */

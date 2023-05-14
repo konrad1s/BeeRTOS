@@ -21,6 +21,14 @@
 *                                        TYPEDEFS                                        *
 ******************************************************************************************/
 
+#undef BEERTOS_SEMAPHORE
+#define BEERTOS_SEMAPHORE(name, initial_count) name,
+typedef enum 
+{
+    BEERTOS_SEMAPHORE_LIST
+    BEERTOS_SEMAPHORE_ID_MAX
+} os_sem_id_t;
+
 typedef struct
 {
     uint32_t count;

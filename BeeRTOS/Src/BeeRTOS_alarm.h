@@ -21,6 +21,14 @@
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
 
+#undef BEERTOS_ALARM
+#define BEERTOS_ALARM(name, callback) name,
+typedef enum
+{
+    BEERTOS_ALARM_LIST
+    ALARM_ID_MAX
+} os_alarm_id_t;
+
 typedef struct
 {
     uint32_t    period;
