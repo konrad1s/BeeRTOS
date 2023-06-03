@@ -1,29 +1,37 @@
 /******************************************************************************************
- * @brief OS header file
- * @file BeeRTOS.h
+ * @brief BeeRTOS Message Configuration File
+ * @file  BeeRTOS_message_cfg.h
  * ****************************************************************************************/
 
-#ifndef __BEERTOS_H__
-#define __BEERTOS_H__
+#ifndef __BEERTOS_MESSAGE_CFG_H__
+#define __BEERTOS_MESSAGE_CFG_H__
 
 /******************************************************************************************
  *                                        INCLUDES                                        *
  ******************************************************************************************/
 
-#include "BeeRTOS_internal.h"
-#include "BeeRTOS_task.h"
-#include "BeeRTOS_alarm.h"
-#include "BeeRTOS_semaphore.h"
-#include "BeeRTOS_mutex.h"
-#include "BeeRTOS_message.h"
-
 /******************************************************************************************
  *                                         DEFINES                                        *
  ******************************************************************************************/
 
+#define OS_MESSAGES_LIST                            \
+    /* queue_id messeges count, messege size */     \
+    OS_MESSAGE(MESSAGE_ONE, 10, 8)                  \
+    OS_MESSAGE(MESSAGE_TWO, 10, 4)                  \
+    OS_MESSAGE(MESSAGE_THREE, 10, 4)
+
 /******************************************************************************************
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
+
+#undef OS_MESSAGE
+#define OS_MESSAGE(name, ...) name,
+
+typedef enum
+{
+    OS_MESSAGES_LIST
+    OS_MESSAGE_ID_MAX
+} os_message_id_t;
 
 /******************************************************************************************
  *                                    GLOBAL VARIABLES                                    *
@@ -33,12 +41,4 @@
  *                                   FUNCTION PROTOTYPES                                  *
  ******************************************************************************************/
 
-extern void os_init(void);
-extern void os_run(void);
-
-extern void os_disable_all_interrupts(void);
-extern void os_enable_all_interrupts(void);
-
-extern uint32_t os_get_tick_count(void);
-
-#endif /* __BEERTOS_H__ */
+#endif /* __BEERTOS_MESSAGE_CFG_H__ */

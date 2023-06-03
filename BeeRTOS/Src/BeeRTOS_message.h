@@ -1,21 +1,17 @@
 /******************************************************************************************
- * @brief OS header file
- * @file BeeRTOS.h
+ * @brief OS message header file
+ * @file BeeRTOS_message.h
  * ****************************************************************************************/
 
-#ifndef __BEERTOS_H__
-#define __BEERTOS_H__
+#ifndef __BEERTOS_MESSAGE_H__
+#define __BEERTOS_MESSAGE_H__
 
 /******************************************************************************************
  *                                        INCLUDES                                        *
  ******************************************************************************************/
 
-#include "BeeRTOS_internal.h"
-#include "BeeRTOS_task.h"
-#include "BeeRTOS_alarm.h"
-#include "BeeRTOS_semaphore.h"
-#include "BeeRTOS_mutex.h"
-#include "BeeRTOS_message.h"
+#include "Beertos_internal.h"
+#include "BeeRTOS_message_cfg.h"
 
 /******************************************************************************************
  *                                         DEFINES                                        *
@@ -25,6 +21,16 @@
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
 
+typedef struct
+{
+    void *buffer;
+    uint32_t size;
+    uint32_t item_size;
+    uint32_t head;
+    uint32_t tail;
+    uint32_t count;
+} os_message_t;
+
 /******************************************************************************************
  *                                    GLOBAL VARIABLES                                    *
  ******************************************************************************************/
@@ -33,12 +39,8 @@
  *                                   FUNCTION PROTOTYPES                                  *
  ******************************************************************************************/
 
-extern void os_init(void);
-extern void os_run(void);
+void os_messages_init(void);
+bool os_message_send(os_message_id_t id, void *data, uint32_t timeout);
+bool os_message_receive(os_message_id_t id, void *data, uint32_t timeout);
 
-extern void os_disable_all_interrupts(void);
-extern void os_enable_all_interrupts(void);
-
-extern uint32_t os_get_tick_count(void);
-
-#endif /* __BEERTOS_H__ */
+#endif /* __BEERTOS_MESSAGE_H__ */
