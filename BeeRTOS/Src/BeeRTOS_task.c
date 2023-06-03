@@ -15,14 +15,14 @@
  *                                         DEFINES                                        *
  ******************************************************************************************/
 
-#define BEERTOS_BIT_SET(var, bit)           (var |= (1U << bit))
-#define BEERTOS_BIT_CLEAR(var, bit)         (var &= ~(1U << bit))
+#define BIT_SET(var, bit)           (var |= (1U << bit))
+#define BIT_CLEAR(var, bit)         (var &= ~(1U << bit))
 
-#define BEERTOS_TASK_START(task_id)         (BEERTOS_BIT_SET(os_ready_mask, (task_id - 1U)))
-#define BEERTOS_TASK_STOP(task_id)          (BEERTOS_BIT_CLEAR(os_ready_mask, (task_id - 1U)))
+#define BEERTOS_TASK_START(task_id)         (BIT_SET(os_ready_mask, (task_id - 1U)))
+#define BEERTOS_TASK_STOP(task_id)          (BIT_CLEAR(os_ready_mask, (task_id - 1U)))
 
-#define BEERTOS_TASK_DELAY_SET(task_id)     (BEERTOS_BIT_SET(os_delay_mask, (task_id - 1U)))
-#define BEERTOS_TASK_DELAY_CLEAR(task_id)   (BEERTOS_BIT_CLEAR(os_delay_mask, (task_id - 1U)))
+#define BEERTOS_TASK_DELAY_SET(task_id)     (BIT_SET(os_delay_mask, (task_id - 1U)))
+#define BEERTOS_TASK_DELAY_CLEAR(task_id)   (BIT_CLEAR(os_delay_mask, (task_id - 1U)))
 
 /******************************************************************************************
  *                                        TYPEDEFS                                        *
@@ -176,23 +176,23 @@ void os_task_init(void)
     BEERTOS_TASK_INIT_ALL();
 
     /* X-Macro to call os_task_start for all tasks */
-    uint8_t task_id = 1U; /* 0 is idle task */
+    prio = OS_TASK_MAX - 1U;
     #undef BEERTOS_TASK
     #define BEERTOS_TASK(name, cb, stack, autostart, argv)    \
         if (true == autostart)                                \
         {                           \
-            os_task_start(task_id); \
+            os_task_start(prio); \
         }                           \
-        task_id++;
+        prio--;
     
     #define BEERTOS_TASK_START_ALL() BEERTOS_TASK_LIST
 
-    os_task_start(OS_TASK_IDLE);
     BEERTOS_TASK_START_ALL();
 }
 
 bool os_task_start(os_task_id_t task_id)
 {
+    BEERTOS_ASSERT(task_id > OS_TASK_IDLE, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
     BEERTOS_ASSERT(task_id < OS_TASK_MAX, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
     BEERTOS_ASSERT(task_id < 255U, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
 
