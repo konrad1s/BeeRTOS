@@ -6,6 +6,7 @@ extern void TEST_rtos_task_core(void);
 extern void TEST_semaphores(void);
 extern void TEST_alarms(void);
 extern void TEST_mutexes(void);
+extern void TEST_messages(void);
 
 void (*test_functions[])(void) = {
     TEST_kernel,
@@ -13,6 +14,7 @@ void (*test_functions[])(void) = {
     TEST_alarms,
     TEST_semaphores,
     TEST_mutexes,
+    TEST_messages
 };
 
 void ut_beertos_main_task(void *arg)

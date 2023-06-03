@@ -49,7 +49,11 @@
     /* Mutex test tasks */                                                          \
     BEERTOS_TASK( OS_TASK_MUTEX_3,   ut_task_mutex_3,       128, 1, NULL )          \
     BEERTOS_TASK( OS_TASK_MUTEX_2,   ut_task_mutex_2,       128, 1, NULL )          \
-    BEERTOS_TASK( OS_TASK_MUTEX_1,   ut_task_mutex_1,       128, 1, NULL )
+    BEERTOS_TASK( OS_TASK_MUTEX_1,   ut_task_mutex_1,       128, 1, NULL )          \
+    /* Message test tasks */                                                        \
+    BEERTOS_TASK( OS_TASK_MSG_2,   ut_task_msg_2,       128, 0, NULL )              \
+    BEERTOS_TASK( OS_TASK_MSG_1,   ut_task_msg_1,       128, 0, NULL )
+
 
 /******************************************************************************************
  *                                        TYPEDEFS                                        *
@@ -71,5 +75,8 @@ extern void ut_task_priority_highest(void *arg);
 extern void ut_task_mutex_1(void *arg);
 extern void ut_task_mutex_2(void *arg);
 extern void ut_task_mutex_3(void *arg);
+
+extern void ut_task_msg_1(void *arg);
+extern void ut_task_msg_2(void *arg);
 
 #endif /* __BEE_RTOS_TASK_CFG_H__ */

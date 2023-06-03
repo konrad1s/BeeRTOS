@@ -78,6 +78,7 @@ UnitTests/TestSets/ut_01_tasks.c	\
 UnitTests/TestSets/ut_02_alarms.c	\
 UnitTests/TestSets/ut_03_semaphores.c	\
 UnitTests/TestSets/ut_04_mutexes.c	\
+UnitTests/TestSets/ut_05_messages.c	\
 
 
 # ASM sources
