@@ -176,14 +176,14 @@ void os_task_init(void)
     BEERTOS_TASK_INIT_ALL();
 
     /* X-Macro to call os_task_start for all tasks */
-    prio = OS_TASK_MAX - 1U;
+    uint8_t task_id = 1U;
     #undef BEERTOS_TASK
     #define BEERTOS_TASK(name, cb, stack, autostart, argv)    \
         if (true == autostart)                                \
         {                           \
-            os_task_start(prio); \
+            os_task_start(task_id); \
         }                           \
-        prio--;
+        task_id++;
     
     #define BEERTOS_TASK_START_ALL() BEERTOS_TASK_LIST
 
@@ -198,8 +198,10 @@ bool os_task_start(os_task_id_t task_id)
 
     os_disable_all_interrupts();
 
-    BEERTOS_TASK_START(task_id);
-    BEERTOS_TASK_DELAY_CLEAR(task_id);
+    uint8_t priority = OS_TASK_MAX - task_id;
+
+    BEERTOS_TASK_START(priority);
+    BEERTOS_TASK_DELAY_CLEAR(priority);
 
     os_enable_all_interrupts();
 
