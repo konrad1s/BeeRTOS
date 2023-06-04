@@ -21,9 +21,9 @@
 
 typedef struct
 {
-    os_task_t *owner;
     uint32_t count;
     uint32_t tasks_blocked;
+    os_task_t *owner;
     uint8_t owner_priority;
 } os_mutex_t;
 
@@ -61,7 +61,6 @@ void os_mutex_lock(os_mutex_id_t id, uint32_t timeout)
         }
         mutex->tasks_blocked |= (1U << task->priority - 1U);
         os_delay(timeout);
-        os_sched();
     }
     os_enable_all_interrupts();
 }
@@ -90,7 +89,6 @@ void os_mutex_unlock(os_mutex_id_t id)
                 mutex->count++;
                 mutex->tasks_blocked &= ~(1U << task_id - 1U);
                 os_task_release(task_id);
-                os_sched();
             }
             else
             {
