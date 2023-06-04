@@ -17,10 +17,10 @@
 #define SEMAPHORE_UT_INITIAL_COUNT 10U
 
 #define BEERTOS_SEMAPHORE_LIST               \
-    /* NAME, INITIAL_COUT */                 \
-    BEERTOS_SEMAPHORE(SEMAPHORE_UT,      SEMAPHORE_UT_INITIAL_COUNT) \
-    BEERTOS_SEMAPHORE(SEMAPHORE_ONE,     0U) \
-    BEERTOS_SEMAPHORE(SEMAPHORE_TWO,     0U)
+    /* NAME, INITIAL_COUT, TYPE */           \
+    BEERTOS_SEMAPHORE(SEMAPHORE_UT,      SEMAPHORE_UT_INITIAL_COUNT, SEMAPHORE_TYPE_COUNTING) \
+    BEERTOS_SEMAPHORE(SEMAPHORE_ONE,     0U,                         SEMAPHORE_TYPE_BINARY)   \
+    BEERTOS_SEMAPHORE(SEMAPHORE_TWO,     0U,                         SEMAPHORE_TYPE_BINARY)
 
 /******************************************************************************************
  *                                        TYPEDEFS                                        *

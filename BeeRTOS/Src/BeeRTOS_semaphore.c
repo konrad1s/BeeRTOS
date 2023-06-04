@@ -49,7 +49,7 @@ void os_semaphores_init(void)
 {
     /*! X-Macro to call os_semaphore_init for all semaphores */
     #undef BEERTOS_SEMAPHORE
-    #define BEERTOS_SEMAPHORE(name, initial_count) \
+    #define BEERTOS_SEMAPHORE(name, initial_count, ...) \
         os_semaphore_init(&semaphores[name], initial_count);
 
     #define BEERTOS_SEMPAPHORES_INIT BEERTOS_SEMAPHORE_LIST

@@ -21,8 +21,14 @@
 *                                        TYPEDEFS                                        *
 ******************************************************************************************/
 
+enum
+{
+    SEMAPHORE_TYPE_BINARY,
+    SEMAPHORE_TYPE_COUNTING
+};
+
 #undef BEERTOS_SEMAPHORE
-#define BEERTOS_SEMAPHORE(name, initial_count) name,
+#define BEERTOS_SEMAPHORE(name, ...) name,
 typedef enum 
 {
     BEERTOS_SEMAPHORE_LIST
