@@ -4,28 +4,34 @@ void TEST_semaphores(void)
 {
     PRINT_UT_BEGIN();
 
-    os_sem_t *test_sem;
-
-     for (int i = 0; i < 10; i++)
+    /* Test 1: wait for semaphore with timeout 0, SEMAPHORE_UT_INITIAL_COUNT times
+       Expected result: true */
+    for (int i = 0; i < SEMAPHORE_UT_INITIAL_COUNT; i++)
     {
-
-        for (int i = 0; i < 10; i++)
-        {
-            // uint32_t start = task_test_sem.ticks;
-
-            os_semaphore_wait(SEMAPHORE_UT, 1000);
-            // uint32_t end = task_test_sem.ticks;
-            // TEST_ASSERT_TRUE(end - start == 1000);
-        }
-
-        os_semaphore_get_control_block_info(SEMAPHORE_UT, &test_sem);
-        TEST_ASSERT_EQUAL(10, test_sem->count);
-
-        for (int i = 0; i < 10; i++)
-        {
-            os_semaphore_signal(SEMAPHORE_UT);
-        }
-
-        TEST_ASSERT_EQUAL(0, test_sem->count);
+        bool ret = os_semaphore_wait(SEMAPHORE_UT, 0);
+        TEST_ASSERT(ret == true);
     }
+
+    /* Test 2: wait for semaphore with timeout 0, one more time
+       Expected result: false */
+    bool ret = os_semaphore_wait(SEMAPHORE_UT, 0);
+    TEST_ASSERT(ret == false);
+
+     /* Test 2: wait for semaphore with timeout 1000, one more time
+       Expected result: false and task blocked for 1000 ticks */
+    uint32_t start = os_get_tick_count();
+    ret = os_semaphore_wait(SEMAPHORE_UT, 1000);
+    uint32_t end = os_get_tick_count();
+    TEST_ASSERT(ret == false);
+    TEST_ASSERT(end - start == 1000);
+
+    /* Test 3: signal semaphore
+       Expected result: true */
+    ret = os_semaphore_signal(SEMAPHORE_UT);
+    TEST_ASSERT(ret == true);
+
+    /* Test 4: wait for semaphore with timeout 0, one more time
+       Expected result: true */
+    ret = os_semaphore_wait(SEMAPHORE_UT, 0);
+    TEST_ASSERT(ret == true);
 }
