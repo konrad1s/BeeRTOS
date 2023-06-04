@@ -42,6 +42,9 @@ static inline void os_semaphore_init(os_sem_t *sem, uint32_t count)
     sem->tasks_blocked = 0U;
 }
 
+/**
+ * @brief Initialize semaphores
+ */
 void os_semaphores_init(void)
 {
     /*! X-Macro to call os_semaphore_init for all semaphores */
@@ -54,6 +57,14 @@ void os_semaphores_init(void)
     BEERTOS_SEMPAPHORES_INIT
 }
 
+/**
+ * @brief Wait for semaphore
+ *
+ * @param id - semaphore id
+ * @param timeout - maximum time to wait for semaphore
+ * 
+ * @return true if semaphore was acquired, false if timeout occured
+ */
 bool os_semaphore_wait(os_sem_id_t id, uint32_t timeout)
 {
     BEERTOS_ASSERT(id < BEERTOS_SEMAPHORE_ID_MAX, OS_MODULE_ID_SEMAPHORE, OS_ERROR_INVALID_PARAM);
@@ -76,6 +87,7 @@ bool os_semaphore_wait(os_sem_id_t id, uint32_t timeout)
             sem->tasks_blocked |= (1U << current_task->priority);
             sem->count++;
             os_delay(timeout);
+            /* TODO: if task was not released by semaphore signal, then timeout occured */
             ret = false;
         }
     }
@@ -85,6 +97,13 @@ bool os_semaphore_wait(os_sem_id_t id, uint32_t timeout)
     return ret;
 }
 
+/**
+ * @brief Signal semaphore
+ *
+ * @param id - semaphore id
+ * 
+ * @return true if semaphore was signaled, false otherwise
+ */
 bool os_semaphore_signal(os_sem_id_t id)
 {
     BEERTOS_ASSERT(id < BEERTOS_SEMAPHORE_ID_MAX, OS_MODULE_ID_SEMAPHORE, OS_ERROR_INVALID_PARAM);
