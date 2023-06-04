@@ -54,13 +54,16 @@ void os_mutex_lock(os_mutex_id_t id, uint32_t timeout)
     }
     else
     {
-        if (mutex->owner->priority < task->priority)
+        if (0U != timeout)
         {
-            mutex->owner_priority = mutex->owner->priority;
-            mutex->owner->priority = task->priority;
+            if (mutex->owner->priority < task->priority)
+            {
+                mutex->owner_priority = mutex->owner->priority;
+                mutex->owner->priority = task->priority;
+            }
+            mutex->tasks_blocked |= (1U << task->priority - 1U);
+            os_delay(timeout);
         }
-        mutex->tasks_blocked |= (1U << task->priority - 1U);
-        os_delay(timeout);
     }
     os_enable_all_interrupts();
 }
