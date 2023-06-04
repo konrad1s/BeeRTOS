@@ -18,8 +18,8 @@
 
 #define BEERTOS_SEMAPHORE_LIST               \
     /* NAME, INITIAL_COUT, TYPE */           \
-    BEERTOS_SEMAPHORE(SEMAPHORE_UT,      SEMAPHORE_UT_INITIAL_COUNT, SEMAPHORE_TYPE_COUNTING) \
-    BEERTOS_SEMAPHORE(SEMAPHORE_ONE,     0U,                         SEMAPHORE_TYPE_BINARY)   \
+    BEERTOS_SEMAPHORE(SEMAPHORE_UT1,     SEMAPHORE_UT_INITIAL_COUNT, SEMAPHORE_TYPE_COUNTING) \
+    BEERTOS_SEMAPHORE(SEMAPHORE_UT2,     0U,                         SEMAPHORE_TYPE_BINARY)   \
     BEERTOS_SEMAPHORE(SEMAPHORE_TWO,     0U,                         SEMAPHORE_TYPE_BINARY)
 
 /******************************************************************************************

@@ -19,6 +19,15 @@
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
 
+typedef uint8_t os_sem_type_t;
+
+typedef struct
+{
+    uint32_t count;
+    uint32_t tasks_blocked; /* one bit represents one task */
+    os_sem_type_t type;
+} os_sem_t;
+
 /******************************************************************************************
  *                                        VARIABLES                                       *
  ******************************************************************************************/
@@ -34,12 +43,16 @@ static os_sem_t semaphores[BEERTOS_SEMAPHORE_ID_MAX];
  *                                        FUNCTIONS                                       *
  ******************************************************************************************/
 
-static inline void os_semaphore_init(os_sem_t *sem, uint32_t count)
+static inline void os_semaphore_init(os_sem_t *sem, uint32_t count, os_sem_type_t type)
 {
     BEERTOS_ASSERT(sem != NULL, OS_MODULE_ID_SEMAPHORE, OS_ERROR_NULLPTR);
+    BEERTOS_ASSERT((type == SEMAPHORE_TYPE_BINARY && count <= 1U) || (type == SEMAPHORE_TYPE_COUNTING),
+                    OS_MODULE_ID_SEMAPHORE, 
+                    OS_ERROR_INVALID_PARAM);
 
     sem->count = count;
     sem->tasks_blocked = 0U;
+    sem->type = type;
 }
 
 /**
@@ -49,8 +62,8 @@ void os_semaphores_init(void)
 {
     /*! X-Macro to call os_semaphore_init for all semaphores */
     #undef BEERTOS_SEMAPHORE
-    #define BEERTOS_SEMAPHORE(name, initial_count, ...) \
-        os_semaphore_init(&semaphores[name], initial_count);
+    #define BEERTOS_SEMAPHORE(name, initial_count, type) \
+        os_semaphore_init(&semaphores[name], initial_count, type);
 
     #define BEERTOS_SEMPAPHORES_INIT BEERTOS_SEMAPHORE_LIST
 
@@ -121,7 +134,15 @@ bool os_semaphore_signal(os_sem_id_t id)
     }
     else
     {
-        sem->count++;
+        if ((SEMAPHORE_TYPE_BINARY == sem->type) &&
+            (sem->count > 0U))
+        {
+            ret = false;
+        }
+        else
+        {
+            sem->count++;
+        }
     }
 
     os_enable_all_interrupts();

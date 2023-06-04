@@ -35,12 +35,6 @@ typedef enum
     BEERTOS_SEMAPHORE_ID_MAX
 } os_sem_id_t;
 
-typedef struct
-{
-    uint32_t count;
-    uint32_t tasks_blocked; /* one bit represents one task */
-} os_sem_t;
-
 /******************************************************************************************
 *                                    GLOBAL VARIABLES                                    *
 ******************************************************************************************/
