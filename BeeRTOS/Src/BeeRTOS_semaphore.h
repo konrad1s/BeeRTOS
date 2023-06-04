@@ -47,8 +47,4 @@ void os_semaphores_init(void);
 bool os_semaphore_wait(os_sem_id_t id, uint32_t timeout);
 bool os_semaphore_signal(os_sem_id_t id);
 
-#if (BEERTOS_USE_GET_CONTROL_BLOCK_API == true)
-bool os_semaphore_get_control_block_info(os_sem_id_t id, os_sem_t **sem);
-#endif
-
 #endif /* __BEERTOS_SEMAPHORE_H__ */
