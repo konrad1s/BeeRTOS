@@ -17,7 +17,8 @@
  *                                         DEFINES                                        *
  ******************************************************************************************/
 
-#define OS_MAS_TASK_NB (32U)
+#define OS_MAX_TASK_NB (32U)
+#define OS_GET_TASK_ID_FROM_PRIORITY(priority) (OS_TASK_MAX - priority)
 
 #define OS_TASK_STACK_PATTERN ((os_stack_t)0xA5A5A5A5U)
 
@@ -59,8 +60,8 @@ typedef enum {
 void os_task_init(void);
 bool os_task_start(os_task_id_t task_id);
 bool os_task_stop(os_task_id_t task_id);
+void os_task_release(os_task_id_t task_id);
 void os_task_delete(void);
-void os_task_release(uint32_t task_id);
 os_task_t* os_get_current_task(void);
 void os_delay(uint32_t ticks);
 void os_task_tick(void);

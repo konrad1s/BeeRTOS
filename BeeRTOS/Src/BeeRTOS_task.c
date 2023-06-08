@@ -223,22 +223,22 @@ bool os_task_stop(os_task_id_t task_id)
     return true;
 }
 
+void os_task_release(os_task_id_t task_id)
+{
+    os_disable_all_interrupts();
+
+    (void)os_task_start(task_id);
+    os_sched();
+
+    os_enable_all_interrupts();
+}
+
 void os_task_delete(void)
 {
     os_disable_all_interrupts();
 
     os_task_stop(os_task_current->priority);
     os_tasks[os_task_current->priority] = NULL;
-    os_sched();
-
-    os_enable_all_interrupts();
-}
-
-void os_task_release(uint32_t task_id)
-{
-    os_disable_all_interrupts();
-
-    (void)os_task_start(task_id);
     os_sched();
 
     os_enable_all_interrupts();

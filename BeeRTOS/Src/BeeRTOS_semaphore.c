@@ -32,6 +32,8 @@ typedef struct
  *                                        VARIABLES                                       *
  ******************************************************************************************/
 
+extern os_task_t *os_tasks[OS_TASK_MAX];
+
 #undef BEERTOS_SEMAPHORE
 #define BEERTOS_SEMAPHORE(name, initial_count) \
     /* count, tasks_blocked */                 \
@@ -96,8 +98,7 @@ bool os_semaphore_wait(os_sem_id_t id, uint32_t timeout)
     {
         if(0U != timeout)
         {
-            const os_task_t *current_task = os_get_current_task();
-            sem->tasks_blocked |= (1U << current_task->priority);
+            sem->tasks_blocked |= (1U << os_get_current_task()->priority - 1U);
             sem->count++;
             os_delay(timeout);
             /* TODO: if task was not released by semaphore signal, then timeout occured */
@@ -128,9 +129,9 @@ bool os_semaphore_signal(os_sem_id_t id)
 
     if(sem->tasks_blocked > 0U)
     {
-        uint8_t priority = OS_LOG2(sem->tasks_blocked) & 0xFFU;
-        sem->tasks_blocked &= ~(1U << priority - 1U);
-        os_task_release(OS_TASK_MAX - priority + 1U);
+        os_task_t* task = os_tasks[OS_LOG2(sem->tasks_blocked) & 0xFFU];
+        sem->tasks_blocked &= ~(1U << (task->priority - 1U));
+        os_task_release(OS_GET_TASK_ID_FROM_PRIORITY(task->priority));
     }
     else
     {

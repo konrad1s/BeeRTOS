@@ -83,20 +83,11 @@ void os_mutex_unlock(os_mutex_id_t id)
         if (mutex->count == 0U)
         {
             mutex->owner->priority = mutex->owner_priority;
-
-            uint32_t task_id = OS_LOG2(mutex->tasks_blocked) & 0xFFU;
-            os_task_t* task = os_tasks[task_id];
-            if (task_id != 0U)
-            {
-                mutex->owner = os_tasks[task_id];
-                mutex->count++;
-                mutex->tasks_blocked &= ~(1U << task_id - 1U);
-                os_task_release(task_id);
-            }
-            else
-            {
-                mutex->owner = NULL;
-            }
+            os_task_t* task = os_tasks[OS_LOG2(mutex->tasks_blocked) & 0xFFU];
+            mutex->owner = task;
+            mutex->count++;
+            mutex->tasks_blocked &= ~(1U << (task->priority - 1U));
+            os_task_release(OS_GET_TASK_ID_FROM_PRIORITY(task->priority));
         }
     }
     else
