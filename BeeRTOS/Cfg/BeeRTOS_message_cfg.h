@@ -15,8 +15,8 @@
  ******************************************************************************************/
 
 #define OS_MESSAGES_LIST                            \
-    /* queue_id messeges count, messege size */     \
-    OS_MESSAGE(MESSAGE_ONE, 10, 8)                  \
+    /* queue_id, messeges count, messege size */     \
+    OS_MESSAGE(MESSAGE_ONE, 2, 8)                  \
     OS_MESSAGE(MESSAGE_TWO, 10, 4)                  \
     OS_MESSAGE(MESSAGE_THREE, 10, 4)
 
