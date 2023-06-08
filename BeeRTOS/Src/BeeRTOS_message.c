@@ -38,7 +38,7 @@ static os_message_t messages[OS_MESSAGE_ID_MAX];
  ******************************************************************************************/
 static inline void os_message_init(os_message_t *message, void *buffer, uint32_t size, uint32_t item_size)
 {
-    // BEERTOS_ASSERT(message != NULL, OS_MODULE_ID_MESSAGE, OS_ERROR_NULLPTR);
+    BEERTOS_ASSERT(message != NULL, OS_MODULE_ID_MESSAGE, OS_ERROR_NULLPTR);
 
     message->buffer = buffer;
     message->size = size;
@@ -62,8 +62,8 @@ void os_messages_init(void)
 
 bool os_message_send(os_message_id_t id, void *data, uint32_t timeout)
 {
-    // BEERTOS_ASSERT(id < OS_MESSAGE_ID_MAX, OS_MODULE_ID_MESSAGE, OS_ERROR_INVALID_PARAM);
-    // BEERTOS_ASSERT(data != NULL, OS_MODULE_ID_MESSAGE, OS_ERROR_NULLPTR);
+    BEERTOS_ASSERT(id < OS_MESSAGE_ID_MAX, OS_MODULE_ID_MESSAGE, OS_ERROR_INVALID_PARAM);
+    BEERTOS_ASSERT(data != NULL, OS_MODULE_ID_MESSAGE, OS_ERROR_NULLPTR);
 
     bool ret = false;
 
@@ -86,8 +86,8 @@ bool os_message_send(os_message_id_t id, void *data, uint32_t timeout)
 
 bool os_message_receive(os_message_id_t id, void *data, uint32_t timeout)
 {
-    // BEERTOS_ASSERT(id < OS_MESSAGE_ID_MAX, OS_MODULE_ID_MESSAGE, OS_ERROR_INVALID_PARAM);
-    // BEERTOS_ASSERT(data != NULL, OS_MODULE_ID_MESSAGE, OS_ERROR_NULLPTR);
+    BEERTOS_ASSERT(id < OS_MESSAGE_ID_MAX, OS_MODULE_ID_MESSAGE, OS_ERROR_INVALID_PARAM);
+    BEERTOS_ASSERT(data != NULL, OS_MODULE_ID_MESSAGE, OS_ERROR_NULLPTR);
 
     bool ret = false;
 
