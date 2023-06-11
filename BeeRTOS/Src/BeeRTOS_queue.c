@@ -63,14 +63,14 @@ bool os_queue_is_full(os_queue_id_t id)
     return queues[id].full;
 }
 
-static bool os_queue_check_push(os_queue_t *queue, uint32_t len)
+static bool os_queue_can_push(os_queue_t *queue, uint32_t len)
 {
-    return ((queue->full) || (((queue->size - queue->head + queue->tail) % queue->size >= len)));
+    return ((!queue->full) && ((queue->size - queue->head + queue->tail) % queue->size <= len));
 }
 
-static bool os_queue_check_pop(os_queue_t *queue, uint32_t len)
+static bool os_queue_can_pop(os_queue_t *queue, uint32_t len)
 {
-    return ((!queue->full) && ((queue->size - queue->tail + queue->head % queue->size) >= len));
+    return ((queue->full) || (queue->size - queue->head + queue->tail) % queue->size >= len);
 }
 
 bool os_queue_push(os_queue_id_t id, void *data, uint32_t len)
@@ -81,7 +81,7 @@ bool os_queue_push(os_queue_id_t id, void *data, uint32_t len)
     bool ret = false;
     os_queue_t *queue = &queues[id];
 
-    if (!os_queue_check_push(queue, len))
+    if (os_queue_can_push(queue, len))
     {
         memcpy((uint8_t *)queue->buffer + queue->head, data, len);
 
@@ -106,7 +106,7 @@ bool os_queue_pop(os_queue_id_t id, void *data, uint32_t len)
     uint8_t ret = false;
     os_queue_t *queue = &queues[id];
 
-    if (!os_queue_check_pop(queue, len))
+    if (os_queue_can_pop(queue, len))
     {
         memcpy(data, (uint8_t *)queue->buffer + queue->tail, len);
 
