@@ -63,6 +63,7 @@ BeeRTOS/Src/BeeRTOS_task.c	\
 BeeRTOS/Src/BeeRTOS_assert.c	\
 BeeRTOS/Src/BeeRTOS_mutex.c	\
 BeeRTOS/Src/BeeRTOS_message.c	\
+BeeRTOS/Src/BeeRTOS_queue.c	\
 BeeRTOS/Cfg/BeeRTOS_trace_cfg.c	\
 BeeRTOS/Src/Portable/GCC/ARM_CM4/port_CM4.c	\
 Core/Src/stm32f4xx_hal_timebase_tim.c	\
@@ -80,6 +81,7 @@ UnitTests/TestSets/ut_02_alarms.c	\
 UnitTests/TestSets/ut_03_semaphores.c	\
 UnitTests/TestSets/ut_04_mutexes.c	\
 UnitTests/TestSets/ut_05_messages.c	\
+UnitTests/TestSets/ut_06_queues.c	\
 
 
 # ASM sources

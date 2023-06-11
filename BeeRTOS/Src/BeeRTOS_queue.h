@@ -1,22 +1,17 @@
 /******************************************************************************************
- * @brief OS header file
- * @file BeeRTOS.h
+ * @brief OS queue header file
+ * @file BeeRTOS_queue.h
  * ****************************************************************************************/
 
-#ifndef __BEERTOS_H__
-#define __BEERTOS_H__
+#ifndef __BEERTOS_QUEUE_H__
+#define __BEERTOS_QUEUE_H__
 
 /******************************************************************************************
  *                                        INCLUDES                                        *
  ******************************************************************************************/
 
-#include "BeeRTOS_internal.h"
-#include "BeeRTOS_task.h"
-#include "BeeRTOS_alarm.h"
-#include "BeeRTOS_semaphore.h"
-#include "BeeRTOS_mutex.h"
-#include "BeeRTOS_message.h"
-#include "BeeRTOS_queue.h"
+#include "Beertos_internal.h"
+#include "BeeRTOS_queue_cfg.h"
 
 /******************************************************************************************
  *                                         DEFINES                                        *
@@ -26,6 +21,15 @@
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
 
+#undef OS_QUEUE
+#define OS_QUEUE(name, ...) name,
+
+typedef enum
+{
+    OS_QUEUES_LIST
+    OS_QUEUE_ID_MAX
+} os_queue_id_t;
+
 /******************************************************************************************
  *                                    GLOBAL VARIABLES                                    *
  ******************************************************************************************/
@@ -34,12 +38,12 @@
  *                                   FUNCTION PROTOTYPES                                  *
  ******************************************************************************************/
 
-extern void os_init(void);
-extern void os_run(void);
+void os_queues_init(void);
+void os_queue_reset(os_queue_id_t id);
 
-extern void os_disable_all_interrupts(void);
-extern void os_enable_all_interrupts(void);
+bool os_queue_is_full(os_queue_id_t id);
+bool os_queue_push(os_queue_id_t id, void *data, uint32_t len);
+bool os_queue_is_empty(os_queue_id_t id);
+bool os_queue_pop(os_queue_id_t id, void *data, uint32_t len);
 
-extern uint32_t os_get_tick_count(void);
-
-#endif /* __BEERTOS_H__ */
+#endif /* __BEERTOS_QUEUE_H__ */

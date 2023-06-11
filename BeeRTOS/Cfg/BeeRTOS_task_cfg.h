@@ -41,7 +41,7 @@
  * The structure of the task definition is as follows:
  * BEERTOS_TASK( task_name, function, stacksize, autostart, task_arg ) */
 #define BEERTOS_TASK_LIST                                                           \
-    BEERTOS_TASK( OS_TASK_UT_MAIN,      ut_beertos_main_task,       256, 1, NULL )  \
+    BEERTOS_TASK( OS_TASK_UT_MAIN,      ut_beertos_main_task,       128, 1, NULL )  \
     /* Priority test tasks */                                                       \
     BEERTOS_TASK( OS_TASK_PRIO_3,   ut_task_priority_highest,    128, 1, NULL )     \
     BEERTOS_TASK( OS_TASK_PRIO_2,   ut_task_priority_medium,     128, 1, NULL )     \

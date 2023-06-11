@@ -1,26 +1,23 @@
 /******************************************************************************************
- * @brief OS header file
- * @file BeeRTOS.h
+ * @brief BeeRTOS Queue Configuration File
+ * @file  BeeRTOS_queue_cfg.h
  * ****************************************************************************************/
 
-#ifndef __BEERTOS_H__
-#define __BEERTOS_H__
+#ifndef __BEERTOS_QUEUE_CFG_H__
+#define __BEERTOS_QUEUE_CFG_H____
 
 /******************************************************************************************
  *                                        INCLUDES                                        *
  ******************************************************************************************/
 
-#include "BeeRTOS_internal.h"
-#include "BeeRTOS_task.h"
-#include "BeeRTOS_alarm.h"
-#include "BeeRTOS_semaphore.h"
-#include "BeeRTOS_mutex.h"
-#include "BeeRTOS_message.h"
-#include "BeeRTOS_queue.h"
-
 /******************************************************************************************
  *                                         DEFINES                                        *
  ******************************************************************************************/
+
+#define OS_QUEUES_LIST                \
+    /* queue_id, queue size */        \
+    OS_QUEUE(QUEUE_1, 10)             \
+    OS_QUEUE(QUEUE_2, 10)             \
 
 /******************************************************************************************
  *                                        TYPEDEFS                                        *
@@ -34,12 +31,4 @@
  *                                   FUNCTION PROTOTYPES                                  *
  ******************************************************************************************/
 
-extern void os_init(void);
-extern void os_run(void);
-
-extern void os_disable_all_interrupts(void);
-extern void os_enable_all_interrupts(void);
-
-extern uint32_t os_get_tick_count(void);
-
-#endif /* __BEERTOS_H__ */
+#endif /* __BEERTOS_QUEUE_CFG_H__ */
