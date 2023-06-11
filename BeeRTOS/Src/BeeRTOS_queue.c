@@ -1,25 +1,25 @@
 #include "BeeRTOS.h"
 #include "BeeRTOS_queue.h"
+#include "BeeRTOS_message.h"
 #include <string.h>
-
-typedef struct
-{
-    void *buffer;
-    uint32_t size;
-    uint32_t head;
-    uint32_t tail;
-    bool full;
-} os_queue_t;
 
 #undef OS_QUEUE
 #define OS_QUEUE(name, size) \
-    static uint8_t name##_buffer[size];
+    static uint8_t name ## _buffer[size];
 
 #define BEERTOS_QUEUE_BUFFORS_LIST() BEERTOS_QUEUE_LIST
 
 BEERTOS_QUEUE_BUFFORS_LIST();
 
-static os_queue_t queues[BEERTOS_QUEUE_ID_MAX];
+#undef OS_MESSAGE
+#define OS_MESSAGE(name, size, count) \
+    static uint8_t name ## _buffer[size * count];
+
+#define BEERTOS_MESSAGE_BUFFERS OS_MESSAGES_LIST
+
+BEERTOS_MESSAGE_BUFFERS
+
+os_queue_t queues[OS_MSG_QUEUE_ID_MAX];
 
 void os_queue_reset(os_queue_id_t id)
 {
@@ -44,6 +44,17 @@ void os_queues_init(void)
     #define BEERTOS_QUEUES_INIT_ALL() BEERTOS_QUEUE_LIST
 
     BEERTOS_QUEUES_INIT_ALL();
+
+    #undef OS_MESSAGE
+    #define OS_MESSAGE(name, count, _size) \
+    queues[id].buffer = name##_buffer; \
+    queues[id].size = count * _size;    \
+    os_queue_reset(id);                \
+    id++;
+
+    #define BEERTOS_MESSAGE_INIT_ALL() OS_MESSAGES_LIST
+
+    BEERTOS_MESSAGE_INIT_ALL();
 }
 
 bool os_queue_is_full(os_queue_id_t id)

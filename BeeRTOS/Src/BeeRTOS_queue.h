@@ -17,9 +17,20 @@
  *                                         DEFINES                                        *
  ******************************************************************************************/
 
+#define OS_MSG_QUEUE_ID_MAX (OS_MESSAGE_ID_MAX + BEERTOS_QUEUE_ID_MAX)
+
 /******************************************************************************************
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
+
+typedef struct
+{
+    void *buffer;
+    uint32_t size;
+    uint32_t head;
+    uint32_t tail;
+    bool full;
+} os_queue_t;
 
 #undef OS_QUEUE
 #define OS_QUEUE(name, ...) name,
