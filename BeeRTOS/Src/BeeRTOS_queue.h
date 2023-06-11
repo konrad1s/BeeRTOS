@@ -26,8 +26,8 @@
 
 typedef enum
 {
-    OS_QUEUES_LIST
-    OS_QUEUE_ID_MAX
+    BEERTOS_QUEUE_LIST
+    BEERTOS_QUEUE_ID_MAX
 } os_queue_id_t;
 
 /******************************************************************************************

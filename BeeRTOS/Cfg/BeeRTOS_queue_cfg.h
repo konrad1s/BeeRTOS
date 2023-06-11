@@ -14,7 +14,7 @@
  *                                         DEFINES                                        *
  ******************************************************************************************/
 
-#define OS_QUEUES_LIST                \
+#define BEERTOS_QUEUE_LIST            \
     /* queue_id, queue size */        \
     OS_QUEUE(QUEUE_1, 10)             \
     OS_QUEUE(QUEUE_2, 10)             \

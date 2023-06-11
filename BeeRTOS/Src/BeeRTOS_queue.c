@@ -15,11 +15,11 @@ typedef struct
 #define OS_QUEUE(name, size) \
     static uint8_t name##_buffer[size];
 
-#define BEERTOS_QUEUES_LIST OS_QUEUES_LIST
+#define BEERTOS_QUEUE_BUFFORS_LIST() BEERTOS_QUEUE_LIST
 
-BEERTOS_QUEUES_LIST
+BEERTOS_QUEUE_BUFFORS_LIST();
 
-static os_queue_t queues[OS_QUEUE_ID_MAX];
+static os_queue_t queues[BEERTOS_QUEUE_ID_MAX];
 
 void os_queue_reset(os_queue_id_t id)
 {
@@ -33,14 +33,15 @@ void os_queue_reset(os_queue_id_t id)
 void os_queues_init(void)
 {
     uint32_t id = 0U;
-#undef OS_QUEUE
-#define OS_QUEUE(name, _size)          \
+
+    #undef OS_QUEUE
+    #define OS_QUEUE(name, _size)          \
     queues[id].buffer = name##_buffer; \
     queues[id].size = _size;           \
     os_queue_reset(id);                \
     id++;
 
-#define BEERTOS_QUEUES_INIT_ALL() OS_QUEUES_LIST
+    #define BEERTOS_QUEUES_INIT_ALL() BEERTOS_QUEUE_LIST
 
     BEERTOS_QUEUES_INIT_ALL();
 }
