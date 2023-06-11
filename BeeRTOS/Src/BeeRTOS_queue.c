@@ -30,7 +30,7 @@ void os_queue_reset(os_queue_id_t id)
     queue->full = false;
 }
 
-void os_queues_init(void)
+void os_queue_init(void)
 {
     uint32_t id = 0U;
 
