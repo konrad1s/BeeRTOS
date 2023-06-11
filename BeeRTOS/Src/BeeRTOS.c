@@ -40,6 +40,8 @@ void os_init(void)
     os_task_init();
     os_cpu_init();
     os_semaphores_init();
+    os_queues_init();
+    os_messages_init();
 }
 
 void os_run(void)

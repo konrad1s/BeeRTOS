@@ -4,8 +4,6 @@ void TEST_queues(void)
 {
     PRINT_UT_BEGIN();
 
-    os_queues_init();
-
     uint8_t data[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     uint8_t received[10];
 

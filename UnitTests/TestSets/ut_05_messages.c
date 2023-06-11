@@ -49,8 +49,6 @@ void TEST_messages(void)
 {
     PRINT_UT_BEGIN();
 
-    os_messages_init();
-
     os_task_start(OS_TASK_MSG_1);
     os_task_start(OS_TASK_MSG_2);
 
