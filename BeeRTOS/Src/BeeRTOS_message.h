@@ -38,7 +38,6 @@ typedef enum
  *                                   FUNCTION PROTOTYPES                                  *
  ******************************************************************************************/
 
-void os_messages_init(void);
 bool os_message_send(os_message_id_t id, void *data, uint32_t timeout);
 bool os_message_receive(os_message_id_t id, void *data, uint32_t timeout);
 

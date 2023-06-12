@@ -31,7 +31,7 @@ typedef struct
 /******************************************************************************************
  *                                        VARIABLES                                       *
  ******************************************************************************************/
-extern os_queue_t queues[OS_MSG_QUEUE_ID_MAX];
+extern os_queue_t os_queues[OS_MSG_QUEUE_ID_MAX];
 extern os_task_t *os_tasks[OS_TASK_MAX];
 
 static os_message_t messages[OS_MESSAGE_ID_MAX];
@@ -45,7 +45,7 @@ void os_messages_init(void)
     /*! X-Macro to initialize all messages */
     #undef OS_MESSAGE
     #define OS_MESSAGE(name, count, size) \
-        messages[name].queue = &queues[name + BEERTOS_QUEUE_ID_MAX]; \
+        messages[name].queue = &os_queues[name + BEERTOS_QUEUE_ID_MAX]; \
         messages[name].item_size = size; \
         messages[name].tasks_blocked = 0U;
     

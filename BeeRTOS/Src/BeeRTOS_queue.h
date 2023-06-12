@@ -17,14 +17,14 @@
  *                                         DEFINES                                        *
  ******************************************************************************************/
 
-/*! @brief Maximum number of queues (normal queues + message queues) */
+/*! Maximum number of queues (normal queues + message queues) */
 #define OS_MSG_QUEUE_ID_MAX (OS_MESSAGE_ID_MAX + BEERTOS_QUEUE_ID_MAX)
 
 /******************************************************************************************
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
 
-/*! @brief Structure describing a queue (circular buffer) */
+/*! Structure describing a queue (circular buffer) */
 typedef struct
 {
     void *buffer;
@@ -37,7 +37,7 @@ typedef struct
 #undef OS_QUEUE
 #define OS_QUEUE(name, ...) name,
 
-/*! @brief Queue IDs - generated from BEERTOS_QUEUE_LIST() in BeeRTOS_queue_cfg.h */
+/*! Queue IDs - generated from BEERTOS_QUEUE_LIST() in BeeRTOS_queue_cfg.h */
 typedef enum
 {
     BEERTOS_QUEUE_LIST

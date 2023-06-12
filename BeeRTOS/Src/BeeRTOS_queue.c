@@ -1,29 +1,63 @@
-#include "BeeRTOS.h"
+/******************************************************************************************
+ * @brief OS queue source file
+ * @file BeeRTOS_queue.c
+ * ****************************************************************************************/
+
+/******************************************************************************************
+ *                                        INCLUDES                                        *
+ ******************************************************************************************/
+
 #include "BeeRTOS_queue.h"
 #include "BeeRTOS_message.h"
 #include <string.h>
 
+/******************************************************************************************
+ *                                         DEFINES                                        *
+ ******************************************************************************************/
+
+/******************************************************************************************
+ *                                        TYPEDEFS                                        *
+ ******************************************************************************************/
+
+/******************************************************************************************
+ *                                        VARIABLES                                       *
+ ******************************************************************************************/
+
+/*! X-Macro to create buffers for all queues */
 #undef OS_QUEUE
 #define OS_QUEUE(name, size) \
     static uint8_t name ## _buffer[size];
 
-#define BEERTOS_QUEUE_BUFFORS_LIST() BEERTOS_QUEUE_LIST
+#define BEERTOS_QUEUE_CREATE_BUFFERS() BEERTOS_QUEUE_LIST
+BEERTOS_QUEUE_CREATE_BUFFERS();
 
-BEERTOS_QUEUE_BUFFORS_LIST();
-
+/*! X-Macro to create buffers for all messages */
 #undef OS_MESSAGE
 #define OS_MESSAGE(name, size, count) \
     static uint8_t name ## _buffer[size * count];
 
-#define BEERTOS_MESSAGE_BUFFERS OS_MESSAGES_LIST
+#define BEERTOS_MESSAGE_CREATE_BUFFERS() OS_MESSAGES_LIST
+BEERTOS_MESSAGE_CREATE_BUFFERS();
 
-BEERTOS_MESSAGE_BUFFERS
+/*! List of all queues (including messages) */
+os_queue_t os_queues[OS_MSG_QUEUE_ID_MAX];
 
-os_queue_t queues[OS_MSG_QUEUE_ID_MAX];
+/******************************************************************************************
+ *                                        FUNCTIONS                                       *
+ ******************************************************************************************/
+static inline bool os_queue_can_push(os_queue_t *queue, uint32_t len)
+{
+    return ((!queue->full) && ((queue->size - queue->head + queue->tail) % queue->size <= len));
+}
+
+static inline bool os_queue_can_pop(os_queue_t *queue, uint32_t len)
+{
+    return ((queue->full) || (queue->size - queue->head + queue->tail) % queue->size >= len);
+}
 
 void os_queue_reset(os_queue_id_t id)
 {
-    os_queue_t *queue = &queues[id];
+    os_queue_t *const queue = &os_queues[id];
 
     queue->head = 0U;
     queue->tail = 0U;
@@ -34,43 +68,40 @@ void os_queue_init(void)
 {
     uint32_t id = 0U;
 
+    /* X-Macro to initialize all queues with their buffers and sizes */
     #undef OS_QUEUE
-    #define OS_QUEUE(name, _size)          \
-    queues[id].buffer = name##_buffer; \
-    queues[id].size = _size;           \
-    os_queue_reset(id);                \
-    id++;
+    #define OS_QUEUE(name, _size)               \
+        os_queues[id].buffer = name##_buffer;   \
+        os_queues[id].size = _size;             \
+        os_queue_reset(id);                     \
+        id++;
 
     #define BEERTOS_QUEUES_INIT_ALL() BEERTOS_QUEUE_LIST
-
     BEERTOS_QUEUES_INIT_ALL();
 
+    /* X-Macro to initialize all messages with their buffers and sizes */
     #undef OS_MESSAGE
-    #define OS_MESSAGE(name, count, _size) \
-    queues[id].buffer = name##_buffer; \
-    queues[id].size = count * _size;    \
-    os_queue_reset(id);                \
-    id++;
+    #define OS_MESSAGE(name, count, _size)      \
+        os_queues[id].buffer = name##_buffer;   \
+        os_queues[id].size = count * _size;     \
+        os_queue_reset(id);                     \
+        id++;
 
     #define BEERTOS_MESSAGE_INIT_ALL() OS_MESSAGES_LIST
-
     BEERTOS_MESSAGE_INIT_ALL();
 }
 
 bool os_queue_is_full(os_queue_id_t id)
 {
     // BEERTOS_ASSERT(queue != NULL, OS_MODULE_ID_QUEUE, OS_ERROR_NULLPTR);
-    return queues[id].full;
+    return os_queues[id].full;
 }
 
-static bool os_queue_can_push(os_queue_t *queue, uint32_t len)
+bool os_queue_is_empty(os_queue_id_t id)
 {
-    return ((!queue->full) && ((queue->size - queue->head + queue->tail) % queue->size <= len));
-}
-
-static bool os_queue_can_pop(os_queue_t *queue, uint32_t len)
-{
-    return ((queue->full) || (queue->size - queue->head + queue->tail) % queue->size >= len);
+    // BEERTOS_ASSERT(queue != NULL, OS_MODULE_ID_QUEUE, OS_ERROR_NULLPTR);
+    const os_queue_t *const queue = &os_queues[id];
+    return (!queue->full && (queue->head == queue->tail));
 }
 
 bool os_queue_push(os_queue_id_t id, void *data, uint32_t len)
@@ -79,10 +110,11 @@ bool os_queue_push(os_queue_id_t id, void *data, uint32_t len)
     // BEERTOS_ASSERT(data != NULL, OS_MODULE_ID_QUEUE, OS_ERROR_NULLPTR);
 
     bool ret = false;
-    os_queue_t *queue = &queues[id];
+    os_queue_t *const queue = &os_queues[id];
 
     if (os_queue_can_push(queue, len))
     {
+        /* Copy data to the queue and update head */
         memcpy((uint8_t *)queue->buffer + queue->head, data, len);
 
         queue->head = (queue->head + len) % queue->size;
@@ -90,13 +122,8 @@ bool os_queue_push(os_queue_id_t id, void *data, uint32_t len)
 
         ret = true;
     }
-}
 
-bool os_queue_is_empty(os_queue_id_t id)
-{
-    // BEERTOS_ASSERT(queue != NULL, OS_MODULE_ID_QUEUE, OS_ERROR_NULLPTR);
-    const os_queue_t *queue = &queues[id];
-    return (!queue->full && (queue->head == queue->tail));
+    return ret;
 }
 
 bool os_queue_pop(os_queue_id_t id, void *data, uint32_t len)
@@ -104,10 +131,11 @@ bool os_queue_pop(os_queue_id_t id, void *data, uint32_t len)
     // BEERTOS_ASSERT(queue != NULL, OS_MODULE_ID_QUEUE, OS_ERROR_NULLPTR);
 
     uint8_t ret = false;
-    os_queue_t *queue = &queues[id];
+    os_queue_t *const queue = &os_queues[id];
 
     if (os_queue_can_pop(queue, len))
     {
+        /* Copy data from the queue and update tail */
         memcpy(data, (uint8_t *)queue->buffer + queue->tail, len);
 
         queue->tail = (queue->tail + len) % queue->size;
