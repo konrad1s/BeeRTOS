@@ -19,12 +19,13 @@
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
 
+/* Structure to hold mutex data */
 typedef struct
 {
-    uint32_t count;
-    uint32_t tasks_blocked;
-    os_task_t *owner;
-    uint8_t owner_priority;
+    uint32_t count;         /* number of times the mutex is locked */
+    uint32_t tasks_blocked; /* tasks blocked on the mutex */
+    os_task_t *owner_task;  /* task that owns the mutex */
+    uint8_t owner_priority; /* priority of the task that owns the mutex */
 } os_mutex_t;
 
 /******************************************************************************************
@@ -32,7 +33,9 @@ typedef struct
  ******************************************************************************************/
 
 extern os_task_t *os_tasks[OS_TASK_MAX];
-static os_mutex_t mutexes[BEERTOS_MUTEX_ID_MAX];
+
+/*! List of all mutexes */
+static os_mutex_t os_mutexes[BEERTOS_MUTEX_ID_MAX];
 
 /******************************************************************************************
  *                                        FUNCTIONS                                       *
@@ -42,24 +45,28 @@ void os_mutex_lock(os_mutex_id_t id, uint32_t timeout)
 {
     BEERTOS_ASSERT(id < BEERTOS_MUTEX_ID_MAX, OS_MODULE_ID_MUTEX, OS_ERROR_INVALID_PARAM);
 
-    os_mutex_t *mutex = &mutexes[id];
-    os_task_t *task = os_get_current_task();
+    os_mutex_t *const mutex = &os_mutexes[id];
+    const os_task_t *const task = os_get_current_task();
 
     os_disable_all_interrupts();
 
-    if (NULL == mutex->owner)
+    /* If the mutex is not locked, lock it */
+    if (NULL == mutex->owner_task)
     {
-        mutex->owner = task;
+        mutex->owner_task = task;
         mutex->count++;
     }
     else
     {
         if (0U != timeout)
         {
-            if (mutex->owner->priority < task->priority)
+            /* Priority inheritance.
+             * If the owner of the mutex has lower priority than the task that wants to lock it,
+             * the owner's priority is set to the task's priority */
+            if (mutex->owner_task->priority < task->priority)
             {
-                mutex->owner_priority = mutex->owner->priority;
-                mutex->owner->priority = task->priority;
+                mutex->owner_priority = mutex->owner_task->priority;
+                mutex->owner_task->priority = task->priority;
             }
             mutex->tasks_blocked |= (1U << task->priority - 1U);
             os_delay(timeout);
@@ -72,22 +79,23 @@ void os_mutex_unlock(os_mutex_id_t id)
 {
     BEERTOS_ASSERT(id < BEERTOS_MUTEX_ID_MAX, OS_MODULE_ID_MUTEX, OS_ERROR_INVALID_PARAM);
 
-    os_mutex_t *mutex = &mutexes[id];
-    os_task_t *task = os_get_current_task();
+    os_mutex_t *mutex = &os_mutexes[id];
 
     os_disable_all_interrupts();
 
-    if (mutex->owner == task)
+    /* Check if the mutex is locked by the calling task */
+    if (mutex->owner_task == os_get_current_task())
     {
         mutex->count--;
         if (mutex->count == 0U)
         {
-            mutex->owner->priority = mutex->owner_priority;
-            os_task_t* task = os_tasks[OS_LOG2(mutex->tasks_blocked) & 0xFFU];
-            mutex->owner = task;
+            /* If there are tasks blocked on the mutex, unblock the one with the highest priority */
+            const os_task_t *const  high_prio_task = os_tasks[OS_LOG2(mutex->tasks_blocked)];
+            mutex->owner_task->priority = mutex->owner_priority;
+            mutex->owner_task = high_prio_task;
             mutex->count++;
-            mutex->tasks_blocked &= ~(1U << (task->priority - 1U));
-            os_task_release(OS_GET_TASK_ID_FROM_PRIORITY(task->priority));
+            mutex->tasks_blocked &= ~(1U << (high_prio_task->priority - 1U));
+            os_task_release(OS_GET_TASK_ID_FROM_PRIORITY(high_prio_task->priority));
         }
     }
     else
