@@ -1,6 +1,6 @@
 #include "ut_utils.h"
 
-static uint32_t alarms_cnt[ALARM_ID_MAX];
+static uint32_t alarms_cnt[BEERTOS_ALARM_ID_MAX];
 
 void alarm1_callback(void)
 {
@@ -20,8 +20,6 @@ void alarm3_callback(void)
 void TEST_alarms(void)
 {
     PRINT_UT_BEGIN();
-
-    os_alarms_init();
 
     os_alarm_start(ALARM_ONE, 10, false);
     os_alarm_start(ALARM_TWO, 20, true);
