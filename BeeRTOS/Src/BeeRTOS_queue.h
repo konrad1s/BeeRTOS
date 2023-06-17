@@ -40,7 +40,7 @@ typedef struct
 /*! Queue IDs - generated from BEERTOS_QUEUE_LIST() in BeeRTOS_queue_cfg.h */
 typedef enum
 {
-    BEERTOS_QUEUE_LIST
+    BEERTOS_QUEUE_LIST()
     BEERTOS_QUEUE_ID_MAX
 } os_queue_id_t;
 

@@ -33,26 +33,40 @@
 #define BEERTOS_USE_USER_STACK_MONITOR  (false)
 #define OS_TASK_STACK_CHECK_BYTE_COUNT  (10U)
 
-/* Define your tasks here! */
-/* In the current implementation all tasks are created statically.
- * The priority of the tasks is defined by the order of the tasks in the list -
- * the first task in the list has the highest priority.
- * You can create up to 32 tasks, but one is reserved for the idle task.
- * The structure of the task definition is as follows:
- * BEERTOS_TASK( task_name, function, stacksize, autostart, task_arg ) */
-#define BEERTOS_TASK_LIST                                                           \
-    BEERTOS_TASK( OS_TASK_UT_MAIN,      ut_beertos_main_task,       128, 1, NULL )  \
-    /* Priority test tasks */                                                       \
-    BEERTOS_TASK( OS_TASK_PRIO_3,   ut_task_priority_highest,    128, 1, NULL )     \
-    BEERTOS_TASK( OS_TASK_PRIO_2,   ut_task_priority_medium,     128, 1, NULL )     \
-    BEERTOS_TASK( OS_TASK_PRIO_1,   ut_task_priority_lowest,     128, 1, NULL )     \
-    /* Mutex test tasks */                                                          \
-    BEERTOS_TASK( OS_TASK_MUTEX_3,   ut_task_mutex_3,       128, 1, NULL )          \
-    BEERTOS_TASK( OS_TASK_MUTEX_2,   ut_task_mutex_2,       128, 1, NULL )          \
-    BEERTOS_TASK( OS_TASK_MUTEX_1,   ut_task_mutex_1,       128, 1, NULL )          \
-    /* Message test tasks */                                                        \
-    BEERTOS_TASK( OS_TASK_MSG_2,   ut_task_msg_2,       128, 0, NULL )              \
-    BEERTOS_TASK( OS_TASK_MSG_1,   ut_task_msg_1,       128, 0, NULL )
+/*!
+ *  @brief OS tasks configuration list - define your tasks here
+ *  In the current implementation all tasks are created statically.
+ *  The priority of the tasks is defined by the order of the tasks in the list -
+ *  the first task in the list has the highest priority.
+ *  You can create up to 32 tasks, but one is reserved for the idle task.
+ * 
+ *  Structure: BEERTOS_TASK(task_id, function, stacksize, autostart, task_arg)
+ * @param task_id - task id (created in os_task_id_t enum), must be unique
+ * @param function - task function
+ * @param stacksize - task stack size in bytes
+ * @param autostart - if TRUE, task will be started automatically after OS initialization
+ * @param task_arg - argument passed to the task function
+ * 
+ * @note If you want to use the task argument, you must define the task function with void* argument
+ *       and cast it to the desired type inside the function.
+ *          Example: void task_function(void* arg)
+ *              {
+ *                  uint32_t my_arg = (uint32_t)arg;
+ *              }
+ */
+#define BEERTOS_TASK_LIST()                                                             \
+    BEERTOS_TASK( OS_TASK_UT_MAIN,      ut_beertos_main_task,       128, true, NULL )   \
+    /* Priority test tasks */                                                           \
+    BEERTOS_TASK( OS_TASK_PRIO_3,   ut_task_priority_highest,    128, true, NULL )      \
+    BEERTOS_TASK( OS_TASK_PRIO_2,   ut_task_priority_medium,     128, true, NULL )      \
+    BEERTOS_TASK( OS_TASK_PRIO_1,   ut_task_priority_lowest,     128, true, NULL )      \
+    /* Mutex test tasks */                                                              \
+    BEERTOS_TASK( OS_TASK_MUTEX_3,   ut_task_mutex_3,       128, true, NULL )           \
+    BEERTOS_TASK( OS_TASK_MUTEX_2,   ut_task_mutex_2,       128, true, NULL )           \
+    BEERTOS_TASK( OS_TASK_MUTEX_1,   ut_task_mutex_1,       128, true, NULL )           \
+    /* Message test tasks */                                                            \
+    BEERTOS_TASK( OS_TASK_MSG_2,   ut_task_msg_2,       128, false, NULL )              \
+    BEERTOS_TASK( OS_TASK_MSG_1,   ut_task_msg_1,       128, false, NULL )
 
 
 /******************************************************************************************

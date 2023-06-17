@@ -28,7 +28,7 @@
 #define OS_QUEUE(name, size) \
     static uint8_t name ## _buffer[size];
 
-#define BEERTOS_QUEUE_CREATE_BUFFERS() BEERTOS_QUEUE_LIST
+#define BEERTOS_QUEUE_CREATE_BUFFERS() BEERTOS_QUEUE_LIST()
 BEERTOS_QUEUE_CREATE_BUFFERS();
 
 /*! X-Macro to create buffers for all messages */
@@ -76,7 +76,7 @@ void os_queue_init(void)
         os_queue_reset(id);                     \
         id++;
 
-    #define BEERTOS_QUEUES_INIT_ALL() BEERTOS_QUEUE_LIST
+    #define BEERTOS_QUEUES_INIT_ALL() BEERTOS_QUEUE_LIST()
     BEERTOS_QUEUES_INIT_ALL();
 
     /* X-Macro to initialize all messages with their buffers and sizes */

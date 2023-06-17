@@ -51,7 +51,7 @@ typedef void (*os_task_handler)(void *args);
 /*! Task IDs - generated from BEERTOS_TASK_LIST() in BeeRTOS_task_cfg.h */
 typedef enum {
     OS_TASK_IDLE = 0, /* Reserved for idle task! */
-    BEERTOS_TASK_LIST
+    BEERTOS_TASK_LIST()
     OS_TASK_MAX
 } os_task_id_t;
 

@@ -18,7 +18,7 @@
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
 
-#if (BEERTOS_USE_ASSERT_HISTORY_LOG == 1)
+#if (BEERTOS_USE_ASSERT_HISTORY_LOG == true)
 typedef struct
 {
     uint8_t module_id;
@@ -31,7 +31,7 @@ typedef struct
  *                                        VARIABLES                                       *
  ******************************************************************************************/
 
-#if (BEERTOS_USE_ASSERT_HISTORY_LOG == 1)
+#if (BEERTOS_USE_ASSERT_HISTORY_LOG == true)
 static os_error_t errors[BEERTOS_ASSERT_HISTORY_LOG_SIZE];
 #endif
 
@@ -40,7 +40,7 @@ static os_error_t errors[BEERTOS_ASSERT_HISTORY_LOG_SIZE];
  ******************************************************************************************/
 void os_report_error(uint8_t module_id, uint8_t error_id)
 {
-#if (BEERTOS_USE_ASSERT_HISTORY_LOG == 1)
+#if (BEERTOS_USE_ASSERT_HISTORY_LOG == true)
     static uint8_t index = 0U;
     errors[index].module_id = module_id;
     errors[index].error_id = error_id;
