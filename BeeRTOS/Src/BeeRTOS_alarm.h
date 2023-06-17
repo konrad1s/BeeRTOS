@@ -29,13 +29,6 @@ typedef enum
     BEERTOS_ALARM_ID_MAX
 } os_alarm_id_t;
 
-typedef struct
-{
-    uint32_t    period;
-    bool        periodic;
-    void        (*callback)(void);
-} os_alarm_t;
-
 /******************************************************************************************
  *                                    GLOBAL VARIABLES                                    *
  ******************************************************************************************/

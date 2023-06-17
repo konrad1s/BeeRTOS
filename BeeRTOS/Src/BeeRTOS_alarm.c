@@ -33,13 +33,19 @@
     #error "BEERTOS_ALARM_ID_MAX must be less or equal to 64"
 #endif
 
+typedef struct
+{
+    uint32_t    period;
+    bool        periodic;
+    void        (*callback)(void);
+    uint32_t    remaining_time;
+} os_alarm_t;
+
 /******************************************************************************************
  *                                        VARIABLES                                       *
  ******************************************************************************************/
 
-static os_alarm_t alarms[BEERTOS_ALARM_ID_MAX];
-static uint32_t ticks[BEERTOS_ALARM_ID_MAX];
-
+static os_alarm_t os_alarms[BEERTOS_ALARM_ID_MAX];
 static os_alarm_active_mask_t os_alarm_active_mask;
 
 /******************************************************************************************
@@ -51,10 +57,11 @@ void os_alarm_init(void)
 
     #undef BEERTOS_ALARM
     #define BEERTOS_ALARM(name, _callback, _autostart, _period, _periodic) \
-        alarms[name].period = _period; \
-        alarms[name].periodic = _periodic; \
-        alarms[name].callback = _callback; \
-        ticks[name] = 0U; \
+        BEERTOS_ASSERT(_callback != NULL, OS_MODULE_ID_ALARM, OS_ERROR_NULLPTR); \
+        os_alarms[name].period = _period; \
+        os_alarms[name].periodic = _periodic; \
+        os_alarms[name].callback = _callback; \
+        os_alarms[name].remaining_time = 0U; \
         if (true == _autostart) \
         { \
             os_alarm_start(name, _period, _periodic); \
@@ -69,9 +76,9 @@ void os_alarm_start(os_alarm_id_t alarm_id, uint32_t period, bool periodic)
 {
     BEERTOS_ASSERT(alarm_id < BEERTOS_ALARM_ID_MAX, OS_MODULE_ID_ALARM, OS_ERROR_INVALID_PARAM);
 
-    alarms[alarm_id].period = period;
-    alarms[alarm_id].periodic = periodic;
-    ticks[alarm_id] = period;
+    os_alarms[alarm_id].period = period;
+    os_alarms[alarm_id].periodic = periodic;
+    os_alarms[alarm_id].remaining_time = period;
     OS_ALARM_ENABLE(alarm_id);
 }
 
@@ -79,7 +86,7 @@ void os_alarm_cancel(os_alarm_id_t alarm_id)
 {
     BEERTOS_ASSERT(alarm_id < BEERTOS_ALARM_ID_MAX, OS_MODULE_ID_ALARM, OS_ERROR_INVALID_PARAM);
 
-    ticks[alarm_id] = 0U;
+    os_alarms[alarm_id].remaining_time = 0U;
     OS_ALARM_DISABLE(alarm_id);
 }
 
@@ -89,17 +96,17 @@ void os_alarm_tick(void)
     {
         for (os_alarm_id_t i = 0U; i < BEERTOS_ALARM_ID_MAX; i++)
         {
-            if (ticks[i] > 0U && 0U != (os_alarm_active_mask & (1U << i)))
+            if (os_alarms[i].remaining_time > 0U && 0U != (os_alarm_active_mask & (1U << i)))
             {
-                ticks[i]--;
+                os_alarms[i].remaining_time--;
 
-                if (0U == ticks[i] && NULL != alarms[i].callback)
+                if (0U == os_alarms[i].remaining_time)
                 {
-                    alarms[i].callback();
+                    os_alarms[i].callback();
 
-                    if (true == alarms[i].periodic)
+                    if (true == os_alarms[i].periodic)
                     {
-                        ticks[i] = alarms[i].period;
+                        os_alarms[i].remaining_time = os_alarms[i].period;
                     }
                     else
                     {
@@ -109,4 +116,11 @@ void os_alarm_tick(void)
             }
         }
     }
+}
+
+uint32_t os_alarm_get_remaining_time(os_alarm_id_t alarm_id)
+{
+    BEERTOS_ASSERT(alarm_id < BEERTOS_ALARM_ID_MAX, OS_MODULE_ID_ALARM, OS_ERROR_INVALID_PARAM);
+
+    return os_alarms[alarm_id].remaining_time;
 }
