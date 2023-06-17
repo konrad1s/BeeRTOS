@@ -33,6 +33,7 @@
     #error "BEERTOS_ALARM_ID_MAX must be less or equal to 64"
 #endif
 
+/*! Structure to hold alarm data */
 typedef struct
 {
     uint32_t    period;
@@ -45,7 +46,9 @@ typedef struct
  *                                        VARIABLES                                       *
  ******************************************************************************************/
 
+/*! List of all alarms */
 static os_alarm_t os_alarms[BEERTOS_ALARM_ID_MAX];
+/*! Mask of all active alarms */
 static os_alarm_active_mask_t os_alarm_active_mask;
 
 /******************************************************************************************
@@ -55,6 +58,7 @@ void os_alarm_init(void)
 {
     os_alarm_active_mask = 0U;
 
+    /*! X-Macro to initialize all alarms */
     #undef BEERTOS_ALARM
     #define BEERTOS_ALARM(name, _callback, _autostart, _period, _periodic) \
         BEERTOS_ASSERT(_callback != NULL, OS_MODULE_ID_ALARM, OS_ERROR_NULLPTR); \
@@ -76,46 +80,22 @@ void os_alarm_start(os_alarm_id_t alarm_id, uint32_t period, bool periodic)
 {
     BEERTOS_ASSERT(alarm_id < BEERTOS_ALARM_ID_MAX, OS_MODULE_ID_ALARM, OS_ERROR_INVALID_PARAM);
 
-    os_alarms[alarm_id].period = period;
-    os_alarms[alarm_id].periodic = periodic;
-    os_alarms[alarm_id].remaining_time = period;
+    os_alarm_t *const alarm = &os_alarms[alarm_id];
+
+    alarm->period = period;
+    alarm->periodic = periodic;
+    alarm->remaining_time = period;
+
     OS_ALARM_ENABLE(alarm_id);
 }
 
 void os_alarm_cancel(os_alarm_id_t alarm_id)
 {
     BEERTOS_ASSERT(alarm_id < BEERTOS_ALARM_ID_MAX, OS_MODULE_ID_ALARM, OS_ERROR_INVALID_PARAM);
+    BEERTOS_ASSERT(os_alarm_active_mask & (1U << alarm_id), OS_MODULE_ID_ALARM, OS_ERROR_INVALID_PARAM);
 
     os_alarms[alarm_id].remaining_time = 0U;
     OS_ALARM_DISABLE(alarm_id);
-}
-
-void os_alarm_tick(void)
-{
-    if (0U != os_alarm_active_mask)
-    {
-        for (os_alarm_id_t i = 0U; i < BEERTOS_ALARM_ID_MAX; i++)
-        {
-            if (os_alarms[i].remaining_time > 0U && 0U != (os_alarm_active_mask & (1U << i)))
-            {
-                os_alarms[i].remaining_time--;
-
-                if (0U == os_alarms[i].remaining_time)
-                {
-                    os_alarms[i].callback();
-
-                    if (true == os_alarms[i].periodic)
-                    {
-                        os_alarms[i].remaining_time = os_alarms[i].period;
-                    }
-                    else
-                    {
-                        OS_ALARM_DISABLE(i);
-                    }
-                }
-            }
-        }
-    }
 }
 
 uint32_t os_alarm_get_remaining_time(os_alarm_id_t alarm_id)
@@ -123,4 +103,41 @@ uint32_t os_alarm_get_remaining_time(os_alarm_id_t alarm_id)
     BEERTOS_ASSERT(alarm_id < BEERTOS_ALARM_ID_MAX, OS_MODULE_ID_ALARM, OS_ERROR_INVALID_PARAM);
 
     return os_alarms[alarm_id].remaining_time;
+}
+
+void os_alarm_tick(void)
+{
+    /* Check if there are any active alarms */
+    if (0U != os_alarm_active_mask)
+    {
+        /* Find all active alarms and decrement their remaining time */
+        for (os_alarm_id_t alarm_id = 0U; alarm_id < BEERTOS_ALARM_ID_MAX; alarm_id++)
+        {
+            os_alarm_t *const alarm = &os_alarms[alarm_id];
+
+            BEERTOS_ASSERT(alarm != NULL, OS_MODULE_ID_ALARM, OS_ERROR_NULLPTR);
+            BEERTOS_ASSERT(alarm->callback != NULL, OS_MODULE_ID_ALARM, OS_ERROR_NULLPTR);
+
+            if (alarm->remaining_time > 0U)
+            {
+                alarm->remaining_time--;
+
+                if (0U == alarm->remaining_time)
+                {
+                    /* Remaining time expired, call the callback */
+                    alarm->callback();
+
+                    /* Rearm the alarm if it is periodic, otherwise disable it */
+                    if (true == alarm->periodic)
+                    {
+                        alarm->remaining_time = alarm->period;
+                    }
+                    else
+                    {
+                        OS_ALARM_DISABLE(alarm_id);
+                    }
+                }
+            }
+        }
+    }
 }
