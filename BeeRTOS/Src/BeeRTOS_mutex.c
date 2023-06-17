@@ -90,7 +90,7 @@ void os_mutex_unlock(os_mutex_id_t id)
         if (mutex->count == 0U)
         {
             /* If there are tasks blocked on the mutex, unblock the one with the highest priority */
-            const os_task_t *const  high_prio_task = os_tasks[OS_LOG2(mutex->tasks_blocked)];
+            const os_task_t *const high_prio_task = os_tasks[OS_LOG2(mutex->tasks_blocked)];
             mutex->owner_task->priority = mutex->owner_priority;
             mutex->owner_task = high_prio_task;
             mutex->count++;
