@@ -52,7 +52,7 @@ void os_message_init(void)
         os_messages[name].item_size = size;     \
         os_messages[name].tasks_blocked = 0U;
     
-    #define BEERTOS_MESSAGES_INIT_ALL() OS_MESSAGES_LIST
+    #define BEERTOS_MESSAGES_INIT_ALL() OS_MESSAGES_LIST()
 
     BEERTOS_MESSAGES_INIT_ALL();
 }

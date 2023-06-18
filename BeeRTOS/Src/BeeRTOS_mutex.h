@@ -27,7 +27,7 @@
 /*! Mutex IDs - generated from BEERTOS_MUTEX_LIST() in BeeRTOS_mutex_cfg.h */
 typedef enum 
 {
-    BEERTOS_MUTEX_LIST
+    BEERTOS_MUTEX_LIST()
     BEERTOS_MUTEX_ID_MAX
 } os_mutex_id_t; 
 

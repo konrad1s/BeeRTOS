@@ -31,7 +31,7 @@ enum
 #define BEERTOS_SEMAPHORE(name, ...) name,
 typedef enum 
 {
-    BEERTOS_SEMAPHORE_LIST
+    BEERTOS_SEMAPHORE_LIST()
     BEERTOS_SEMAPHORE_ID_MAX
 } os_sem_id_t;
 

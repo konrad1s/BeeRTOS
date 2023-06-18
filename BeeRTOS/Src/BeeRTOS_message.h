@@ -27,7 +27,7 @@
 /*! Message IDs - generated from OS_MESSAGES_LIST() in BeeRTOS_message_cfg.h */
 typedef enum
 {
-    OS_MESSAGES_LIST
+    OS_MESSAGES_LIST()
     OS_MESSAGE_ID_MAX
 } os_message_id_t;
 

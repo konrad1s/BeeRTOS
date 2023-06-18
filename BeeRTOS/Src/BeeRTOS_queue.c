@@ -36,7 +36,7 @@ BEERTOS_QUEUE_CREATE_BUFFERS();
 #define OS_MESSAGE(name, size, count) \
     static uint8_t name ## _buffer[size * count];
 
-#define BEERTOS_MESSAGE_CREATE_BUFFERS() OS_MESSAGES_LIST
+#define BEERTOS_MESSAGE_CREATE_BUFFERS() OS_MESSAGES_LIST()
 BEERTOS_MESSAGE_CREATE_BUFFERS();
 
 /*! List of all queues (including messages) */
@@ -87,7 +87,7 @@ void os_queue_init(void)
         os_queue_reset(id);                     \
         id++;
 
-    #define BEERTOS_MESSAGE_INIT_ALL() OS_MESSAGES_LIST
+    #define BEERTOS_MESSAGE_INIT_ALL() OS_MESSAGES_LIST()
     BEERTOS_MESSAGE_INIT_ALL();
 }
 

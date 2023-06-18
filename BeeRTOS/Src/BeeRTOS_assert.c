@@ -18,15 +18,6 @@
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
 
-#if (BEERTOS_USE_ASSERT_HISTORY_LOG == true)
-typedef struct
-{
-    uint8_t module_id;
-    uint8_t error_id;
-    uint32_t timestamp;
-} os_error_t;
-#endif
-
 /******************************************************************************************
  *                                        VARIABLES                                       *
  ******************************************************************************************/
@@ -49,4 +40,13 @@ void os_report_error(uint8_t module_id, uint8_t error_id)
 #endif
 
     BEERTOS_ASSERT_ERROR_HANDLER(module_id, error_id);
+}
+
+os_error_t* os_assert_get_history_log(void)
+{
+#if (BEERTOS_USE_ASSERT_HISTORY_LOG == true)
+    return errors;
+#else
+    return NULL;
+#endif
 }

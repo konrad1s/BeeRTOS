@@ -27,6 +27,15 @@
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
 
+#if (BEERTOS_USE_ASSERT_HISTORY_LOG == true)
+typedef struct
+{
+    uint8_t module_id;
+    uint8_t error_id;
+    uint32_t timestamp;
+} os_error_t;
+#endif
+
 #undef BEERTOS_ASSERT_USER
 #define BEERTOS_ASSERT_USER(module_id, ...)  module_id,
 
@@ -40,7 +49,7 @@ typedef enum
     OS_MODULE_ID_QUEUE,
     OS_MODULE_ID_MESSAGE,
 
-    BEERTOS_ASSERT_USER_LIST
+    BEERTOS_ASSERT_USER_LIST()
 
     OS_MODULE_ID_MAX
 } os_assert_module_id_t;
@@ -62,7 +71,7 @@ typedef enum
     OS_ERROR_OVERFLOW,
     OS_ERROR_NULLPTR,
 
-    BEERTOS_ASSERT_USER_LIST
+    BEERTOS_ASSERT_USER_LIST()
 
     OS_ERROR_ID_MAX
 } os_assert_error_id_t;
@@ -76,5 +85,6 @@ typedef enum
  ******************************************************************************************/
 
 void os_report_error(uint8_t module_id, uint8_t error_id);
+os_error_t* os_assert_get_history_log(void);
 
 #endif /* __BEERTOS_ASSERT_H__ */

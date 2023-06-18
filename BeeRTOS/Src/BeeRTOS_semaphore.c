@@ -67,7 +67,7 @@ void os_semaphores_init(void)
     #define BEERTOS_SEMAPHORE(name, initial_count, type) \
         os_semaphore_init(&semaphores[name], initial_count, type);
 
-    #define BEERTOS_SEMPAPHORES_INIT BEERTOS_SEMAPHORE_LIST
+    #define BEERTOS_SEMPAPHORES_INIT BEERTOS_SEMAPHORE_LIST()
 
     BEERTOS_SEMPAPHORES_INIT
 }

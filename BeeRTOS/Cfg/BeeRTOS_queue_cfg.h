@@ -25,9 +25,9 @@
  * @param queue_id - queue id (created in os_queue_id_t enum), must be unique
  * @param queue size - queue size in bytes - maximum number of elements that can be stored in queue
  */
-#define BEERTOS_QUEUE_LIST()          \
-    OS_QUEUE(QUEUE_1, 10U)            \
-    OS_QUEUE(QUEUE_2, 10U)            \
+#define BEERTOS_QUEUE_LIST()    \
+    OS_QUEUE(QUEUE_1, 10U)      \
+    OS_QUEUE(QUEUE_2, 10U)      \
 
 /******************************************************************************************
  *                                        TYPEDEFS                                        *
