@@ -55,6 +55,30 @@ typedef enum {
     OS_TASK_MAX
 } os_task_id_t;
 
+
+#undef  BEERTOS_TASK
+#define BEERTOS_TASK(...) + 1U
+/*! Returns the number of tasks, OS_TASK_MAX cannot be used in preprocessor expressions,
+    because enum is known only after the preprocessor is done */
+#define OS_TASK_COUNT (1U + BEERTOS_TASK_LIST())
+
+/*! Check and select the proper mask type for the number of configured tasks */
+#if OS_TASK_COUNT <= 8U
+    typedef uint8_t os_task_mask_t;
+    #define OS_GET_HIGHEST_PRIO_TASK_MASK(mask) OS_GET_HIGHEST_PRIO_TASK_MASK8(mask)
+#elif OS_TASK_COUNT <= 16U
+    typedef uint16_t os_task_mask_t;
+    #define OS_GET_HIGHEST_PRIO_TASK_MASK(mask) OS_GET_HIGHEST_PRIO_TASK_MASK16(mask)
+#elif OS_TASK_COUNT <= 32U
+    typedef uint32_t os_task_mask_t;
+    #define OS_GET_HIGHEST_PRIO_TASK_MASK(mask) OS_GET_HIGHEST_PRIO_TASK_MASK32(mask)
+#elif OS_TASK_COUNT <= 64U
+    typedef uint64_t os_task_mask_t;
+    #define OS_GET_HIGHEST_PRIO_TASK_MASK(mask) OS_GET_HIGHEST_PRIO_TASK_MASK64(mask)
+#else
+    #error "OS_TASK_MAX must be less or equal to 64"
+#endif
+
 /******************************************************************************************
  *                                    GLOBAL VARIABLES                                    *
  ******************************************************************************************/

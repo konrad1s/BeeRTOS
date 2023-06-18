@@ -68,8 +68,9 @@ os_task_t *volatile os_task_current;
 os_task_t *volatile os_task_next;
 
 os_task_t *os_tasks[OS_TASK_MAX];
-static uint32_t os_ready_mask;
-static uint32_t os_delay_mask;
+
+static os_task_mask_t os_ready_mask;
+static os_task_mask_t os_delay_mask;
 
 /******************************************************************************************
  *                                        FUNCTIONS                                       *
@@ -267,7 +268,7 @@ void os_task_tick(void)
 
     while (mask)
     {
-       os_task_t* const task = os_tasks[OS_LOG2(mask)];
+       os_task_t* const task = os_tasks[OS_GET_HIGHEST_PRIO_TASK_MASK(mask)];
 
         task->ticks--;
          if (task->ticks == 0)
@@ -289,7 +290,7 @@ void os_sched(void)
     }
     else
     {
-        os_task_next = os_tasks[OS_LOG2(os_ready_mask)];
+        os_task_next = os_tasks[OS_GET_HIGHEST_PRIO_TASK_MASK(os_ready_mask)];
     }
 
     if(NULL != os_task_current)

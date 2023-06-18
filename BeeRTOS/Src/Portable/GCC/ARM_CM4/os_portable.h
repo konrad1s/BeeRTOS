@@ -16,6 +16,11 @@
 
 #define OS_LOG2(x) (32 - __builtin_clz(x))
 
+#define OS_GET_HIGHEST_PRIO_TASK_MASK8(mask)  (32 - __builtin_clz(mask))
+#define OS_GET_HIGHEST_PRIO_TASK_MASK16(mask) (32 - __builtin_clz(mask))
+#define OS_GET_HIGHEST_PRIO_TASK_MASK32(mask) (32 - __builtin_clz(mask))
+#define OS_GET_HIGHEST_PRIO_TASK_MASK64(mask) (64 - __builtin_clzll(mask))
+
 /******************************************************************************************
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
