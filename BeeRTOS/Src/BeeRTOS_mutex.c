@@ -22,10 +22,10 @@
 /* Structure to hold mutex data */
 typedef struct
 {
-    uint32_t count;         /* number of times the mutex is locked */
-    uint32_t tasks_blocked; /* tasks blocked on the mutex */
-    os_task_t *owner_task;  /* task that owns the mutex */
-    uint8_t owner_priority; /* priority of the task that owns the mutex */
+    uint32_t count;               /* number of times the mutex is locked */
+    os_task_mask_t tasks_blocked; /* tasks blocked on the mutex */
+    os_task_t *owner_task;        /* task that owns the mutex */
+    uint8_t owner_priority;       /* priority of the task that owns the mutex */
 } os_mutex_t;
 
 /******************************************************************************************
@@ -90,7 +90,7 @@ void os_mutex_unlock(os_mutex_id_t id)
         if (mutex->count == 0U)
         {
             /* If there are tasks blocked on the mutex, unblock the one with the highest priority */
-            const os_task_t *const high_prio_task = os_tasks[OS_LOG2(mutex->tasks_blocked)];
+            const os_task_t *const high_prio_task = os_tasks[OS_GET_HIGHEST_PRIO_TASK_FROM_MASK(mutex->tasks_blocked)];
             mutex->owner_task->priority = mutex->owner_priority;
             mutex->owner_task = high_prio_task;
             mutex->count++;

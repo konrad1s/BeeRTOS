@@ -26,7 +26,7 @@ typedef struct
 {
     os_queue_t *queue;
     uint32_t item_size;
-    uint32_t tasks_blocked;
+    os_task_mask_t tasks_blocked;
 } os_message_t;
 
 /******************************************************************************************
@@ -47,11 +47,11 @@ void os_message_init(void)
 {
     /*! X-Macro to initialize all messages */
     #undef OS_MESSAGE
-    #define OS_MESSAGE(name, count, size)       \
+    #define OS_MESSAGE(name, count, size)                                  \
         os_messages[name].queue = &os_queues[name + BEERTOS_QUEUE_ID_MAX]; \
-        os_messages[name].item_size = size;     \
+        os_messages[name].item_size = size;                                \
         os_messages[name].tasks_blocked = 0U;
-    
+
     #define BEERTOS_MESSAGES_INIT_ALL() OS_MESSAGES_LIST()
 
     BEERTOS_MESSAGES_INIT_ALL();
@@ -109,7 +109,7 @@ bool os_message_receive(os_message_id_t id, void *data, uint32_t timeout)
         /* If there are tasks blocked on this message, release the highest priority one */
         if (0U != msg->tasks_blocked)
         {
-            os_task_t* task = os_tasks[OS_LOG2(msg->tasks_blocked) & 0xFFU];
+            os_task_t *task = os_tasks[OS_GET_HIGHEST_PRIO_TASK_FROM_MASK(msg->tasks_blocked)];
             msg->tasks_blocked &= ~(1U << (task->priority - 1U));
             os_task_release(OS_GET_TASK_ID_FROM_PRIORITY(task->priority));
         }
