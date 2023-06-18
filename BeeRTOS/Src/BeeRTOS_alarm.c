@@ -21,13 +21,20 @@
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
 
-#if (BEERTOS_ALARM_ID_MAX <= 8U)
+#undef BEERTOS_ALARM
+#define BEERTOS_ALARM(...) +1U
+/*! Returns the number of alarms, BEERTOS_ALARM_ID_MAX cannot be used in preprocessor expressions,
+    because enum is known only after the preprocessor is done */
+#define OS_ALARM_COUNT (0U + BEERTOS_ALARM_LIST())
+
+/*! Check and select the proper mask type for the number of configured alarms */
+#if (OS_ALARM_COUNT <= 8U)
     typedef uint8_t os_alarm_active_mask_t;
-#elif (BEERTOS_ALARM_ID_MAX <= 16U)
+#elif (OS_ALARM_COUNT <= 16U)
     typedef uint16_t os_alarm_active_mask_t;
-#elif (BEERTOS_ALARM_ID_MAX <= 32U)
+#elif (OS_ALARM_COUNT <= 32U)
     typedef uint32_t os_alarm_active_mask_t;
-#elif (BEERTOS_ALARM_ID_MAX <= 64U)
+#elif (OS_ALARM_COUNT <= 64U)
     typedef uint64_t os_alarm_active_mask_t;
 #else
     #error "BEERTOS_ALARM_ID_MAX must be less or equal to 64"
