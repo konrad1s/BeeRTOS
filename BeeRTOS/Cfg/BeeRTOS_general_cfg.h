@@ -3,22 +3,23 @@
  * @file 
  * ****************************************************************************************/
 
-#ifndef __BEERTOS_INTERNAL_H__
-#define __BEERTOS_INTERNAL_H__
+#ifndef __BEERTOS_GENERAL_CFG_H__
+#define __BEERTOS_GENERAL_CFG_H__
 
 /******************************************************************************************
  *                                        INCLUDES                                        *
  ******************************************************************************************/
 
-#include <stdint.h>
-#include <stddef.h>
-#include <stdbool.h>
-#include "os_portable.h"
-#include "BeeRTOS_general_cfg.h"
-
 /******************************************************************************************
  *                                         DEFINES                                        *
  ******************************************************************************************/
+
+/*! Enable/Disable OS features */
+#define BEERTOS_ALARM_MODULE_EN     (true)
+#define BEERTOS_MESSAGE_MODULE_EN   (true)
+#define BEERTOS_QUEUE_MODULE_EN     (true)
+#define BEERTOS_MUTEX_MODULE_EN     (true)
+#define BEERTOS_SEMAPHORE_MODULE_EN (true)
 
 /******************************************************************************************
  *                                        TYPEDEFS                                        *
@@ -32,4 +33,4 @@
  *                                   FUNCTION PROTOTYPES                                  *
  ******************************************************************************************/
 
-#endif /* __BEERTOS_INTERNAL_H__ */
+#endif /* __BEERTOS_GENERAL_CFG_H__ */
