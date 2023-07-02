@@ -94,7 +94,6 @@ bool os_semaphore_wait(os_sem_id_t id, uint32_t timeout)
 {
     BEERTOS_ASSERT(id < BEERTOS_SEMAPHORE_ID_MAX, OS_MODULE_ID_SEMAPHORE, OS_ERROR_INVALID_PARAM);
 
-    bool ret = false;
     os_sem_t *sem = &semaphores[id];
 
     os_disable_all_interrupts();
@@ -102,22 +101,30 @@ bool os_semaphore_wait(os_sem_id_t id, uint32_t timeout)
     if (sem->count > 0U)
     {
         sem->count--;
-        ret = true;
+        os_enable_all_interrupts();
+        return true;
     }
     else
     {
         if (0U != timeout)
         {
             sem->tasks_blocked |= (1U << os_get_current_task()->priority - 1U);
+            os_enable_all_interrupts();
+
             os_delay(timeout);
-            /* TODO: if task was not released by semaphore signal, then timeout occured */
-            ret = false;
+
+            os_disable_all_interrupts();
+            bool task_released = (sem->tasks_blocked & (1U << os_get_current_task()->priority - 1U)) == 0U;
+            sem->tasks_blocked &= ~(1U << os_get_current_task()->priority - 1U);
+            os_enable_all_interrupts();
+
+            return task_released;
         }
     }
 
     os_enable_all_interrupts();
 
-    return ret;
+    return false;
 }
 
 /**
