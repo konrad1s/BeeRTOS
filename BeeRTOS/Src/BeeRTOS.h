@@ -34,12 +34,41 @@
  *                                   FUNCTION PROTOTYPES                                  *
  ******************************************************************************************/
 
-extern void os_init(void);
-extern void os_run(void);
+/**
+ * @brief This function initializes the operating system. It initializes all the OS modules
+ * and starts the OS scheduler (triggers the PendSV interrupt) used to switch context between
+ * tasks. It should be called once by the application, before any other OS function!
+ *
+ * @param None
+ * @return None
+ */
+void os_init(void);
 
-extern void os_disable_all_interrupts(void);
-extern void os_enable_all_interrupts(void);
+/**
+ * @brief This function enters critical section. It disables all interrupts. As many times
+ * as os_disable_all_interrupts() is called, os_enable_all_interrupts() must be called to exit the critical
+ * section.
+ *
+ * @param None
+ * @return None
+ */
+void os_disable_all_interrupts(void);
 
-extern uint32_t os_get_tick_count(void);
+/**
+ * @brief This function exits critical section. If the number of calls to os_disable_all_interrupts()
+ * is equal to the number of calls to os_enable_all_interrupts(), the interrupts will be enabled.
+ *
+ * @param None
+ * @return None
+ */
+void os_enable_all_interrupts(void);
+
+/**
+ * @brief This function returns the current tick. The tick count is used to measure time in the OS.
+ *
+ * @param None
+ * @return The current tick count (time in ticks)
+ */
+uint32_t os_get_tick_count(void);
 
 #endif /* __BEERTOS_H__ */

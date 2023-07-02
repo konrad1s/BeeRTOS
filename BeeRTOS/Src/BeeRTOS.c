@@ -38,16 +38,11 @@ void os_init(void)
     os_tick_counter = 0U;
 
     os_task_init();
-    os_cpu_init();
     os_alarm_init();
     os_semaphores_init();
     os_queue_init();
     os_message_init();
-}
-
-void os_run(void)
-{
-    os_sched();
+    os_cpu_init();
 }
 
 void os_disable_all_interrupts(void)

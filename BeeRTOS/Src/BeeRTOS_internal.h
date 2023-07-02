@@ -31,12 +31,4 @@
  *                                   FUNCTION PROTOTYPES                                  *
  ******************************************************************************************/
 
-void os_init(void);
-void os_run(void);
-
-void os_disable_all_interrupts(void);
-void os_enable_all_interrupts(void);
-
-uint32_t os_get_tick_count(void);
-
 #endif /* __BEERTOS_INTERNAL_H__ */
