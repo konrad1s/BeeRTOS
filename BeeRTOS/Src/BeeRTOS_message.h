@@ -47,7 +47,7 @@ typedef enum
  * @param None
  * @return None
  */
-void os_message_init(void);
+void os_message_module_init(void);
 
 /**
  * @brief This function sends a message to the specified message queue.

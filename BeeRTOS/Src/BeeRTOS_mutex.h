@@ -44,7 +44,7 @@ typedef enum
  * 
  * @return None
  */
-void os_mutex_init(void);
+void os_mutex_module_init(void);
 
 /**
  * @brief This function unlocks the specified mutex. Can be called only if the mutex is locked.

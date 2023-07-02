@@ -43,7 +43,7 @@ typedef enum
 *                                   FUNCTION PROTOTYPES                                  *
 ******************************************************************************************/
 
-void os_semaphores_init(void);
+void os_semaphore_module_init(void);
 bool os_semaphore_wait(os_sem_id_t id, uint32_t timeout);
 bool os_semaphore_signal(os_sem_id_t id);
 

@@ -60,7 +60,7 @@ typedef enum
  * @param None
  * @return None
  */
-void os_queue_init(void);
+void os_queue_module_init(void);
 
 /**
  * @brief The function resets a specific queue.

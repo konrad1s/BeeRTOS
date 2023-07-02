@@ -96,7 +96,7 @@ typedef enum
  * @param id - None
  * @return None
  */
-void os_task_init(void);
+void os_task_module_init(void);
 
 /**
  * @brief This function starts the specified task.

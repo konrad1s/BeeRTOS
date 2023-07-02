@@ -154,7 +154,7 @@ static void BeeRTOS_Idle_Task(void *argv)
     }
 }
 
-void os_task_init(void)
+void os_task_module_init(void)
 {
     /* Clear all global variables */
     os_ready_mask = 0U;

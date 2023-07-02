@@ -60,7 +60,7 @@ static inline void os_semaphore_init(os_sem_t *sem, uint32_t count, os_sem_type_
 /**
  * @brief Initialize semaphores
  */
-void os_semaphores_init(void)
+void os_semaphore_module_init(void)
 {
     /*! X-Macro to call os_semaphore_init for all semaphores */
     #undef BEERTOS_SEMAPHORE

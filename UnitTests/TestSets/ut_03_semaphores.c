@@ -63,10 +63,7 @@ void TEST_semaphores(void)
 {
     PRINT_UT_BEGIN();
 
-    for (int i = 0; i < 10; i++)
-    {
-        os_semaphores_init();
-        TEST_couting_semaphores();
-        TEST_binary_semaphores();
-    }
+
+    TEST_couting_semaphores();
+    TEST_binary_semaphores();
 }

@@ -61,7 +61,7 @@ static os_alarm_active_mask_t os_alarm_active_mask;
 /******************************************************************************************
  *                                        FUNCTIONS                                       *
  ******************************************************************************************/
-void os_alarm_init(void)
+void os_alarm_module_init(void)
 {
     os_alarm_active_mask = 0U;
 

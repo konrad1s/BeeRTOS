@@ -41,7 +41,7 @@ static os_mutex_t os_mutexes[BEERTOS_MUTEX_ID_MAX];
  *                                        FUNCTIONS                                       *
  ******************************************************************************************/
 
-void os_mutex_init(void)
+void os_mutex_module_init(void)
 {
     /*! X-Macro to initialize all mutexes */
     #undef BEERTOS_MUTEX

@@ -43,7 +43,7 @@ static os_message_t os_messages[OS_MESSAGE_ID_MAX];
  *                                        FUNCTIONS                                       *
  ******************************************************************************************/
 
-void os_message_init(void)
+void os_message_module_init(void)
 {
     /*! X-Macro to initialize all messages */
     #undef OS_MESSAGE

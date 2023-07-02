@@ -38,26 +38,26 @@ void os_init(void)
     os_tick_counter = 0U;
 
 #if (BEERTOS_ALARM_MODULE_EN == true)
-    os_alarm_init();
+    os_alarm_module_init();
 #endif
 
 #if (BEERTOS_SEMAPHORE_MODULE_EN == true)
-    os_semaphores_init();
+    os_semaphore_module_init();
 #endif
 
 #if (BEERTOS_MUTEX_MODULE_EN == true)
-    os_mutex_init();
+    os_mutex_module_init();
 #endif
 
 #if (BEERTOS_QUEUE_MODULE_EN == true)
-    os_queue_init();
+    os_queue_module_init();
 #endif
 
 #if (BEERTOS_MESSAGE_MODULE_EN == true)
-    os_message_init();
+    os_message_module_init();
 #endif
 
-    os_task_init();
+    os_task_module_init();
     os_cpu_init();
 }
 

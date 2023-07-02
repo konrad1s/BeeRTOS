@@ -47,7 +47,7 @@ typedef enum
  * @param None
  * @return None
  */
-void os_alarm_init(void);
+void os_alarm_module_init(void);
 
 /**
  * @brief This function starts the specified alarm. If the alarm is already started, the function
