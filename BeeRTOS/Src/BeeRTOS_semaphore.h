@@ -17,15 +17,13 @@
 *                                         DEFINES                                        *
 ******************************************************************************************/
 
+/* Semaphore types */
+#define SEMAPHORE_TYPE_BINARY       (0U)
+#define SEMAPHORE_TYPE_COUNTING     (1U)
+
 /******************************************************************************************
 *                                        TYPEDEFS                                        *
 ******************************************************************************************/
-
-enum
-{
-    SEMAPHORE_TYPE_BINARY,
-    SEMAPHORE_TYPE_COUNTING
-};
 
 #undef BEERTOS_SEMAPHORE
 #define BEERTOS_SEMAPHORE(name, ...) name,
@@ -34,6 +32,20 @@ typedef enum
     BEERTOS_SEMAPHORE_LIST()
     BEERTOS_SEMAPHORE_ID_MAX
 } os_sem_id_t;
+
+
+/* Counting semaphores are used if at least one counting semaphore is defined.
+ * The magic code below sums up all the types of semaphores and if the sum is greater than 0,
+ * counting semaphores are used (SEMAPHORE_TYPE_COUNTING is equal to 1U). */
+#undef BEERTOS_SEMAPHORE
+#define BEERTOS_SEMAPHORE(name, initial_count, type) + type
+
+#if (BEERTOS_SEMAPHORE_LIST() > 0U)
+#define BEERTOS_SEMAPHORE_COUNTING_USED     (true)
+#else
+#define BEERTOS_SEMAPHORE_COUNTING_USED     (false)
+#endif
+
 
 /******************************************************************************************
 *                                    GLOBAL VARIABLES                                    *

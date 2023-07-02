@@ -3,9 +3,9 @@
 void TEST_couting_semaphores(void)
 {
     bool ret;
-    /* Test 1: wait for semaphore with timeout 0, SEMAPHORE_UT1_INITIAL_COUNT times
+    /* Test 1: wait for semaphore with timeout 0, SEMAPHORE_UT1_INITIAL_COUNT (10) times
        Expected result: true */
-    for (int i = 0; i < SEMAPHORE_UT1_INITIAL_COUNT; i++)
+    for (int i = 0; i < 10U; i++)
     {
         ret = os_semaphore_wait(SEMAPHORE_UT1, 0);
         TEST_ASSERT(ret == true);

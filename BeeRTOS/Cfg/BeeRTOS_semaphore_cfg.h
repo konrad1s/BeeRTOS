@@ -14,8 +14,6 @@
  *                                         DEFINES                                        *
  ******************************************************************************************/
 
-#define SEMAPHORE_UT1_INITIAL_COUNT (10U)
-
 /*! @brief BeeRTOS semaphore list - define your semaphores here
  * Semaphores are used to synchronize tasks and to protect shared resources from being
  * accessed by more than one task at the same time. Semaphores can be used to implement
@@ -28,9 +26,9 @@
  * @param type - semaphore type (counting or binary)
  */
 #define BEERTOS_SEMAPHORE_LIST()               \
-    BEERTOS_SEMAPHORE(SEMAPHORE_UT1,     SEMAPHORE_UT1_INITIAL_COUNT,   SEMAPHORE_TYPE_COUNTING) \
-    BEERTOS_SEMAPHORE(SEMAPHORE_UT2,     0U,                            SEMAPHORE_TYPE_BINARY)   \
-    BEERTOS_SEMAPHORE(SEMAPHORE_TWO,     0U,                            SEMAPHORE_TYPE_BINARY)
+    BEERTOS_SEMAPHORE(SEMAPHORE_UT1,     10U,   SEMAPHORE_TYPE_COUNTING) \
+    BEERTOS_SEMAPHORE(SEMAPHORE_UT2,     0U,    SEMAPHORE_TYPE_BINARY)   \
+    BEERTOS_SEMAPHORE(SEMAPHORE_TWO,     0U,    SEMAPHORE_TYPE_BINARY)
 
 /******************************************************************************************
  *                                        TYPEDEFS                                        *

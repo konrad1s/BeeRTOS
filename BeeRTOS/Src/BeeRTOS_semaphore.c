@@ -23,9 +23,19 @@ typedef uint8_t os_sem_type_t;
 
 typedef struct
 {
+    #if (BEERTOS_SEMAPHORE_COUNTING_USED == true)
     uint32_t count;
+    #else
+    uint8_t count;
+    #endif
+
     os_task_mask_t tasks_blocked; /* one bit represents one task */
+
+    /* If counting semaphores are not used, all semaphores are binary */
+    #if (BEERTOS_SEMAPHORE_COUNTING_USED == true)
     os_sem_type_t type;
+    #endif
+
 } os_sem_t;
 
 /******************************************************************************************
@@ -99,7 +109,6 @@ bool os_semaphore_wait(os_sem_id_t id, uint32_t timeout)
         if (0U != timeout)
         {
             sem->tasks_blocked |= (1U << os_get_current_task()->priority - 1U);
-            sem->count++;
             os_delay(timeout);
             /* TODO: if task was not released by semaphore signal, then timeout occured */
             ret = false;
@@ -135,6 +144,7 @@ bool os_semaphore_signal(os_sem_id_t id)
     }
     else
     {
+#if (BEERTOS_SEMAPHORE_COUNTING_USED == true)
         if ((SEMAPHORE_TYPE_BINARY == sem->type) &&
             (sem->count > 0U))
         {
@@ -144,6 +154,9 @@ bool os_semaphore_signal(os_sem_id_t id)
         {
             sem->count++;
         }
+#else
+        ret = false;
+#endif
     }
 
     os_enable_all_interrupts();
