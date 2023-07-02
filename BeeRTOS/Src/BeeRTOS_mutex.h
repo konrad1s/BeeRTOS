@@ -40,6 +40,13 @@ typedef enum
 ******************************************************************************************/
 
 /**
+ * @brief This function initializes all mutexes.
+ * 
+ * @return None
+ */
+void os_mutex_init(void);
+
+/**
  * @brief This function unlocks the specified mutex. Can be called only if the mutex is locked.
  * If the mutex is locked by another task, the function will rise an error. If the mutex was
  * locked multiple times, it must be unlocked the same number of times.

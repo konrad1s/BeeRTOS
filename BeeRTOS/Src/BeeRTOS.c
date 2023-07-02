@@ -46,7 +46,7 @@ void os_init(void)
 #endif
 
 #if (BEERTOS_MUTEX_MODULE_EN == true)
-    //TODO: os_mutex_init();
+    os_mutex_init();
 #endif
 
 #if (BEERTOS_QUEUE_MODULE_EN == true)

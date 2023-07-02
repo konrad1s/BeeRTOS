@@ -41,6 +41,21 @@ static os_mutex_t os_mutexes[BEERTOS_MUTEX_ID_MAX];
  *                                        FUNCTIONS                                       *
  ******************************************************************************************/
 
+void os_mutex_init(void)
+{
+    /*! X-Macro to initialize all mutexes */
+    #undef BEERTOS_MUTEX
+    #define BEERTOS_MUTEX(name, initial_count)  \
+        os_mutexes[name].count = initial_count; \
+        os_mutexes[name].tasks_blocked = 0U;    \
+        os_mutexes[name].owner_task = NULL;     \
+        os_mutexes[name].owner_priority = 0U;
+
+    #define BEERTOS_MUTEXES_INIT_ALL() BEERTOS_MUTEX_LIST()
+
+    BEERTOS_MUTEXES_INIT_ALL();
+}
+
 void os_mutex_lock(os_mutex_id_t id, uint32_t timeout)
 {
     BEERTOS_ASSERT(id < BEERTOS_MUTEX_ID_MAX, OS_MODULE_ID_MUTEX, OS_ERROR_INVALID_PARAM);
