@@ -10,6 +10,7 @@
 #include "BeeRTOS_mutex.h"
 #include "BeeRTOS_task.h"
 #include "BeeRTOS_assert.h"
+#include "BeeRTOS_trace_cfg.h"
 
 /******************************************************************************************
  *                                         DEFINES                                        *
@@ -82,9 +83,11 @@ void os_mutex_lock(os_mutex_id_t id, uint32_t timeout)
             {
                 mutex->owner_priority = mutex->owner_task->priority;
                 mutex->owner_task->priority = task->priority;
+                BEERTOS_TRACE_MUTEX_PRIORITY_INHERITANCE(mutex->owner_task, task->priority);
             }
+
             mutex->tasks_blocked |= (1U << task->priority - 1U);
-            os_delay(timeout);
+            os_delay_internal(timeout, OS_MODULE_ID_MUTEX);
         }
     }
     os_enable_all_interrupts();
@@ -106,7 +109,14 @@ void os_mutex_unlock(os_mutex_id_t id)
         {
             /* If there are tasks blocked on the mutex, unblock the one with the highest priority */
             const os_task_t *const high_prio_task = os_tasks[OS_GET_HIGHEST_PRIO_TASK_FROM_MASK(mutex->tasks_blocked)];
-            mutex->owner_task->priority = mutex->owner_priority;
+            
+            /* Priority restoration */
+            if (mutex->owner_priority < high_prio_task->priority)
+            {
+                mutex->owner_task->priority = mutex->owner_priority;
+                BEERTOS_TRACE_MUTEX_PRIORITY_RESTORE(mutex->owner_task, mutex->owner_priority);
+            }
+
             mutex->owner_task = high_prio_task;
             mutex->count++;
             mutex->tasks_blocked &= ~(1U << (high_prio_task->priority - 1U));

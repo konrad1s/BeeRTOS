@@ -205,6 +205,7 @@ bool os_task_start(os_task_id_t task_id)
 
     BEERTOS_TASK_START(priority);
     BEERTOS_TASK_DELAY_CLEAR(priority);
+    BEERTOS_TRACE_TASK_READY(os_tasks[priority]);
 
     os_enable_all_interrupts();
 
@@ -252,16 +253,40 @@ os_task_t *os_get_current_task(void)
     return os_task_current;
 }
 
-void os_delay(uint32_t ticks)
+void os_delay_internal(uint32_t ticks, uint8_t module_id)
 {
     os_disable_all_interrupts();
 
     os_task_current->ticks = ticks;
     BEERTOS_TASK_DELAY_SET(os_task_current->priority);
     BEERTOS_TASK_STOP(os_task_current->priority);
+
+    switch(module_id)
+    {
+        case OS_MODULE_ID_SEMAPHORE:
+            BEERTOS_TRACE_SEMAPHORE_BLOCKED(os_task_current);
+            break;
+        case OS_MODULE_ID_MESSAGE:
+            BEERTOS_TRACE_MESSAGE_BLOCKED(os_task_current);
+            break;
+        case OS_MODULE_ID_MUTEX:
+            BEERTOS_TRACE_MUTEX_BLOCKED(os_task_current);
+            break;
+        case OS_MODULE_ID_TASK:
+            BEERTOS_TRACE_TASK_DELAYED(os_task_current);
+            break;
+        default:
+            break;
+    }
+
     os_sched();
 
     os_enable_all_interrupts();
+}
+
+void os_delay(uint32_t ticks)
+{
+    os_delay_internal(ticks, OS_MODULE_ID_TASK);
 }
 
 void os_task_tick(void)
@@ -277,6 +302,7 @@ void os_task_tick(void)
         {
             BEERTOS_TASK_START(task->priority);
             BEERTOS_TASK_DELAY_CLEAR(task->priority);
+            BEERTOS_TRACE_TASK_READY(task);
         }
         mask &= ~(1 << (task->priority - 1U));
     }

@@ -32,4 +32,6 @@
  *                                   FUNCTION PROTOTYPES                                  *
  ******************************************************************************************/
 
+void os_delay_internal(uint32_t ticks, uint8_t module_id);
+
 #endif /* __BEERTOS_INTERNAL_H__ */

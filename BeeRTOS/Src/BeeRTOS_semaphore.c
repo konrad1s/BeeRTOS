@@ -77,9 +77,9 @@ void os_semaphore_module_init(void)
     #define BEERTOS_SEMAPHORE(name, initial_count, type) \
         os_semaphore_init(&semaphores[name], initial_count, type);
 
-    #define BEERTOS_SEMPAPHORES_INIT BEERTOS_SEMAPHORE_LIST()
+    #define BEERTOS_SEMPAPHORES_INIT() BEERTOS_SEMAPHORE_LIST()
 
-    BEERTOS_SEMPAPHORES_INIT
+    BEERTOS_SEMPAPHORES_INIT();
 }
 
 /**
@@ -111,7 +111,7 @@ bool os_semaphore_wait(os_sem_id_t id, uint32_t timeout)
             sem->tasks_blocked |= (1U << os_get_current_task()->priority - 1U);
             os_enable_all_interrupts();
 
-            os_delay(timeout);
+           os_delay_internal(timeout, OS_MODULE_ID_SEMAPHORE);
 
             os_disable_all_interrupts();
             bool task_released = (sem->tasks_blocked & (1U << os_get_current_task()->priority - 1U)) == 0U;

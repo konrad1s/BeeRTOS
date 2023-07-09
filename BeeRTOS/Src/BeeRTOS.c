@@ -9,6 +9,7 @@
 
 #include "BeeRTOS.h"
 #include "BeeRTOS_internal.h"
+#include "BeeRTOS_trace_cfg.h"
 
 /******************************************************************************************
  *                                         DEFINES                                        *
@@ -59,6 +60,8 @@ void os_init(void)
 
     os_task_module_init();
     os_cpu_init();
+
+    BEERTOS_TRACE_INIT();
 }
 
 void os_disable_all_interrupts(void)
@@ -81,6 +84,7 @@ void os_tick(void)
     os_task_tick();
     os_alarm_tick();
     os_tick_counter++;
+    BEERTOS_TRACE_TICK(os_tick_counter);
 }
 
 uint32_t os_get_tick_count(void)

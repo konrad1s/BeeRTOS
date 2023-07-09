@@ -76,7 +76,7 @@ bool os_message_send(os_message_id_t id, void *data, uint32_t timeout)
         if (0U != timeout)
         {
             msg->tasks_blocked |= (1U << (os_get_current_task()->priority - 1U));
-            os_delay(timeout);
+            os_delay_internal(timeout, OS_MODULE_ID_MESSAGE);
 
             /* Try to push the message again, if it fails, it means that the timeout expired
                and the message was not popped by the other task */
