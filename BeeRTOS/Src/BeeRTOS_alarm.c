@@ -9,6 +9,7 @@
 
 #include "BeeRTOS_alarm.h"
 #include "BeeRTOS_assert.h"
+#include "BeeRTOS_trace_cfg.h"
 
 /******************************************************************************************
  *                                         DEFINES                                        *
@@ -94,6 +95,7 @@ void os_alarm_start(os_alarm_id_t alarm_id, uint32_t period, bool periodic)
     alarm->remaining_time = period;
 
     OS_ALARM_ENABLE(alarm_id);
+    BEERTOS_TRACE_ALARM_START(alarm_id, period, periodic);
 }
 
 void os_alarm_cancel(os_alarm_id_t alarm_id)
@@ -103,6 +105,7 @@ void os_alarm_cancel(os_alarm_id_t alarm_id)
 
     os_alarms[alarm_id].remaining_time = 0U;
     OS_ALARM_DISABLE(alarm_id);
+    BEERTOS_TRACE_ALARM_CANCEL(alarm_id);
 }
 
 uint32_t os_alarm_get_remaining_time(os_alarm_id_t alarm_id)

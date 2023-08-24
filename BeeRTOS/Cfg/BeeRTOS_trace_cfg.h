@@ -86,6 +86,12 @@
 #define BEERTOS_TRACE_EXIT_ISR() \
     SEGGER_SYSVIEW_RecordExitISR()
 
+/* @brief Records the timer start event */
+#define BEERTOS_TRACE_ALARM_START(alarm_id, period, periodic) {}
+
+/* @brief Records the timer stop event */
+#define BEERTOS_TRACE_ALARM_CANCEL(alarm_id) {}
+
 /******************************************************************************************
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
