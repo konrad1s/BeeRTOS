@@ -23,10 +23,10 @@
 /* Structure to hold mutex data */
 typedef struct
 {
-    uint32_t count;               /* number of times the mutex is locked */
-    os_task_mask_t tasks_blocked; /* tasks blocked on the mutex */
-    os_task_t *owner_task;        /* task that owns the mutex */
-    uint8_t owner_priority;       /* priority of the task that owns the mutex */
+    uint32_t count;                 /* number of times the mutex is locked */
+    os_task_mask_t tasks_blocked;   /* tasks blocked on the mutex */
+    os_task_t *owner_task;          /* task that currently owns the mutex */
+    os_task_t *original_owner_task; /* task that originally owned the mutex */
 } os_mutex_t;
 
 /******************************************************************************************
@@ -44,15 +44,15 @@ static os_mutex_t os_mutexes[BEERTOS_MUTEX_ID_MAX];
 
 void os_mutex_module_init(void)
 {
-    /*! X-Macro to initialize all mutexes */
-    #undef BEERTOS_MUTEX
-    #define BEERTOS_MUTEX(name, initial_count)  \
-        os_mutexes[name].count = initial_count; \
-        os_mutexes[name].tasks_blocked = 0U;    \
-        os_mutexes[name].owner_task = NULL;     \
-        os_mutexes[name].owner_priority = 0U;
+/*! X-Macro to initialize all mutexes */
+#undef BEERTOS_MUTEX
+#define BEERTOS_MUTEX(name, initial_count)  \
+    os_mutexes[name].count = initial_count; \
+    os_mutexes[name].tasks_blocked = 0U;    \
+    os_mutexes[name].owner_task = NULL;     \
+    os_mutexes[name].original_owner_task = NULL;
 
-    #define BEERTOS_MUTEXES_INIT_ALL() BEERTOS_MUTEX_LIST()
+#define BEERTOS_MUTEXES_INIT_ALL() BEERTOS_MUTEX_LIST()
 
     BEERTOS_MUTEXES_INIT_ALL();
 }
@@ -70,6 +70,7 @@ void os_mutex_lock(os_mutex_id_t id, uint32_t timeout)
     if (NULL == mutex->owner_task)
     {
         mutex->owner_task = task;
+        mutex->original_owner_task = task;
         mutex->count++;
     }
     else
@@ -81,12 +82,19 @@ void os_mutex_lock(os_mutex_id_t id, uint32_t timeout)
              * the owner's priority is set to the task's priority */
             if (mutex->owner_task->priority < task->priority)
             {
-                mutex->owner_priority = mutex->owner_task->priority;
-                mutex->owner_task->priority = task->priority;
+                /* Swap the owner with the task that wants to lock the mutex */
+                os_tasks[mutex->owner_task->priority] = task;
+                os_tasks[task->priority] = mutex->owner_task;
+                mutex->owner_task = task;
+
+                uint8_t temp = mutex->original_owner_task->priority;
+                mutex->original_owner_task->priority = task->priority;
+                mutex->owner_task->priority = temp;
+
                 BEERTOS_TRACE_MUTEX_PRIORITY_INHERITANCE(mutex->owner_task, task->priority);
             }
 
-            mutex->tasks_blocked |= (1U << task->priority - 1U);
+            mutex->tasks_blocked |= (1U << (task->priority - 1U));
             os_delay_internal(timeout, OS_MODULE_ID_MUTEX);
         }
     }
@@ -102,19 +110,26 @@ void os_mutex_unlock(os_mutex_id_t id)
     os_disable_all_interrupts();
 
     /* Check if the mutex is locked by the calling task */
-    if (mutex->owner_task == os_get_current_task())
+    if (mutex->original_owner_task == os_get_current_task())
     {
         mutex->count--;
         if (mutex->count == 0U)
         {
             /* If there are tasks blocked on the mutex, unblock the one with the highest priority */
             const os_task_t *const high_prio_task = os_tasks[OS_GET_HIGHEST_PRIO_TASK_FROM_MASK(mutex->tasks_blocked)];
-            
-            /* Priority restoration */
-            if (mutex->owner_priority < high_prio_task->priority)
+
+            /* Priority restoration, only if there was a task blocked on the mutex, that has higher priority than the owner */
+            if (high_prio_task->priority < mutex->original_owner_task->priority)
             {
-                mutex->owner_task->priority = mutex->owner_priority;
-                BEERTOS_TRACE_MUTEX_PRIORITY_RESTORE(mutex->owner_task, mutex->owner_priority);
+                /* Restore the priority of the task that owned the mutex */
+                os_tasks[high_prio_task->priority] = mutex->original_owner_task;
+                os_tasks[mutex->original_owner_task->priority] = high_prio_task;
+
+                uint8_t temp = mutex->original_owner_task->priority;
+                mutex->original_owner_task->priority = high_prio_task->priority;
+                mutex->owner_task->priority = temp;
+
+                BEERTOS_TRACE_MUTEX_PRIORITY_RESTORE(mutex->original_owner_task, high_prio_task->priority);
             }
 
             mutex->owner_task = high_prio_task;

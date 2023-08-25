@@ -18,7 +18,7 @@
  ******************************************************************************************/
 
 /*! @brief Initialize trace module */
-#define BEERTOS_TRACE_INIT() SEGGER_SYSVIEW_Conf()
+#define BEERTOS_TRACE_INIT() {}
 
 /*! @brief Records a tick event */
 #define BEERTOS_TRACE_TICK(ticks) (void)ticks;
