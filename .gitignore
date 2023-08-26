@@ -57,7 +57,11 @@ Drivers/*
 *.jdebug
 *icf
 
-# TODO: delete
 gitos/*
+Source/*
 Core/*
 SEGGER/*
+.vscode/*
+Makefile
+*.user
+.mxproject
