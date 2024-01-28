@@ -54,20 +54,35 @@
  *                  uint32_t my_arg = (uint32_t)arg;
  *              }
  */
-#define BEERTOS_TASK_LIST()                                                             \
-    BEERTOS_TASK( OS_TASK_UT_MAIN,      ut_beertos_main_task,       128, true, NULL )   \
-    /* Priority test tasks */                                                           \
-    BEERTOS_TASK( OS_TASK_PRIO_3,   ut_task_priority_highest,    128, true, NULL )      \
-    BEERTOS_TASK( OS_TASK_PRIO_2,   ut_task_priority_medium,     128, true, NULL )      \
-    BEERTOS_TASK( OS_TASK_PRIO_1,   ut_task_priority_lowest,     128, true, NULL )      \
-    /* Mutex test tasks */                                                              \
-    BEERTOS_TASK( OS_TASK_MUTEX_3,   ut_task_mutex_3,       128, true, NULL )           \
-    BEERTOS_TASK( OS_TASK_MUTEX_2,   ut_task_mutex_2,       128, true, NULL )           \
-    BEERTOS_TASK( OS_TASK_MUTEX_1,   ut_task_mutex_1,       128, true, NULL )           \
-    /* Message test tasks */                                                            \
-    BEERTOS_TASK( OS_TASK_MSG_2,   ut_task_msg_2,       128, false, NULL )              \
-    BEERTOS_TASK( OS_TASK_MSG_1,   ut_task_msg_1,       128, false, NULL )
-
+/*! @brief BeeRTOS mutex list - define your mutexes here
+ *  Mutexes are used to protect critical sections of code from being executed by more than
+ *  one task at the same time. In the current implementation, mutexes are recursive, which
+ * means that the same task can lock the same mutex multiple times, but it must be unlocked
+ * the same number of times.
+ * Compared to semaphores, mutexes uses priority inheritance, which means that if a task
+ * with higher priority is blocked on a mutex, the priority of the task that owns the mutex
+ * will be raised to the priority of the blocked task. This prevents priority inversion.
+ * 
+ *  Structure: BEERTOS_MUTEX(mutex_id, initial_count)
+ * @param mutex_id - mutex id (created in os_mutex_id_t enum), must be unique
+ * @param initial_count - initial count of the mutex
+ */
+#define BEERTOS_TASK_LIST()                                                 \
+    BEERTOS_TASK(OS_TASK_UT_MAIN, ut_beertos_main_task, 128, true, NULL)    \
+    /* Priority test tasks */                                               \
+    BEERTOS_TASK(OS_TASK_PRIO_3, ut_task_priority_highest, 128, true, NULL) \
+    BEERTOS_TASK(OS_TASK_PRIO_2, ut_task_priority_medium, 128, true, NULL)  \
+    BEERTOS_TASK(OS_TASK_PRIO_1, ut_task_priority_lowest, 128, true, NULL)  \
+    /* Mutex test tasks */                                                  \
+    BEERTOS_MUTEX(MUTEX_ONE, 0U)                                            \
+    BEERTOS_MUTEX(MUTEX_TWO, 0U)                                            \
+    BEERTOS_MUTEX(MUTEX_THREE, 0U)                                          \
+    BEERTOS_TASK(OS_TASK_MUTEX_3, ut_task_mutex_3, 128, true, NULL)         \
+    BEERTOS_TASK(OS_TASK_MUTEX_2, ut_task_mutex_2, 128, true, NULL)         \
+    BEERTOS_TASK(OS_TASK_MUTEX_1, ut_task_mutex_1, 128, true, NULL)         \
+    /* Message test tasks */                                                \
+    BEERTOS_TASK(OS_TASK_MSG_2, ut_task_msg_2, 128, false, NULL)            \
+    BEERTOS_TASK(OS_TASK_MSG_1, ut_task_msg_1, 128, false, NULL)
 
 /******************************************************************************************
  *                                        TYPEDEFS                                        *

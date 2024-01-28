@@ -34,6 +34,8 @@
 
 /*! X-Macro to create task stack array for all tasks */
 #undef BEERTOS_TASK
+#undef BEERTOS_MUTEX
+#define BEERTOS_MUTEX(...)
 #define BEERTOS_TASK(name, cb, stack, autostart, argv) \
     static os_stack_t name##_stack[stack];
 
@@ -46,6 +48,9 @@ BEERTOS_STACK_VAR;
 #undef BEERTOS_TASK
 #define BEERTOS_TASK(name, ...) \
     name##_stack,
+#undef BEERTOS_MUTEX
+#define BEERTOS_MUTEX(...) \
+    NULL,
 
 #define BEERTOS_STACK_PTR_VAR BEERTOS_TASK_LIST()
 
@@ -56,6 +61,9 @@ static os_stack_t *task_stacks[] = {
 
 /*! X-Macro to create task control structure for all tasks */
 #undef BEERTOS_TASK
+#undef BEERTOS_MUTEX
+#define BEERTOS_MUTEX(name, ...)    \
+    static os_task_t name##_control;
 #define BEERTOS_TASK(name, ...) \
     static os_task_t name##_control;
 
@@ -86,14 +94,14 @@ extern void os_port_context_switch(void);
             const os_task_t *const task = os_task_current;
             const os_stack_t pattern = OS_TASK_STACK_PATTERN;
 
-            if ((task_stacks[task->priority][0] != pattern) ||
-                (task_stacks[task->priority][1] != pattern) ||
-                (task_stacks[task->priority][2] != pattern) ||
-                (task_stacks[task->priority][3] != pattern))
+            if ((task_stacks[OS_GET_TASK_ID_FROM_PRIORITY(task->priority)][0] != pattern) ||
+                (task_stacks[OS_GET_TASK_ID_FROM_PRIORITY(task->priority)][1] != pattern) ||
+                (task_stacks[OS_GET_TASK_ID_FROM_PRIORITY(task->priority)][2] != pattern) ||
+                (task_stacks[OS_GET_TASK_ID_FROM_PRIORITY(task->priority)][3] != pattern))
             {
                 /* TODO - handle stack overflow */
-                while (1)
-                    ;
+                // while (1)
+                    // ;
             }
         }
     #elif (BEERTOS_USE_USER_STACK_MONITOR == true)
@@ -133,15 +141,15 @@ static void os_task_create(os_task_t *task, os_task_handler task_handler,
 
     os_tasks[priority] = task;
 
-    #undef BEERTOS_TASK
-    #define BEERTOS_TASK(name, cb, stack, autostart, argv) \
-        if (task == &name##_control)                       \
-        {                                                  \
-            BEERTOS_TRACE_TASK_CREATE(task, #name, stack); \
-        }
+    // #undef BEERTOS_TASK
+    // #define BEERTOS_TASK(name, cb, stack, autostart, argv) \
+    //     if (task == &name##_control)                       \
+    //     {                                                  \
+    //         BEERTOS_TRACE_TASK_CREATE(task, #name, stack); \
+    //     }
 
-    #define BEERTOS_TASK_TRACE_INIT() BEERTOS_TASK_LIST()
-    BEERTOS_TASK_TRACE_INIT();
+    // #define BEERTOS_TASK_TRACE_INIT() BEERTOS_TASK_LIST()
+    // BEERTOS_TASK_TRACE_INIT();
 }
 
 static void BeeRTOS_Idle_Task(void *argv)
@@ -159,16 +167,20 @@ void os_task_module_init(void)
     /* Clear all global variables */
     os_ready_mask = 0U;
     os_delay_mask = 0U;
-    for (uint32_t i = 0U; i < OS_TASK_MAX; i++)
-    {
-        os_tasks[i] = NULL;
-    }
 
     /* X-Macro to call os_task_create for all tasks */
     uint8_t prio = OS_TASK_MAX - 1U;
     #undef BEERTOS_TASK
     #define BEERTOS_TASK(name, cb, stack, autostart, argv)                                   \
         os_task_create(&name##_control, cb, name##_stack, sizeof(name##_stack), prio, argv); \
+        prio--;
+
+    #undef BEERTOS_MUTEX
+    #define BEERTOS_MUTEX(name, ...) \
+        os_tasks[prio] = &name##_control; \
+        os_tasks[prio]->priority = prio; \
+        os_tasks[prio]->ticks = 0U; \
+        os_tasks[prio]->sp = NULL; \
         prio--;
 
     #define BEERTOS_TASK_INIT_ALL() BEERTOS_TASK_LIST()
@@ -186,6 +198,10 @@ void os_task_module_init(void)
         {                                                  \
             os_task_start(task_id);                        \
         }                                                  \
+        task_id++;
+
+    #undef BEERTOS_MUTEX
+    #define BEERTOS_MUTEX(name, ...) \
         task_id++;
 
     #define BEERTOS_TASK_START_ALL() BEERTOS_TASK_LIST()

@@ -14,14 +14,20 @@ void ut_task_mutex_1(void *arg)
     os_mutex_unlock(MUTEX_ONE);
 
     tasks_cnt[0]++;
-    os_task_delete();
+    while(1)
+    {
+        os_delay(500);
+    }
 }
 
 /* Medium priority task */
 void ut_task_mutex_2(void *arg)
 {
     tasks_cnt[1]++;
-    os_task_delete();
+    while(1)
+    {
+        os_delay(500);
+    }
 }
 
 /* Highest priority task */
@@ -36,7 +42,10 @@ void ut_task_mutex_3(void *arg)
     
     tasks_cnt[2]++;
     ut_blocking_delay(10);
-    os_task_delete();
+    while(1)
+    {
+        os_delay(500);
+    }
 }
 
 void TEST_mutexes(void)

@@ -12,13 +12,11 @@
 
 #include "Beertos_internal.h"
 #include "BeeRTOS_task_cfg.h"
+#include "BeeRTOS_mutex.h"
 
 /******************************************************************************************
  *                                         DEFINES                                        *
  ******************************************************************************************/
-
-/*! Maximum number of tasks, that can be created */
-#define OS_MAX_TASK_NB (32U)
 
 /*! Returns the task ID from the priority */
 #define OS_GET_TASK_ID_FROM_PRIORITY(priority) (OS_TASK_MAX - priority)
@@ -47,7 +45,9 @@ typedef struct
 typedef void (*os_task_handler)(void *args);
 
 #undef BEERTOS_TASK
+#undef BEERTOS_MUTEX
 #define BEERTOS_TASK(task_name, ...) task_name,
+#define BEERTOS_MUTEX(task_name, ...) PRIO_CELLING_TASK_##task_name,
 /*! Task IDs - generated from BEERTOS_TASK_LIST() in BeeRTOS_task_cfg.h */
 typedef enum
 {
@@ -57,7 +57,9 @@ typedef enum
 } os_task_id_t;
 
 #undef BEERTOS_TASK
+#undef BEERTOS_MUTEX
 #define BEERTOS_TASK(...) +1U
+#define BEERTOS_MUTEX(...) +1U
 /*! Returns the number of tasks, OS_TASK_MAX cannot be used in preprocessor expressions,
     because enum is known only after the preprocessor is done */
 #define OS_TASK_COUNT (1U + BEERTOS_TASK_LIST())

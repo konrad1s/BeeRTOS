@@ -12,6 +12,7 @@
 
 #include "Beertos_internal.h"
 #include "BeeRTOS_mutex_cfg.h"
+#include "BeeRTOS_task_cfg.h"
 
 /******************************************************************************************
 *                                         DEFINES                                        *
@@ -23,6 +24,10 @@
 
 #undef BEERTOS_MUTEX
 #define BEERTOS_MUTEX(name, initial_count) name,
+#undef BEERTOS_TASK
+#define BEERTOS_TASK(...)
+
+#define BEERTOS_MUTEX_LIST() BEERTOS_TASK_LIST()
 
 /*! Mutex IDs - generated from BEERTOS_MUTEX_LIST() in BeeRTOS_mutex_cfg.h */
 typedef enum 
