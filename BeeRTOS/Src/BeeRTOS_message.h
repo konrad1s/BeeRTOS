@@ -1,7 +1,11 @@
 /******************************************************************************************
- * @brief OS message header file
+ * @brief OS message header file for BeeRTOS
+ * Provides the interface for message queue operations including initialization, sending,
+ * and receiving messages within the BeeRTOS operating system. This header defines the
+ * necessary data types and function prototypes.
+ * 
  * @file BeeRTOS_message.h
- * ****************************************************************************************/
+ ******************************************************************************************/
 
 #ifndef __BEERTOS_MESSAGE_H__
 #define __BEERTOS_MESSAGE_H__

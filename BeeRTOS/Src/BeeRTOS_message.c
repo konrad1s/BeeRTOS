@@ -1,7 +1,11 @@
 /******************************************************************************************
- * @brief OS message source file
+ * @brief OS message source file for BeeRTOS
+ * Implements the operations for message queue management including initialization,
+ * sending, and receiving messages. This file contains the core functionality for
+ * inter-task communication via messages within the BeeRTOS operating system.
+ * 
  * @file BeeRTOS_message.c
- * ****************************************************************************************/
+ ******************************************************************************************/
 
 /******************************************************************************************
  *                                        INCLUDES                                        *
