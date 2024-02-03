@@ -59,7 +59,7 @@ void os_alarm_module_init(void);
  * @param periodic - true if the alarm is periodic, false if it is one-shot
  * @return None
  */
-void os_alarm_start(os_alarm_id_t alarm_id, uint32_t period, bool periodic);
+void os_alarm_start(const os_alarm_id_t alarm_id, const uint32_t period, const bool periodic);
 
 /**
  * @brief This function cancels the specified alarm. The alarm has to be started before it can be
@@ -68,7 +68,7 @@ void os_alarm_start(os_alarm_id_t alarm_id, uint32_t period, bool periodic);
  * @param alarm_id - alarm id
  * @return None
  */
-void os_alarm_cancel(os_alarm_id_t alarm_id);
+void os_alarm_cancel(const os_alarm_id_t alarm_id);
 
 /**
  * @brief This function returns the remaining time until the alarm expires.
@@ -77,7 +77,7 @@ void os_alarm_cancel(os_alarm_id_t alarm_id);
  * @param alarm_id - alarm id
  * @return remaining time in ticks
  */
-uint32_t os_alarm_get_remaining_time(os_alarm_id_t alarm_id);
+uint32_t os_alarm_get_remaining_time(const os_alarm_id_t alarm_id);
 
 /**
  * @brief This function is called by the OS tick handler. It is responsible for decrementing the
