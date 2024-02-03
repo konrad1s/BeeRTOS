@@ -15,6 +15,36 @@
  *                                         DEFINES                                        *
  ******************************************************************************************/
 
+#if (BEERTOS_ALARM_MODULE_EN == true)
+    #define OS_ALARM_INIT() os_alarm_module_init()
+#else
+    #define OS_ALARM_INIT()
+#endif
+
+#if (BEERTOS_SEMAPHORE_MODULE_EN == true)
+    #define OS_SEMAPHORE_INIT() os_semaphore_module_init()
+#else
+    #define OS_SEMAPHORE_INIT()
+#endif
+
+#if (BEERTOS_MUTEX_MODULE_EN == true)
+    #define OS_MUTEX_INIT() os_mutex_module_init()
+#else
+    #define OS_MUTEX_INIT()
+#endif
+
+#if (BEERTOS_QUEUE_MODULE_EN == true)
+    #define OS_QUEUE_INIT() os_queue_module_init()
+#else
+    #define OS_QUEUE_INIT()
+#endif
+
+#if (BEERTOS_MESSAGE_MODULE_EN == true)
+    #define OS_MESSAGE_INIT() os_message_module_init()
+#else
+    #define OS_MESSAGE_INIT()
+#endif
+
 /******************************************************************************************
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
@@ -39,29 +69,12 @@ void os_init(void)
     os_tick_counter = 0U;
 
     os_task_module_init();
-
-#if (BEERTOS_ALARM_MODULE_EN == true)
-    os_alarm_module_init();
-#endif
-
-#if (BEERTOS_SEMAPHORE_MODULE_EN == true)
-    os_semaphore_module_init();
-#endif
-
-#if (BEERTOS_MUTEX_MODULE_EN == true)
-    os_mutex_module_init();
-#endif
-
-#if (BEERTOS_QUEUE_MODULE_EN == true)
-    os_queue_module_init();
-#endif
-
-#if (BEERTOS_MESSAGE_MODULE_EN == true)
-    os_message_module_init();
-#endif
-
+    OS_ALARM_INIT();
+    OS_SEMAPHORE_INIT();
+    OS_MUTEX_INIT();
+    OS_QUEUE_INIT();
+    OS_MESSAGE_INIT();
     os_cpu_init();
-
     BEERTOS_TRACE_INIT();
 }
 
