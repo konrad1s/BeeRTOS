@@ -9,6 +9,7 @@
 
 #include "BeeRTOS_queue.h"
 #include "BeeRTOS_message.h"
+#include "BeeRTOS_assert.h"
 #include <string.h>
 
 /******************************************************************************************
@@ -57,11 +58,22 @@ static inline bool os_queue_can_pop(os_queue_t *queue, uint32_t len)
 
 void os_queue_reset(os_queue_id_t id)
 {
+    BEERTOS_ASSERT(id < OS_MSG_QUEUE_ID_MAX,
+                   OS_MODULE_ID_QUEUE,
+                   OS_ERROR_INVALID_PARAM);
     os_queue_t *const queue = &os_queues[id];
+
+    BEERTOS_ASSERT(queue != NULL,
+                   OS_MODULE_ID_QUEUE,
+                   OS_ERROR_NULLPTR);
+
+    os_disable_all_interrupts();
 
     queue->head = 0U;
     queue->tail = 0U;
     queue->full = false;
+
+    os_enable_all_interrupts();
 }
 
 void os_queue_module_init(void)
@@ -93,25 +105,54 @@ void os_queue_module_init(void)
 
 bool os_queue_is_full(os_queue_id_t id)
 {
-    // BEERTOS_ASSERT(queue != NULL, OS_MODULE_ID_QUEUE, OS_ERROR_NULLPTR);
+    BEERTOS_ASSERT(id < OS_MSG_QUEUE_ID_MAX,
+                   OS_MODULE_ID_QUEUE,
+                   OS_ERROR_INVALID_PARAM);
+
     return os_queues[id].full;
 }
 
 bool os_queue_is_empty(os_queue_id_t id)
 {
-    // BEERTOS_ASSERT(queue != NULL, OS_MODULE_ID_QUEUE, OS_ERROR_NULLPTR);
+    BEERTOS_ASSERT(id < OS_MSG_QUEUE_ID_MAX,
+                   OS_MODULE_ID_QUEUE,
+                   OS_ERROR_INVALID_PARAM);
+
     const os_queue_t *const queue = &os_queues[id];
-    return (!queue->full && (queue->head == queue->tail));
+
+    BEERTOS_ASSERT(queue != NULL,
+                   OS_MODULE_ID_QUEUE,
+                   OS_ERROR_NULLPTR);
+
+    os_disable_all_interrupts();
+
+    /* Queue is empty if head and tail are equal and not full */
+    const bool is_empty = (!queue->full && (queue->head == queue->tail));
+
+    os_enable_all_interrupts();
+
+    return is_empty;
 }
 
 bool os_queue_push(os_queue_id_t id, void *data, uint32_t len)
 {
-    // BEERTOS_ASSERT(queue != NULL, OS_MODULE_ID_QUEUE, OS_ERROR_NULLPTR);
-    // BEERTOS_ASSERT(data != NULL, OS_MODULE_ID_QUEUE, OS_ERROR_NULLPTR);
+    BEERTOS_ASSERT(id < OS_MSG_QUEUE_ID_MAX,
+                   OS_MODULE_ID_QUEUE,
+                   OS_ERROR_INVALID_PARAM);
+    BEERTOS_ASSERT(data != NULL,
+                   OS_MODULE_ID_QUEUE,
+                   OS_ERROR_NULLPTR);
 
     bool ret = false;
     os_queue_t *const queue = &os_queues[id];
 
+    BEERTOS_ASSERT(queue != NULL,
+                   OS_MODULE_ID_QUEUE,
+                   OS_ERROR_NULLPTR);
+
+    os_disable_all_interrupts();
+
+    /* Check if the queue can accept the data */
     if (os_queue_can_push(queue, len))
     {
         /* Copy data to the queue and update head */
@@ -123,16 +164,30 @@ bool os_queue_push(os_queue_id_t id, void *data, uint32_t len)
         ret = true;
     }
 
+    os_enable_all_interrupts();
+
     return ret;
 }
 
 bool os_queue_pop(os_queue_id_t id, void *data, uint32_t len)
 {
-    // BEERTOS_ASSERT(queue != NULL, OS_MODULE_ID_QUEUE, OS_ERROR_NULLPTR);
+    BEERTOS_ASSERT(id < OS_MSG_QUEUE_ID_MAX,
+                   OS_MODULE_ID_QUEUE,
+                   OS_ERROR_INVALID_PARAM);
+    BEERTOS_ASSERT(data != NULL,
+                   OS_MODULE_ID_QUEUE,
+                   OS_ERROR_NULLPTR);
 
     uint8_t ret = false;
     os_queue_t *const queue = &os_queues[id];
 
+    BEERTOS_ASSERT(queue != NULL,
+                   OS_MODULE_ID_QUEUE,
+                   OS_ERROR_NULLPTR);
+
+    os_disable_all_interrupts();
+
+    /* Check if the queue can provide the data */
     if (os_queue_can_pop(queue, len))
     {
         /* Copy data from the queue and update tail */
@@ -143,6 +198,8 @@ bool os_queue_pop(os_queue_id_t id, void *data, uint32_t len)
 
         ret = true;
     }
+
+     os_enable_all_interrupts();
 
     return ret;
 }
