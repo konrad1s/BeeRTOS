@@ -38,6 +38,8 @@ void os_init(void)
     os_isr_counter = 0U;
     os_tick_counter = 0U;
 
+    os_task_module_init();
+
 #if (BEERTOS_ALARM_MODULE_EN == true)
     os_alarm_module_init();
 #endif
@@ -58,7 +60,7 @@ void os_init(void)
     os_message_module_init();
 #endif
 
-    os_task_module_init();
+
     os_cpu_init();
 
     BEERTOS_TRACE_INIT();

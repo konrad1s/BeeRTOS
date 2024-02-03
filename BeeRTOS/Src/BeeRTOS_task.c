@@ -234,9 +234,10 @@ bool os_task_stop(os_task_id_t task_id)
     BEERTOS_ASSERT(task_id < 255U, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
 
     os_disable_all_interrupts();
+    uint8_t priority = OS_TASK_MAX - task_id;
 
-    BEERTOS_TASK_STOP(task_id);
-    BEERTOS_TASK_DELAY_CLEAR(task_id);
+    BEERTOS_TASK_STOP(priority);
+    BEERTOS_TASK_DELAY_CLEAR(priority);
 
     os_enable_all_interrupts();
 
@@ -257,7 +258,7 @@ void os_task_delete(void)
 {
     os_disable_all_interrupts();
 
-    os_task_stop(os_task_current->priority);
+    os_task_stop(OS_GET_TASK_ID_FROM_PRIORITY(os_task_current->priority));
     os_tasks[os_task_current->priority] = NULL;
     os_sched();
 

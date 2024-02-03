@@ -11,7 +11,6 @@
 ******************************************************************************************/
 
 #include "Beertos_internal.h"
-#include "BeeRTOS_mutex_cfg.h"
 #include "BeeRTOS_task_cfg.h"
 
 /******************************************************************************************
@@ -59,7 +58,7 @@ void os_mutex_module_init(void);
  * @param id - mutex id
  * @return None
  */
-void os_mutex_unlock(os_mutex_id_t id);
+void os_mutex_unlock(const os_mutex_id_t id);
 
 /**
  * @brief This function locks the specified mutex. If the mutex is already locked, the function
@@ -71,6 +70,6 @@ void os_mutex_unlock(os_mutex_id_t id);
  * @param timeout - maximum time to wait for the mutex to be unlocked. If timeout is 0, the function
  *                  will return immediately false if the mutex is locked.
  */
-void os_mutex_lock(os_mutex_id_t id, uint32_t timeout);
+bool os_mutex_lock(const os_mutex_id_t id, const uint32_t timeout);
 
 #endif /* __BEERTOS_MUTEX_H__ */
