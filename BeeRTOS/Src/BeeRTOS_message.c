@@ -3,7 +3,7 @@
  * Implements the operations for message queue management including initialization,
  * sending, and receiving messages. This file contains the core functionality for
  * inter-task communication via messages within the BeeRTOS operating system.
- * 
+ *
  * @file BeeRTOS_message.c
  ******************************************************************************************/
 
@@ -76,10 +76,10 @@ static bool os_message_handle_timeout(os_message_t *msg,
     os_delay_internal(timeout, OS_MODULE_ID_MESSAGE);
     /* Scheduler will be called by the delay function, enable interrupts to
        allow possible context switch */
-    os_enable_all_interrupts();
+    os_leave_critical_section();
 
     /* End of the delay, disable interrupts again */
-    os_disable_all_interrupts();
+    os_enter_critical_section();
 
     /* Try to perform the operation again */
     bool operation_success = queue_op(id + BEERTOS_QUEUE_ID_MAX, data, msg->item_size);
@@ -92,14 +92,14 @@ static bool os_message_handle_timeout(os_message_t *msg,
 
 void os_message_module_init(void)
 {
-    /*! X-Macro to initialize all messages */
-    #undef OS_MESSAGE
-    #define OS_MESSAGE(name, count, size)                                  \
-        os_messages[name].queue = &os_queues[name + BEERTOS_QUEUE_ID_MAX]; \
-        os_messages[name].item_size = size;                                \
-        os_messages[name].send_waiting_tasks = 0U;
+/*! X-Macro to initialize all messages */
+#undef OS_MESSAGE
+#define OS_MESSAGE(name, count, size)                                  \
+    os_messages[name].queue = &os_queues[name + BEERTOS_QUEUE_ID_MAX]; \
+    os_messages[name].item_size = size;                                \
+    os_messages[name].send_waiting_tasks = 0U;
 
-    #define BEERTOS_MESSAGES_INIT_ALL() OS_MESSAGES_LIST()
+#define BEERTOS_MESSAGES_INIT_ALL() OS_MESSAGES_LIST()
 
     BEERTOS_MESSAGES_INIT_ALL();
 }
@@ -116,7 +116,7 @@ bool os_message_send(const os_message_id_t id, const void *const data, const uin
     bool msg_sent = false;
     os_message_t *const msg = &os_messages[id];
 
-    os_disable_all_interrupts();
+    os_enter_critical_section();
 
     /* Check if message can be pushed instantly */
     if (true == os_queue_push(id + BEERTOS_QUEUE_ID_MAX, data, msg->item_size))
@@ -124,7 +124,7 @@ bool os_message_send(const os_message_id_t id, const void *const data, const uin
         msg_sent = true;
 
         /* If there are tasks blocked on this message, release the highest priority one */
-        if (msg->receive_waiting_tasks) 
+        if (msg->receive_waiting_tasks)
         {
             os_message_release_waiting_task(&msg->receive_waiting_tasks);
         }
@@ -138,7 +138,7 @@ bool os_message_send(const os_message_id_t id, const void *const data, const uin
         /* Timetout is set to 0, just return false */
     }
 
-    os_enable_all_interrupts();
+    os_leave_critical_section();
 
     return msg_sent;
 }
@@ -156,7 +156,7 @@ bool os_message_receive(const os_message_id_t id, void *const data, const uint32
 
     os_message_t *const msg = &os_messages[id];
 
-    os_disable_all_interrupts();
+    os_enter_critical_section();
 
     /* Check if message can be popped instantly */
     if (true == os_queue_pop(id + BEERTOS_QUEUE_ID_MAX, data, msg->item_size))
@@ -178,8 +178,7 @@ bool os_message_receive(const os_message_id_t id, void *const data, const uint32
         /* Timetout is set to 0, just return false */
     }
 
-
-    os_enable_all_interrupts();
+    os_leave_critical_section();
 
     return msg_received;
 }

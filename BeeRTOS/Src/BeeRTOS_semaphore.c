@@ -23,18 +23,18 @@ typedef uint8_t os_sem_type_t;
 
 typedef struct
 {
-    #if (BEERTOS_SEMAPHORE_COUNTING_USED == true)
+#if (BEERTOS_SEMAPHORE_COUNTING_USED == true)
     uint32_t count;
-    #else
+#else
     uint8_t count;
-    #endif
+#endif
 
     os_task_mask_t tasks_blocked; /* one bit represents one task */
 
-    /* If counting semaphores are not used, all semaphores are binary */
-    #if (BEERTOS_SEMAPHORE_COUNTING_USED == true)
+/* If counting semaphores are not used, all semaphores are binary */
+#if (BEERTOS_SEMAPHORE_COUNTING_USED == true)
     os_sem_type_t type;
-    #endif
+#endif
 
 } os_sem_t;
 
@@ -82,12 +82,12 @@ static void os_sem_unlock_waiting_task(os_sem_t *const sem)
 
 void os_semaphore_module_init(void)
 {
-    /*! X-Macro to call os_semaphore_init for all semaphores */
-    #undef BEERTOS_SEMAPHORE
-    #define BEERTOS_SEMAPHORE(name, initial_count, type) \
-        os_semaphore_init(&semaphores[name], initial_count, type);
+/*! X-Macro to call os_semaphore_init for all semaphores */
+#undef BEERTOS_SEMAPHORE
+#define BEERTOS_SEMAPHORE(name, initial_count, type) \
+    os_semaphore_init(&semaphores[name], initial_count, type);
 
-    #define BEERTOS_SEMPAPHORES_INIT() BEERTOS_SEMAPHORE_LIST()
+#define BEERTOS_SEMPAPHORES_INIT() BEERTOS_SEMAPHORE_LIST()
 
     BEERTOS_SEMPAPHORES_INIT();
 }
@@ -102,7 +102,7 @@ bool os_semaphore_wait(const os_sem_id_t id, const uint32_t timeout)
     os_sem_t *const sem = &semaphores[id];
     const uint8_t current_task_priority = os_task_current->priority;
 
-    os_disable_all_interrupts();
+    os_enter_critical_section();
 
     if (sem->count > 0U)
     {
@@ -115,9 +115,9 @@ bool os_semaphore_wait(const os_sem_id_t id, const uint32_t timeout)
         sem->tasks_blocked |= (1U << (current_task_priority - 1U));
         os_delay_internal(timeout, OS_MODULE_ID_SEMAPHORE);
 
-        os_enable_all_interrupts();
+        os_leave_critical_section();
         /* Potencial context switch is right here */
-        os_disable_all_interrupts();
+        os_enter_critical_section();
 
         /* Check if the task was unblocked by the semaphore */
         s_got = (sem->tasks_blocked & (1U << (current_task_priority - 1U))) == 0U;
@@ -130,7 +130,7 @@ bool os_semaphore_wait(const os_sem_id_t id, const uint32_t timeout)
         s_got = false;
     }
 
-    os_enable_all_interrupts();
+    os_leave_critical_section();
 
     return s_got;
 }
@@ -144,7 +144,7 @@ bool os_semaphore_signal(const os_sem_id_t id)
     bool s_signaled = true;
     os_sem_t *const sem = &semaphores[id];
 
-    os_disable_all_interrupts();
+    os_enter_critical_section();
 
     if (sem->tasks_blocked > 0U)
     {
@@ -153,9 +153,9 @@ bool os_semaphore_signal(const os_sem_id_t id)
     else
     {
         if (!sem->count ||
-    #if (BEERTOS_SEMAPHORE_COUNTING_USED == true)
+#if (BEERTOS_SEMAPHORE_COUNTING_USED == true)
             sem->type == SEMAPHORE_TYPE_COUNTING
-    #endif
+#endif
         )
         {
             sem->count++;
@@ -167,7 +167,7 @@ bool os_semaphore_signal(const os_sem_id_t id)
         }
     }
 
-    os_enable_all_interrupts();
+    os_leave_critical_section();
 
     return s_signaled;
 }

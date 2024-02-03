@@ -27,7 +27,7 @@
 /*! X-Macro to create buffers for all queues */
 #undef OS_QUEUE
 #define OS_QUEUE(name, size) \
-    static uint8_t name ## _buffer[size];
+    static uint8_t name##_buffer[size];
 
 #define BEERTOS_QUEUE_CREATE_BUFFERS() BEERTOS_QUEUE_LIST()
 BEERTOS_QUEUE_CREATE_BUFFERS();
@@ -35,7 +35,7 @@ BEERTOS_QUEUE_CREATE_BUFFERS();
 /*! X-Macro to create buffers for all messages */
 #undef OS_MESSAGE
 #define OS_MESSAGE(name, size, count) \
-    static uint8_t name ## _buffer[size * count];
+    static uint8_t name##_buffer[size * count];
 
 #define BEERTOS_MESSAGE_CREATE_BUFFERS() OS_MESSAGES_LIST()
 BEERTOS_MESSAGE_CREATE_BUFFERS();
@@ -64,39 +64,39 @@ void os_queue_reset(const os_queue_id_t id)
 
     os_queue_t *const queue = &os_queues[id];
 
-    os_disable_all_interrupts();
+    os_enter_critical_section();
 
     queue->head = 0U;
     queue->tail = 0U;
     queue->full = false;
 
-    os_enable_all_interrupts();
+    os_leave_critical_section();
 }
 
 void os_queue_module_init(void)
 {
     uint32_t id = 0U;
 
-    /* X-Macro to initialize all queues with their buffers and sizes */
-    #undef OS_QUEUE
-    #define OS_QUEUE(name, _size)               \
-        os_queues[id].buffer = name##_buffer;   \
-        os_queues[id].size = _size;             \
-        os_queue_reset(id);                     \
-        id++;
+/* X-Macro to initialize all queues with their buffers and sizes */
+#undef OS_QUEUE
+#define OS_QUEUE(name, _size)             \
+    os_queues[id].buffer = name##_buffer; \
+    os_queues[id].size = _size;           \
+    os_queue_reset(id);                   \
+    id++;
 
-    #define BEERTOS_QUEUES_INIT_ALL() BEERTOS_QUEUE_LIST()
+#define BEERTOS_QUEUES_INIT_ALL() BEERTOS_QUEUE_LIST()
     BEERTOS_QUEUES_INIT_ALL();
 
-    /* X-Macro to initialize all messages with their buffers and sizes */
-    #undef OS_MESSAGE
-    #define OS_MESSAGE(name, count, _size)      \
-        os_queues[id].buffer = name##_buffer;   \
-        os_queues[id].size = count * _size;     \
-        os_queue_reset(id);                     \
-        id++;
+/* X-Macro to initialize all messages with their buffers and sizes */
+#undef OS_MESSAGE
+#define OS_MESSAGE(name, count, _size)    \
+    os_queues[id].buffer = name##_buffer; \
+    os_queues[id].size = count * _size;   \
+    os_queue_reset(id);                   \
+    id++;
 
-    #define BEERTOS_MESSAGE_INIT_ALL() OS_MESSAGES_LIST()
+#define BEERTOS_MESSAGE_INIT_ALL() OS_MESSAGES_LIST()
     BEERTOS_MESSAGE_INIT_ALL();
 }
 
@@ -117,12 +117,12 @@ bool os_queue_is_empty(const os_queue_id_t id)
 
     const os_queue_t *const queue = &os_queues[id];
 
-    os_disable_all_interrupts();
+    os_enter_critical_section();
 
     /* Queue is empty if head and tail are equal and not full */
     const bool is_empty = (!queue->full && (queue->head == queue->tail));
 
-    os_enable_all_interrupts();
+    os_leave_critical_section();
 
     return is_empty;
 }
@@ -139,7 +139,7 @@ bool os_queue_push(const os_queue_id_t id, const void *const data, const uint32_
     bool ret = false;
     os_queue_t *const queue = &os_queues[id];
 
-    os_disable_all_interrupts();
+    os_enter_critical_section();
 
     /* Check if the queue can accept the data */
     if (os_queue_can_push(queue, len))
@@ -153,7 +153,7 @@ bool os_queue_push(const os_queue_id_t id, const void *const data, const uint32_
         ret = true;
     }
 
-    os_enable_all_interrupts();
+    os_leave_critical_section();
 
     return ret;
 }
@@ -170,7 +170,7 @@ bool os_queue_pop(const os_queue_id_t id, void *const data, const uint32_t len)
     uint8_t ret = false;
     os_queue_t *const queue = &os_queues[id];
 
-    os_disable_all_interrupts();
+    os_enter_critical_section();
 
     /* Check if the queue can provide the data */
     if (os_queue_can_pop(queue, len))
@@ -184,7 +184,7 @@ bool os_queue_pop(const os_queue_id_t id, void *const data, const uint32_t len)
         ret = true;
     }
 
-     os_enable_all_interrupts();
+    os_leave_critical_section();
 
     return ret;
 }

@@ -16,33 +16,33 @@
  ******************************************************************************************/
 
 #if (BEERTOS_ALARM_MODULE_EN == true)
-    #define OS_ALARM_INIT() os_alarm_module_init()
+#define OS_ALARM_INIT() os_alarm_module_init()
 #else
-    #define OS_ALARM_INIT()
+#define OS_ALARM_INIT()
 #endif
 
 #if (BEERTOS_SEMAPHORE_MODULE_EN == true)
-    #define OS_SEMAPHORE_INIT() os_semaphore_module_init()
+#define OS_SEMAPHORE_INIT() os_semaphore_module_init()
 #else
-    #define OS_SEMAPHORE_INIT()
+#define OS_SEMAPHORE_INIT()
 #endif
 
 #if (BEERTOS_MUTEX_MODULE_EN == true)
-    #define OS_MUTEX_INIT() os_mutex_module_init()
+#define OS_MUTEX_INIT() os_mutex_module_init()
 #else
-    #define OS_MUTEX_INIT()
+#define OS_MUTEX_INIT()
 #endif
 
 #if (BEERTOS_QUEUE_MODULE_EN == true)
-    #define OS_QUEUE_INIT() os_queue_module_init()
+#define OS_QUEUE_INIT() os_queue_module_init()
 #else
-    #define OS_QUEUE_INIT()
+#define OS_QUEUE_INIT()
 #endif
 
 #if (BEERTOS_MESSAGE_MODULE_EN == true)
-    #define OS_MESSAGE_INIT() os_message_module_init()
+#define OS_MESSAGE_INIT() os_message_module_init()
 #else
-    #define OS_MESSAGE_INIT()
+#define OS_MESSAGE_INIT()
 #endif
 
 /******************************************************************************************
@@ -78,13 +78,13 @@ void os_init(void)
     BEERTOS_TRACE_INIT();
 }
 
-void os_disable_all_interrupts(void)
+void os_enter_critical_section(void)
 {
     os_port_disable_interrupts();
     os_isr_counter++;
 }
 
-void os_enable_all_interrupts(void)
+void os_leave_critical_section(void)
 {
     os_isr_counter--;
     if (os_isr_counter == 0U)

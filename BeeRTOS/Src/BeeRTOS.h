@@ -46,22 +46,22 @@ void os_init(void);
 
 /**
  * @brief This function enters critical section. It disables all interrupts. As many times
- * as os_disable_all_interrupts() is called, os_enable_all_interrupts() must be called to exit the critical
+ * as os_enter_critical_section() is called, os_leave_critical_section() must be called to exit the critical
  * section.
  *
  * @param None
  * @return None
  */
-void os_disable_all_interrupts(void);
+void os_enter_critical_section(void);
 
 /**
- * @brief This function exits critical section. If the number of calls to os_disable_all_interrupts()
- * is equal to the number of calls to os_enable_all_interrupts(), the interrupts will be enabled.
+ * @brief This function exits critical section. If the number of calls to os_enter_critical_section()
+ * is equal to the number of calls to os_leave_critical_section(), the interrupts will be enabled.
  *
  * @param None
  * @return None
  */
-void os_enable_all_interrupts(void);
+void os_leave_critical_section(void);
 
 /**
  * @brief This function returns the current tick. The tick count is used to measure time in the OS.

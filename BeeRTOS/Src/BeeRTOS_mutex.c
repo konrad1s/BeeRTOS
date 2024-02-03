@@ -48,19 +48,19 @@ void os_mutex_module_init(void)
 {
     uint32_t idx = OS_TASK_MAX - 1U;
     /* Here is the X-Macro to initialize all mutexes, from user configuration */
-   #undef BEERTOS_MUTEX
-   #define BEERTOS_MUTEX(name, initial_count)           \
-    os_mutexes[name].locks_nb = initial_count;          \
-    os_mutexes[name].owner = NULL;                      \
-    os_mutexes[name].pcp_task = &os_tasks[idx];         \
-    os_mutexes[name].owner_priority = 0U;               \
-    os_mutexes[name].pcp_priority = idx;                \
+#undef BEERTOS_MUTEX
+#define BEERTOS_MUTEX(name, initial_count)      \
+    os_mutexes[name].locks_nb = initial_count;  \
+    os_mutexes[name].owner = NULL;              \
+    os_mutexes[name].pcp_task = &os_tasks[idx]; \
+    os_mutexes[name].owner_priority = 0U;       \
+    os_mutexes[name].pcp_priority = idx;        \
     idx--;
-   #undef BEERTOS_TASK
-   #define BEERTOS_TASK(...) \
+#undef BEERTOS_TASK
+#define BEERTOS_TASK(...) \
     idx--;
 
-   #define BEERTOS_MUTEXES_INIT_ALL() BEERTOS_MUTEX_LIST()
+#define BEERTOS_MUTEXES_INIT_ALL() BEERTOS_MUTEX_LIST()
 
     BEERTOS_MUTEXES_INIT_ALL();
 }
@@ -81,7 +81,7 @@ bool os_mutex_lock(const os_mutex_id_t id, const uint32_t timeout)
                    OS_MODULE_ID_MUTEX,
                    OS_ERROR_INVALID_PARAM);
 
-    /* In the current implementation, there is no option do not use 
+    /* In the current implementation, there is no option do not use
        priority ceiling protocol, so when this function is called the
        mutex->owner must be equal to NULL because the PCP has always
        higher priority than the task that is trying to lock the mutex */
@@ -94,7 +94,7 @@ bool os_mutex_lock(const os_mutex_id_t id, const uint32_t timeout)
                    OS_MODULE_ID_MUTEX,
                    OS_ERROR_OVERFLOW);
 
-    os_disable_all_interrupts();
+    os_enter_critical_section();
 
     /* Check if the mutex is available */
     if (mutex->owner == NULL)
@@ -126,7 +126,7 @@ bool os_mutex_lock(const os_mutex_id_t id, const uint32_t timeout)
 
         if (mutex->owner == current_task)
         {
-            /* The task was unblocked by calling os_mutex_unlock(), 
+            /* The task was unblocked by calling os_mutex_unlock(),
                so it is the owner of the mutex now */
         }
         else
@@ -139,7 +139,7 @@ bool os_mutex_lock(const os_mutex_id_t id, const uint32_t timeout)
         /* Mutex is not available */
     }
 
-    os_enable_all_interrupts();
+    os_leave_critical_section();
 
     return (mutex->owner == current_task);
 }
@@ -162,7 +162,7 @@ void os_mutex_unlock(const os_mutex_id_t id)
                    OS_MODULE_ID_MUTEX,
                    OS_ERROR_INVALID_OPERATION);
 
-    os_disable_all_interrupts();
+    os_enter_critical_section();
 
     if (mutex->locks_nb > 0U)
     {
@@ -182,5 +182,5 @@ void os_mutex_unlock(const os_mutex_id_t id)
         }
     }
 
-    os_enable_all_interrupts();
+    os_leave_critical_section();
 }

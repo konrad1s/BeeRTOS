@@ -56,13 +56,12 @@ BEERTOS_STACK_VAR;
 
 static os_stack_t *task_stacks[] = {
     os_idle_task_stack,
-    BEERTOS_STACK_PTR_VAR
-};
+    BEERTOS_STACK_PTR_VAR};
 
 /*! X-Macro to create task control structure for all tasks */
 #undef BEERTOS_TASK
 #undef BEERTOS_MUTEX
-#define BEERTOS_MUTEX(name, ...)    \
+#define BEERTOS_MUTEX(name, ...) \
     static os_task_t name##_control;
 #define BEERTOS_TASK(name, ...) \
     static os_task_t name##_control;
@@ -88,39 +87,39 @@ extern os_stack_t *os_port_task_stack_init(void (*task)(void *), void *arg, void
 extern void os_port_context_switch(void);
 
 #if (BEERTOS_USE_TASK_STACK_MONITOR == true)
-    #if (BEERTOS_USE_FAST_STACK_MONITOR == true)
-        static inline void os_task_stack_mon(void)
-        {
-            const os_task_t *const task = os_task_current;
-            const os_stack_t pattern = OS_TASK_STACK_PATTERN;
+#if (BEERTOS_USE_FAST_STACK_MONITOR == true)
+static inline void os_task_stack_mon(void)
+{
+    const os_task_t *const task = os_task_current;
+    const os_stack_t pattern = OS_TASK_STACK_PATTERN;
 
-            if ((task_stacks[OS_GET_TASK_ID_FROM_PRIORITY(task->priority)][0] != pattern) ||
-                (task_stacks[OS_GET_TASK_ID_FROM_PRIORITY(task->priority)][1] != pattern) ||
-                (task_stacks[OS_GET_TASK_ID_FROM_PRIORITY(task->priority)][2] != pattern) ||
-                (task_stacks[OS_GET_TASK_ID_FROM_PRIORITY(task->priority)][3] != pattern))
-            {
-                /* TODO - handle stack overflow */
-                // while (1)
-                    // ;
-            }
-        }
-    #elif (BEERTOS_USE_USER_STACK_MONITOR == true)
-        static inline void os_task_stack_mon(void)
-        {
-            const os_task_t *const task = os_task_current;
-            const os_stack_t pattern = OS_TASK_STACK_PATTERN;
+    if ((task_stacks[OS_GET_TASK_ID_FROM_PRIORITY(task->priority)][0] != pattern) ||
+        (task_stacks[OS_GET_TASK_ID_FROM_PRIORITY(task->priority)][1] != pattern) ||
+        (task_stacks[OS_GET_TASK_ID_FROM_PRIORITY(task->priority)][2] != pattern) ||
+        (task_stacks[OS_GET_TASK_ID_FROM_PRIORITY(task->priority)][3] != pattern))
+    {
+        /* TODO - handle stack overflow */
+        // while (1)
+        // ;
+    }
+}
+#elif (BEERTOS_USE_USER_STACK_MONITOR == true)
+static inline void os_task_stack_mon(void)
+{
+    const os_task_t *const task = os_task_current;
+    const os_stack_t pattern = OS_TASK_STACK_PATTERN;
 
-            for (uint32_t i = 0U; i < OS_TASK_STACK_CHECK_BYTE_COUNT; i++)
-            {
-                if (task_stacks[task->priority][i] != pattern)
-                {
-                    /* TODO - handle stack overflow */
-                    while (1)
-                        ;
-                }
-            }
+    for (uint32_t i = 0U; i < OS_TASK_STACK_CHECK_BYTE_COUNT; i++)
+    {
+        if (task_stacks[task->priority][i] != pattern)
+        {
+            /* TODO - handle stack overflow */
+            while (1)
+                ;
         }
-    #endif /* BEERTOS_USE_USER_STACK_MONITOR */
+    }
+}
+#endif /* BEERTOS_USE_USER_STACK_MONITOR */
 #endif /* BEERTOS_USE_TASK_STACK_MONITOR */
 
 static void os_task_create(os_task_t *task, os_task_handler task_handler,
@@ -170,20 +169,20 @@ void os_task_module_init(void)
 
     /* X-Macro to call os_task_create for all tasks */
     uint8_t prio = OS_TASK_MAX - 1U;
-    #undef BEERTOS_TASK
-    #define BEERTOS_TASK(name, cb, stack, autostart, argv)                                   \
-        os_task_create(&name##_control, cb, name##_stack, sizeof(name##_stack), prio, argv); \
-        prio--;
+#undef BEERTOS_TASK
+#define BEERTOS_TASK(name, cb, stack, autostart, argv)                                   \
+    os_task_create(&name##_control, cb, name##_stack, sizeof(name##_stack), prio, argv); \
+    prio--;
 
-    #undef BEERTOS_MUTEX
-    #define BEERTOS_MUTEX(name, ...) \
-        os_tasks[prio] = &name##_control; \
-        os_tasks[prio]->priority = prio; \
-        os_tasks[prio]->ticks = 0U; \
-        os_tasks[prio]->sp = NULL; \
-        prio--;
+#undef BEERTOS_MUTEX
+#define BEERTOS_MUTEX(name, ...)      \
+    os_tasks[prio] = &name##_control; \
+    os_tasks[prio]->priority = prio;  \
+    os_tasks[prio]->ticks = 0U;       \
+    os_tasks[prio]->sp = NULL;        \
+    prio--;
 
-    #define BEERTOS_TASK_INIT_ALL() BEERTOS_TASK_LIST()
+#define BEERTOS_TASK_INIT_ALL() BEERTOS_TASK_LIST()
 
     os_task_create(&os_idle_task_control, BeeRTOS_Idle_Task, os_idle_task_stack, sizeof(os_idle_task_stack), 0U, NULL);
     BEERTOS_TRACE_TASK_CREATE(&os_idle_task_control, "IDLE", sizeof(os_idle_task_stack));
@@ -192,19 +191,19 @@ void os_task_module_init(void)
 
     /* X-Macro to call os_task_start for all tasks */
     uint8_t task_id = 1U;
-    #undef BEERTOS_TASK
-    #define BEERTOS_TASK(name, cb, stack, autostart, argv) \
-        if (true == autostart)                             \
-        {                                                  \
-            os_task_start(task_id);                        \
-        }                                                  \
-        task_id++;
+#undef BEERTOS_TASK
+#define BEERTOS_TASK(name, cb, stack, autostart, argv) \
+    if (true == autostart)                             \
+    {                                                  \
+        os_task_start(task_id);                        \
+    }                                                  \
+    task_id++;
 
-    #undef BEERTOS_MUTEX
-    #define BEERTOS_MUTEX(name, ...) \
-        task_id++;
+#undef BEERTOS_MUTEX
+#define BEERTOS_MUTEX(name, ...) \
+    task_id++;
 
-    #define BEERTOS_TASK_START_ALL() BEERTOS_TASK_LIST()
+#define BEERTOS_TASK_START_ALL() BEERTOS_TASK_LIST()
 
     BEERTOS_TASK_START_ALL();
 }
@@ -215,7 +214,7 @@ bool os_task_start(os_task_id_t task_id)
     BEERTOS_ASSERT(task_id < OS_TASK_MAX, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
     BEERTOS_ASSERT(task_id < 255U, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
 
-    os_disable_all_interrupts();
+    os_enter_critical_section();
 
     uint8_t priority = OS_TASK_MAX - task_id;
 
@@ -223,7 +222,7 @@ bool os_task_start(os_task_id_t task_id)
     BEERTOS_TASK_DELAY_CLEAR(priority);
     BEERTOS_TRACE_TASK_READY(os_tasks[priority]);
 
-    os_enable_all_interrupts();
+    os_leave_critical_section();
 
     return true;
 }
@@ -233,67 +232,67 @@ bool os_task_stop(os_task_id_t task_id)
     BEERTOS_ASSERT(task_id < OS_TASK_MAX, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
     BEERTOS_ASSERT(task_id < 255U, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
 
-    os_disable_all_interrupts();
+    os_enter_critical_section();
     uint8_t priority = OS_TASK_MAX - task_id;
 
     BEERTOS_TASK_STOP(priority);
     BEERTOS_TASK_DELAY_CLEAR(priority);
 
-    os_enable_all_interrupts();
+    os_leave_critical_section();
 
     return true;
 }
 
 void os_task_release(os_task_id_t task_id)
 {
-    os_disable_all_interrupts();
+    os_enter_critical_section();
 
     (void)os_task_start(task_id);
     os_sched();
 
-    os_enable_all_interrupts();
+    os_leave_critical_section();
 }
 
 void os_task_delete(void)
 {
-    os_disable_all_interrupts();
+    os_enter_critical_section();
 
     os_task_stop(OS_GET_TASK_ID_FROM_PRIORITY(os_task_current->priority));
     os_tasks[os_task_current->priority] = NULL;
     os_sched();
 
-    os_enable_all_interrupts();
+    os_leave_critical_section();
 }
 
 void os_delay_internal(uint32_t ticks, uint8_t module_id)
 {
-    os_disable_all_interrupts();
+    os_enter_critical_section();
 
     os_task_current->ticks = ticks;
     BEERTOS_TASK_DELAY_SET(os_task_current->priority);
     BEERTOS_TASK_STOP(os_task_current->priority);
 
-    switch(module_id)
+    switch (module_id)
     {
-        case OS_MODULE_ID_SEMAPHORE:
-            BEERTOS_TRACE_SEMAPHORE_BLOCKED(os_task_current);
-            break;
-        case OS_MODULE_ID_MESSAGE:
-            BEERTOS_TRACE_MESSAGE_BLOCKED(os_task_current);
-            break;
-        case OS_MODULE_ID_MUTEX:
-            BEERTOS_TRACE_MUTEX_BLOCKED(os_task_current);
-            break;
-        case OS_MODULE_ID_TASK:
-            BEERTOS_TRACE_TASK_DELAYED(os_task_current);
-            break;
-        default:
-            break;
+    case OS_MODULE_ID_SEMAPHORE:
+        BEERTOS_TRACE_SEMAPHORE_BLOCKED(os_task_current);
+        break;
+    case OS_MODULE_ID_MESSAGE:
+        BEERTOS_TRACE_MESSAGE_BLOCKED(os_task_current);
+        break;
+    case OS_MODULE_ID_MUTEX:
+        BEERTOS_TRACE_MUTEX_BLOCKED(os_task_current);
+        break;
+    case OS_MODULE_ID_TASK:
+        BEERTOS_TRACE_TASK_DELAYED(os_task_current);
+        break;
+    default:
+        break;
     }
 
     os_sched();
 
-    os_enable_all_interrupts();
+    os_leave_critical_section();
 }
 
 void os_delay(uint32_t ticks)
@@ -322,7 +321,7 @@ void os_task_tick(void)
 
 void os_sched(void)
 {
-    os_disable_all_interrupts();
+    os_enter_critical_section();
 
     if (os_ready_mask == 0U)
     {
@@ -343,5 +342,5 @@ void os_sched(void)
         os_port_context_switch();
     }
 
-    os_enable_all_interrupts();
+    os_leave_critical_section();
 }
