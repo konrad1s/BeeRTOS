@@ -113,7 +113,7 @@ bool os_semaphore_wait(const os_sem_id_t id, const uint32_t timeout)
     {
         /* Block the task and wait for the semaphore */
         sem->tasks_blocked |= (1U << (current_task_priority - 1U));
-        os_delay_internal(timeout, OS_MODULE_ID_SEMAPHORE);
+        os_delay(timeout);
 
         os_leave_critical_section();
         /* Potencial context switch is right here */

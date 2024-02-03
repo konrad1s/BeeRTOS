@@ -264,7 +264,7 @@ void os_task_delete(void)
     os_leave_critical_section();
 }
 
-void os_delay_internal(uint32_t ticks, uint8_t module_id)
+void os_delay(uint32_t ticks)
 {
     os_enter_critical_section();
 
@@ -272,32 +272,9 @@ void os_delay_internal(uint32_t ticks, uint8_t module_id)
     BEERTOS_TASK_DELAY_SET(os_task_current->priority);
     BEERTOS_TASK_STOP(os_task_current->priority);
 
-    switch (module_id)
-    {
-    case OS_MODULE_ID_SEMAPHORE:
-        BEERTOS_TRACE_SEMAPHORE_BLOCKED(os_task_current);
-        break;
-    case OS_MODULE_ID_MESSAGE:
-        BEERTOS_TRACE_MESSAGE_BLOCKED(os_task_current);
-        break;
-    case OS_MODULE_ID_MUTEX:
-        BEERTOS_TRACE_MUTEX_BLOCKED(os_task_current);
-        break;
-    case OS_MODULE_ID_TASK:
-        BEERTOS_TRACE_TASK_DELAYED(os_task_current);
-        break;
-    default:
-        break;
-    }
-
     os_sched();
 
     os_leave_critical_section();
-}
-
-void os_delay(uint32_t ticks)
-{
-    os_delay_internal(ticks, OS_MODULE_ID_TASK);
 }
 
 void os_task_tick(void)

@@ -73,7 +73,7 @@ static bool os_message_handle_timeout(os_message_t *msg,
     /* Mark the task as waiting */
     *waiting_tasks |= (1U << (current_task_priority - 1U));
 
-    os_delay_internal(timeout, OS_MODULE_ID_MESSAGE);
+    os_delay(timeout);
     /* Scheduler will be called by the delay function, enable interrupts to
        allow possible context switch */
     os_leave_critical_section();
