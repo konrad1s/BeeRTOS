@@ -61,11 +61,8 @@ void os_queue_reset(const os_queue_id_t id)
     BEERTOS_ASSERT(id < OS_MSG_QUEUE_ID_MAX,
                    OS_MODULE_ID_QUEUE,
                    OS_ERROR_INVALID_PARAM);
-    os_queue_t *const queue = &os_queues[id];
 
-    BEERTOS_ASSERT(queue != NULL,
-                   OS_MODULE_ID_QUEUE,
-                   OS_ERROR_NULLPTR);
+    os_queue_t *const queue = &os_queues[id];
 
     os_disable_all_interrupts();
 
@@ -120,10 +117,6 @@ bool os_queue_is_empty(const os_queue_id_t id)
 
     const os_queue_t *const queue = &os_queues[id];
 
-    BEERTOS_ASSERT(queue != NULL,
-                   OS_MODULE_ID_QUEUE,
-                   OS_ERROR_NULLPTR);
-
     os_disable_all_interrupts();
 
     /* Queue is empty if head and tail are equal and not full */
@@ -145,10 +138,6 @@ bool os_queue_push(const os_queue_id_t id, const void *const data, const uint32_
 
     bool ret = false;
     os_queue_t *const queue = &os_queues[id];
-
-    BEERTOS_ASSERT(queue != NULL,
-                   OS_MODULE_ID_QUEUE,
-                   OS_ERROR_NULLPTR);
 
     os_disable_all_interrupts();
 
@@ -180,10 +169,6 @@ bool os_queue_pop(const os_queue_id_t id, void *const data, const uint32_t len)
 
     uint8_t ret = false;
     os_queue_t *const queue = &os_queues[id];
-
-    BEERTOS_ASSERT(queue != NULL,
-                   OS_MODULE_ID_QUEUE,
-                   OS_ERROR_NULLPTR);
 
     os_disable_all_interrupts();
 

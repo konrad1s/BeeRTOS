@@ -63,7 +63,7 @@ void os_message_module_init(void);
  * @return true - message sent successfully in the given timeout
  *         false - message not sent
  */
-bool os_message_send(os_message_id_t id, void *data, uint32_t timeout);
+bool os_message_send(const os_message_id_t id, const void *const data, const uint32_t timeout);
 
 /**
  * @brief This function receives a message from the specified message queue.
@@ -75,6 +75,6 @@ bool os_message_send(os_message_id_t id, void *data, uint32_t timeout);
  * @return true - message received successfully in the given timeout
  *         false - message not received
  */
-bool os_message_receive(os_message_id_t id, void *data, uint32_t timeout);
+bool os_message_receive(const os_message_id_t id, void *const data, const uint32_t timeout);
 
 #endif /* __BEERTOS_MESSAGE_H__ */
