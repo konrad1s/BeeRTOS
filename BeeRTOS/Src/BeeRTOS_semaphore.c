@@ -152,6 +152,8 @@ bool os_semaphore_signal(const os_sem_id_t id)
     }
     else
     {
+        /* If semaphore is counting, or binary and not signaled
+           increment the count */
         if (!sem->count ||
 #if (BEERTOS_SEMAPHORE_COUNTING_USED == true)
             sem->type == SEMAPHORE_TYPE_COUNTING
