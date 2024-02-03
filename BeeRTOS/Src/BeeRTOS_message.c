@@ -67,9 +67,10 @@ static bool os_message_handle_timeout(os_message_t *msg,
     os_task_mask_t *waiting_tasks = is_send_operation ? &msg->send_waiting_tasks : &msg->receive_waiting_tasks;
     bool (*queue_op)(uint32_t, const void *, uint32_t) = is_send_operation ? os_queue_push : os_queue_pop;
     const uint32_t id = msg - os_messages;
+    const uint8_t current_task_priority = os_get_current_task()->priority;
 
     /* Mark the task as waiting */
-    *waiting_tasks |= (1U << (os_get_current_task()->priority - 1U));
+    *waiting_tasks |= (1U << (current_task_priority - 1U));
 
     os_delay_internal(timeout, OS_MODULE_ID_MESSAGE);
     /* Scheduler will be called by the delay function, enable interrupts to
@@ -83,7 +84,7 @@ static bool os_message_handle_timeout(os_message_t *msg,
     bool operation_success = queue_op(id + BEERTOS_QUEUE_ID_MAX, data, msg->item_size);
 
     /* Clear the waiting bit */
-    *waiting_tasks &= ~(1U << (os_get_current_task()->priority - 1U));
+    *waiting_tasks &= ~(1U << (current_task_priority - 1U));
 
     return operation_success;
 }

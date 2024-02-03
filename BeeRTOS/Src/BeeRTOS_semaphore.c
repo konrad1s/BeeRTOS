@@ -69,6 +69,16 @@ static inline void os_semaphore_init(os_sem_t *const sem,
     sem->type = type;
 }
 
+static void os_sem_unlock_waiting_task(os_sem_t *const sem)
+{
+    /* There are tasks blocked on the semaphore, release the highest priority one */
+    const os_task_id_t highest_prio_task = OS_GET_HIGHEST_PRIO_TASK_FROM_MASK(sem->tasks_blocked);
+    os_task_t *const task = os_tasks[highest_prio_task];
+
+    sem->tasks_blocked &= ~(1U << (task->priority - 1U));
+    os_task_release(OS_GET_TASK_ID_FROM_PRIORITY(task->priority));
+}
+
 void os_semaphore_module_init(void)
 {
     /*! X-Macro to call os_semaphore_init for all semaphores */
@@ -87,69 +97,76 @@ bool os_semaphore_wait(const os_sem_id_t id, const uint32_t timeout)
                    OS_MODULE_ID_SEMAPHORE,
                    OS_ERROR_INVALID_PARAM);
 
-    os_sem_t *sem = &semaphores[id];
+    bool s_got = true;
+    os_sem_t *const sem = &semaphores[id];
+    const uint8_t current_task_priority = os_get_current_task()->priority;
 
     os_disable_all_interrupts();
 
     if (sem->count > 0U)
     {
+        /* Decrement the semaphore count, s_got is true */
         sem->count--;
-        os_enable_all_interrupts();
-        return true;
     }
     else if (0U != timeout)
     {
-        sem->tasks_blocked |= (1U << os_get_current_task()->priority - 1U);
-        os_enable_all_interrupts();
-
+        /* Block the task and wait for the semaphore */
+        sem->tasks_blocked |= (1U << (current_task_priority - 1U));
         os_delay_internal(timeout, OS_MODULE_ID_SEMAPHORE);
 
-        os_disable_all_interrupts();
-        bool task_released = (sem->tasks_blocked & (1U << os_get_current_task()->priority - 1U)) == 0U;
-        sem->tasks_blocked &= ~(1U << os_get_current_task()->priority - 1U);
         os_enable_all_interrupts();
+        /* Potencial context switch is right here */
+        os_disable_all_interrupts();
 
-        return task_released;
+        /* Check if the task was unblocked by the semaphore */
+        s_got = (sem->tasks_blocked & (1U << (current_task_priority - 1U))) == 0U;
+        /* Clear the waiting bit */
+        sem->tasks_blocked &= ~(1U << (current_task_priority - 1U));
+    }
+    else
+    {
+        /* There is no timeout and the semaphore is not available */
+        s_got = false;
     }
 
     os_enable_all_interrupts();
 
-    return false;
+    return s_got;
 }
 
 bool os_semaphore_signal(const os_sem_id_t id)
 {
-    BEERTOS_ASSERT(id < BEERTOS_SEMAPHORE_ID_MAX, OS_MODULE_ID_SEMAPHORE, OS_ERROR_INVALID_PARAM);
+    BEERTOS_ASSERT(id < BEERTOS_SEMAPHORE_ID_MAX,
+                   OS_MODULE_ID_SEMAPHORE,
+                   OS_ERROR_INVALID_PARAM);
 
-    bool ret = true;
-    os_sem_t *sem = &semaphores[id];
+    bool s_signaled = true;
+    os_sem_t *const sem = &semaphores[id];
 
     os_disable_all_interrupts();
 
     if (sem->tasks_blocked > 0U)
     {
-        os_task_t *task = os_tasks[OS_GET_HIGHEST_PRIO_TASK_FROM_MASK(sem->tasks_blocked)];
-        sem->tasks_blocked &= ~(1U << (task->priority - 1U));
-        os_task_release(OS_GET_TASK_ID_FROM_PRIORITY(task->priority));
+        os_sem_unlock_waiting_task(sem);
     }
     else
     {
-#if (BEERTOS_SEMAPHORE_COUNTING_USED == true)
-        if ((SEMAPHORE_TYPE_BINARY == sem->type) &&
-            (sem->count > 0U))
-        {
-            ret = false;
-        }
-        else
+        if (!sem->count ||
+    #if (BEERTOS_SEMAPHORE_COUNTING_USED == true)
+            sem->type == SEMAPHORE_TYPE_COUNTING
+    #endif
+        )
         {
             sem->count++;
         }
-#else
-        ret = false;
-#endif
+        else
+        {
+            /* Binary semaphore is already signaled */
+            s_signaled = false;
+        }
     }
 
     os_enable_all_interrupts();
 
-    return ret;
+    return s_signaled;
 }
