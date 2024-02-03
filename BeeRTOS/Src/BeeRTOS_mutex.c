@@ -111,6 +111,8 @@ bool os_mutex_lock(const os_mutex_id_t id, const uint32_t timeout)
 
         /* Start the priority ceiling task */
         os_task_start(OS_GET_TASK_ID_FROM_PRIORITY((*mutex->pcp_task)->priority));
+        BEERTOS_TRACE_MUTEX_PRIORITY_INHERITANCE(current_task,
+                                                 current_task->priority);
         os_sched();
     }
     else if (mutex->owner == current_task)
@@ -174,6 +176,8 @@ void os_mutex_unlock(const os_mutex_id_t id)
             current_task->priority = mutex->owner_priority;
             mutex->owner = NULL;
             os_task_stop(OS_GET_TASK_ID_FROM_PRIORITY(mutex->pcp_priority));
+            BEERTOS_TRACE_MUTEX_PRIORITY_RESTORE(current_task,
+                                                 current_task->priority);
             os_sched();
 
             /* We should check here if there are tasks blocked on the mutex,

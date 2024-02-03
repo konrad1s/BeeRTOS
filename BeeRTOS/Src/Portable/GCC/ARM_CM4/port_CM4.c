@@ -44,7 +44,7 @@ extern os_task_t *volatile os_task_next;
 /******************************************************************************************
 *                                        FUNCTIONS                                       *
 ******************************************************************************************/
-void test(void)
+void os_context_switched_cb(void)
 {
     BEERTOS_TRACE_TASK_SWITCHED(os_task_next);
 }
@@ -88,7 +88,7 @@ void PendSV_Handler(void)
 
     #ifdef BEERTOS_TRACE_TASK_SWITCHED
         "stmdb          sp!, {r4-r11, lr}       \n"
-        "bl             test                    \n"
+        "bl             os_context_switched_cb  \n"
         "ldmia          sp!, {r4-r11, lr}       \n"
     #endif /* BEERTOS_TRACE_TASK_SWITCHED */
 

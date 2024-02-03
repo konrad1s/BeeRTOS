@@ -51,13 +51,22 @@
 #define BEERTOS_TRACE_SEMAPHORE_BLOCKED(task) \
     SEGGER_SYSVIEW_OnTaskStopReady((uint32_t)task, 1U)
 
+/*! @brief Records a task unblocked event when a task is unblocked from a semaphore */
+#define BEERTOS_TRACE_SEMAPHORE_UNBLOCKED(task) {}
+
 /*! @brief Records a task blocked event when a task is blocked waiting for a message */
 #define BEERTOS_TRACE_MESSAGE_BLOCKED(task) \
     SEGGER_SYSVIEW_OnTaskStopReady((uint32_t)task, 2U)
 
+/*! @brief Records a task unblocked event when a task is unblocked from a message */
+#define BEERTOS_TRACE_MESSAGE_UNBLOCKED(task) {}
+
 /*! @brief Records a task blocked event when a task is blocked waiting for a mutex */
 #define BEERTOS_TRACE_MUTEX_BLOCKED(task) \
     SEGGER_SYSVIEW_OnTaskStopReady((uint32_t)task, 3U)
+
+/*! @brief Records a task unblocked event when a task is unblocked from a mutex */
+#define BEERTOS_TRACE_MUTEX_UNBLOCKED(task) {}
 
 /*! @brief Records a priority inheritance event when 
  * a task temporarily inherits the priority of an another task */

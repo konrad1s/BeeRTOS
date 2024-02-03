@@ -271,6 +271,7 @@ void os_delay(uint32_t ticks)
     os_task_current->ticks = ticks;
     BEERTOS_TASK_DELAY_SET(os_task_current->priority);
     BEERTOS_TASK_STOP(os_task_current->priority);
+    BEERTOS_TRACE_TASK_DELAYED(os_task_current);
 
     os_sched();
 

@@ -10,6 +10,7 @@
 #include "BeeRTOS_semaphore.h"
 #include "BeeRTOS_task.h"
 #include "BeeRTOS_assert.h"
+#include "BeeRTOS_trace_cfg.h"
 
 /******************************************************************************************
  *                                         DEFINES                                        *
@@ -78,6 +79,7 @@ static void os_sem_unlock_waiting_task(os_sem_t *const sem)
 
     sem->tasks_blocked &= ~(1U << (task->priority - 1U));
     os_task_release(OS_GET_TASK_ID_FROM_PRIORITY(task->priority));
+    BEERTOS_TRACE_SEMAPHORE_UNBLOCKED(task);
 }
 
 void os_semaphore_module_init(void)
@@ -114,6 +116,7 @@ bool os_semaphore_wait(const os_sem_id_t id, const uint32_t timeout)
         /* Block the task and wait for the semaphore */
         sem->tasks_blocked |= (1U << (current_task_priority - 1U));
         os_delay(timeout);
+        BEERTOS_TRACE_SEMAPHORE_BLOCKED(os_task_current);
 
         os_leave_critical_section();
         /* Potencial context switch is right here */

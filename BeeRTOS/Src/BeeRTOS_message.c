@@ -15,6 +15,7 @@
 #include "BeeRTOS_assert.h"
 #include "BeeRTOS_task.h"
 #include "BeeRTOS_queue.h"
+#include "BeeRTOS_trace_cfg.h"
 #include <string.h>
 
 /******************************************************************************************
@@ -58,6 +59,7 @@ static void os_message_release_waiting_task(os_task_mask_t *const task_mask)
     *task_mask &= ~(1U << (task->priority - 1U));
     /* Release the task */
     os_task_release(OS_GET_TASK_ID_FROM_PRIORITY(task->priority));
+    BEERTOS_TRACE_MESSAGE_UNBLOCKED(task);
 }
 
 static bool os_message_handle_timeout(os_message_t *msg,
@@ -74,6 +76,7 @@ static bool os_message_handle_timeout(os_message_t *msg,
     *waiting_tasks |= (1U << (current_task_priority - 1U));
 
     os_delay(timeout);
+    BEERTOS_TRACE_MESSAGE_BLOCKED(os_task_current);
     /* Scheduler will be called by the delay function, enable interrupts to
        allow possible context switch */
     os_leave_critical_section();
