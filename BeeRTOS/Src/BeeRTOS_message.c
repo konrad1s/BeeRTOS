@@ -40,6 +40,7 @@ typedef struct
 
 extern os_queue_t os_queues[OS_MSG_QUEUE_ID_MAX];
 extern os_task_t *os_tasks[OS_TASK_MAX];
+extern os_task_t *volatile os_task_current;
 
 /*! List of all messages */
 static os_message_t os_messages[OS_MESSAGE_ID_MAX];
@@ -67,7 +68,7 @@ static bool os_message_handle_timeout(os_message_t *msg,
     os_task_mask_t *waiting_tasks = is_send_operation ? &msg->send_waiting_tasks : &msg->receive_waiting_tasks;
     bool (*queue_op)(uint32_t, const void *, uint32_t) = is_send_operation ? os_queue_push : os_queue_pop;
     const uint32_t id = msg - os_messages;
-    const uint8_t current_task_priority = os_get_current_task()->priority;
+    const uint8_t current_task_priority = os_task_current->priority;
 
     /* Mark the task as waiting */
     *waiting_tasks |= (1U << (current_task_priority - 1U));

@@ -137,14 +137,6 @@ void os_task_release(os_task_id_t task_id);
 void os_task_delete(void);
 
 /**
- * @brief This function returns the current task (the task that is currently calling this function).
- * Used for mutexes/semaphores/queues and other functions that manage resources.
- *
- * @return os_task_t* - pointer to the current task
- */
-os_task_t *os_get_current_task(void);
-
-/**
  * @brief Delay the current task for the specified number of ticks.
  * After the specified number of ticks, the task will be ready to run again.
  * After calling this function, the scheduler is called to switch context to another task.

@@ -60,7 +60,6 @@ void os_init(void)
     os_message_module_init();
 #endif
 
-
     os_cpu_init();
 
     BEERTOS_TRACE_INIT();

@@ -265,11 +265,6 @@ void os_task_delete(void)
     os_enable_all_interrupts();
 }
 
-os_task_t *os_get_current_task(void)
-{
-    return os_task_current;
-}
-
 void os_delay_internal(uint32_t ticks, uint8_t module_id)
 {
     os_disable_all_interrupts();

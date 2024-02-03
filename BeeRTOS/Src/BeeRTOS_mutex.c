@@ -35,6 +35,7 @@ typedef struct
  ******************************************************************************************/
 
 extern os_task_t *os_tasks[OS_TASK_MAX];
+extern os_task_t *volatile os_task_current;
 
 /*! List of all mutexes */
 static os_mutex_t os_mutexes[BEERTOS_MUTEX_ID_MAX];
@@ -71,7 +72,7 @@ bool os_mutex_lock(const os_mutex_id_t id, const uint32_t timeout)
                    OS_ERROR_INVALID_PARAM);
 
     os_mutex_t *const mutex = &os_mutexes[id];
-    os_task_t *const current_task = os_get_current_task();
+    os_task_t *const current_task = os_task_current;
 
     /* The priority ceiling task must have a priority of all
        tasks that can lock the mutex, otherwise priority inversion,
@@ -150,7 +151,7 @@ void os_mutex_unlock(const os_mutex_id_t id)
                    OS_ERROR_INVALID_PARAM);
 
     os_mutex_t *const mutex = &os_mutexes[id];
-    os_task_t *const current_task = os_get_current_task();
+    os_task_t *const current_task = os_task_current;
 
     /* Only the owner of the mutex can unlock it */
     BEERTOS_ASSERT(mutex->owner == current_task,

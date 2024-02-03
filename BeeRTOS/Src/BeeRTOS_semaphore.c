@@ -43,6 +43,7 @@ typedef struct
  ******************************************************************************************/
 
 extern os_task_t *os_tasks[OS_TASK_MAX];
+extern os_task_t *volatile os_task_current;
 
 #undef BEERTOS_SEMAPHORE
 #define BEERTOS_SEMAPHORE(name, initial_count) \
@@ -99,7 +100,7 @@ bool os_semaphore_wait(const os_sem_id_t id, const uint32_t timeout)
 
     bool s_got = true;
     os_sem_t *const sem = &semaphores[id];
-    const uint8_t current_task_priority = os_get_current_task()->priority;
+    const uint8_t current_task_priority = os_task_current->priority;
 
     os_disable_all_interrupts();
 
