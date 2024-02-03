@@ -46,17 +46,17 @@ os_queue_t os_queues[OS_MSG_QUEUE_ID_MAX];
 /******************************************************************************************
  *                                        FUNCTIONS                                       *
  ******************************************************************************************/
-static inline bool os_queue_can_push(os_queue_t *queue, uint32_t len)
+static inline bool os_queue_can_push(const os_queue_t *const queue, const uint32_t len)
 {
     return ((!queue->full) && ((queue->size - queue->head + queue->tail) % queue->size <= len));
 }
 
-static inline bool os_queue_can_pop(os_queue_t *queue, uint32_t len)
+static inline bool os_queue_can_pop(const os_queue_t *const queue, const uint32_t len)
 {
     return ((queue->full) || (queue->size - queue->head + queue->tail) % queue->size >= len);
 }
 
-void os_queue_reset(os_queue_id_t id)
+void os_queue_reset(const os_queue_id_t id)
 {
     BEERTOS_ASSERT(id < OS_MSG_QUEUE_ID_MAX,
                    OS_MODULE_ID_QUEUE,
@@ -103,7 +103,7 @@ void os_queue_module_init(void)
     BEERTOS_MESSAGE_INIT_ALL();
 }
 
-bool os_queue_is_full(os_queue_id_t id)
+bool os_queue_is_full(const os_queue_id_t id)
 {
     BEERTOS_ASSERT(id < OS_MSG_QUEUE_ID_MAX,
                    OS_MODULE_ID_QUEUE,
@@ -112,7 +112,7 @@ bool os_queue_is_full(os_queue_id_t id)
     return os_queues[id].full;
 }
 
-bool os_queue_is_empty(os_queue_id_t id)
+bool os_queue_is_empty(const os_queue_id_t id)
 {
     BEERTOS_ASSERT(id < OS_MSG_QUEUE_ID_MAX,
                    OS_MODULE_ID_QUEUE,
@@ -134,7 +134,7 @@ bool os_queue_is_empty(os_queue_id_t id)
     return is_empty;
 }
 
-bool os_queue_push(os_queue_id_t id, void *data, uint32_t len)
+bool os_queue_push(const os_queue_id_t id, const void *const data, const uint32_t len)
 {
     BEERTOS_ASSERT(id < OS_MSG_QUEUE_ID_MAX,
                    OS_MODULE_ID_QUEUE,
@@ -169,7 +169,7 @@ bool os_queue_push(os_queue_id_t id, void *data, uint32_t len)
     return ret;
 }
 
-bool os_queue_pop(os_queue_id_t id, void *data, uint32_t len)
+bool os_queue_pop(const os_queue_id_t id, void *const data, const uint32_t len)
 {
     BEERTOS_ASSERT(id < OS_MSG_QUEUE_ID_MAX,
                    OS_MODULE_ID_QUEUE,

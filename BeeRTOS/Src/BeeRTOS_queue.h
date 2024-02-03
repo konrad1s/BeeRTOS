@@ -70,7 +70,7 @@ void os_queue_module_init(void);
  * @param id - queue id
  * @return None
  */
-void os_queue_reset(os_queue_id_t id);
+void os_queue_reset(const os_queue_id_t id);
 
 /**
  * @brief The function checks whether a specific queue is full.
@@ -79,7 +79,7 @@ void os_queue_reset(os_queue_id_t id);
  * @return true if the queue is full and cannot accept any more data
  *         false otherwise
  */
-bool os_queue_is_full(os_queue_id_t id);
+bool os_queue_is_full(const os_queue_id_t id);
 
 /**
  * @brief The function checks whether a specific queue is empty.
@@ -88,7 +88,7 @@ bool os_queue_is_full(os_queue_id_t id);
  * @return true if the queue is empty and cannot provide any more data
  *         false otherwise
  */
-bool os_queue_is_empty(os_queue_id_t id);
+bool os_queue_is_empty(const os_queue_id_t id);
 
 /**
  * @brief The function pushes data to a specific queue.
@@ -100,7 +100,7 @@ bool os_queue_is_empty(os_queue_id_t id);
  * @return true if the data was successfully pushed to the queue
  *         false otherwise
  */
-bool os_queue_push(os_queue_id_t id, void *data, uint32_t len);
+bool os_queue_push(const os_queue_id_t id, const void *const data, const uint32_t len);
 
 /**
  * @brief The function pops data from a specific queue.
@@ -112,6 +112,6 @@ bool os_queue_push(os_queue_id_t id, void *data, uint32_t len);
  * @return true if the data was successfully popped from the queue
  *         false otherwise
  */
-bool os_queue_pop(os_queue_id_t id, void *data, uint32_t len);
+bool os_queue_pop(const os_queue_id_t id, void *const data, const uint32_t len);
 
 #endif /* __BEERTOS_QUEUE_H__ */
