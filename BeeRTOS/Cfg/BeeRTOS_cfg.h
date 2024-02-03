@@ -3,8 +3,8 @@
  * @file 
  * ****************************************************************************************/
 
-#ifndef __BEE_RTOS_TASK_CFG_H__
-#define __BEE_RTOS_TASK_CFG_H__
+#ifndef __BEERTOS_CFG_H__
+#define __BEERTOS_CFG_H__
 
 /******************************************************************************************
  *                                        INCLUDES                                        *
@@ -14,13 +14,19 @@
  *                                         DEFINES                                        *
  ******************************************************************************************/
 
+/*! Enable/Disable OS features */
+#define BEERTOS_ALARM_MODULE_EN     (true)
+#define BEERTOS_MESSAGE_MODULE_EN   (true)
+#define BEERTOS_QUEUE_MODULE_EN     (true)
+#define BEERTOS_MUTEX_MODULE_EN     (true)
+#define BEERTOS_SEMAPHORE_MODULE_EN (true)
+
 /* Stack size of the idle task in bytes - if callbacks not used you can set 16 bytes */
 #define BEERTOS_IDLE_TASK_STACK_SIZE    (64U)
 /* Callback when idle task is initialized (before entering the idle loop) */
 #define BEERTOS_IDLE_TASK_INIT_CB()     {}
 /* Callback when idle task is running (in the idle loop) */
 #define BEERTOS_IDLE_TASK_CB()          {}
-
 
 /* Enable this option to use the stack overflow detection feature. 
  * When tasks is created, the stack is filled with a pattern. Each context switch
@@ -84,6 +90,70 @@
     BEERTOS_TASK(OS_TASK_MSG_2, ut_task_msg_2, 128, false, NULL)            \
     BEERTOS_TASK(OS_TASK_MSG_1, ut_task_msg_1, 128, false, NULL)
 
+/*! @brief BeeRTOS message list - define your messages here
+ * Messages are more specific than queues, they can store only one type of data
+ * Messages in BeeRTOS are implemented as circular buffers, if message is full, new elements
+ * will not overwrite old ones, task will be delayed until there is space in message, or
+ * timeout occurs.
+ *
+ * Structure: OS_MESSAGE(message_id, messages_count, message_size)
+ * @param message_id - message id (created in os_message_id_t enum), must be unique
+ * @param messages_count - number of messages that can be stored in queue
+ * @param message_size - size of single message in bytes
+ */
+#define OS_MESSAGES_LIST()              \
+    OS_MESSAGE(MESSAGE_ONE,   2,  8)    \
+    OS_MESSAGE(MESSAGE_TWO,   10, 4)    \
+    OS_MESSAGE(MESSAGE_THREE, 10, 4)
+
+/*! @brief BeeRTOS queue list - define your queues here
+ *  Queues are more general than messages, they can store any type of data
+ *  There can be pushed any number of elements to queue, as long as queue is not full.
+ *  There can be popped any number of elements from queue, as long as queue is not empty.
+ *  Queues in BeeRTOS are implemented as circular buffers, if queue is full, new elements
+ *  will not overwrite old ones, but will be discarded without task delay.
+ * 
+ *  Structure: OS_QUEUE(queue_id, queue size)
+ * @param queue_id - queue id (created in os_queue_id_t enum), must be unique
+ * @param queue size - queue size in bytes - maximum number of elements that can be stored in queue
+ */
+#define BEERTOS_QUEUE_LIST()    \
+    OS_QUEUE(QUEUE_1, 10U)      \
+    OS_QUEUE(QUEUE_2, 10U)      \
+
+/*! @brief BeeRTOS semaphore list - define your semaphores here
+ * Semaphores are used to synchronize tasks and to protect shared resources from being
+ * accessed by more than one task at the same time. Semaphores can be used to implement
+ * mutual exclusion, but mutexes are preferred for this purpose. Semaphores do not implement
+ * priority inheritance. Semaphores can be used for signaling between tasks.
+ * 
+ * Structure: BEERTOS_SEMAPHORE(semaphore_id, initial_count, type)
+ * @param semaphore_id - semaphore id (created in os_semaphore_id_t enum), must be unique
+ * @param initial_count - initial count of the semaphore
+ * @param type - semaphore type (counting or binary)
+ */
+#define BEERTOS_SEMAPHORE_LIST()               \
+    BEERTOS_SEMAPHORE(SEMAPHORE_UT1,     10U,   SEMAPHORE_TYPE_COUNTING) \
+    BEERTOS_SEMAPHORE(SEMAPHORE_UT2,     0U,    SEMAPHORE_TYPE_BINARY)   \
+    BEERTOS_SEMAPHORE(SEMAPHORE_TWO,     0U,    SEMAPHORE_TYPE_BINARY)
+
+/*!
+ *  @brief Define your alarms here
+ *  @note Structure: BEERTOS_ALARM(alarm_id, callback, autostart, default_period, periodic)
+ * 
+ *  @param alarm_id - alarm id (created in os_alarm_id_t enum), must be unique
+ *  @param callback - callback function to be called when alarm expires
+ *  @param autostart - if TRUE, alarm will be started automatically after OS initialization
+ *  @param default_period - default alarm period in ticks, set only if autostart is TRUE,
+ *                          otherwise use os_alarm_start with period parameter
+ *  @param periodic - if TRUE, alarm will be periodic, otherwise it will be one-shot,
+ *                    set only if autostart is TRUE, otherwise use os_alarm_start with periodic parameter
+ */
+#define BEERTOS_ALARM_LIST() \
+    BEERTOS_ALARM(ALARM_ONE,      alarm1_callback, false, 0U, false) \
+    BEERTOS_ALARM(ALARM_TWO,      alarm2_callback, false, 0U, false) \
+    BEERTOS_ALARM(ALARM_THREE,    alarm3_callback, false, 0U, false)
+
 /******************************************************************************************
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
@@ -95,6 +165,7 @@
 /******************************************************************************************
  *                                   FUNCTION PROTOTYPES                                  *
  ******************************************************************************************/
+
 extern void ut_beertos_main_task(void *arg);
 
 extern void ut_task_priority_lowest(void *arg);
@@ -108,4 +179,8 @@ extern void ut_task_mutex_3(void *arg);
 extern void ut_task_msg_1(void *arg);
 extern void ut_task_msg_2(void *arg);
 
-#endif /* __BEE_RTOS_TASK_CFG_H__ */
+extern void alarm1_callback(void);
+extern void alarm2_callback(void);
+extern void alarm3_callback(void);
+
+#endif /* __BEERTOS_CFG_H__ */

@@ -14,7 +14,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include "os_portable.h"
-#include "BeeRTOS_general_cfg.h"
+#include "BeeRTOS_cfg.h"
 
 /******************************************************************************************
  *                                         DEFINES                                        *
