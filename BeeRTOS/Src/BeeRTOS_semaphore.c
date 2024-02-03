@@ -55,7 +55,9 @@ static os_sem_t semaphores[BEERTOS_SEMAPHORE_ID_MAX];
  *                                        FUNCTIONS                                       *
  ******************************************************************************************/
 
-static inline void os_semaphore_init(os_sem_t *sem, uint32_t count, os_sem_type_t type)
+static inline void os_semaphore_init(os_sem_t *const sem,
+                                     const uint32_t count,
+                                     const os_sem_type_t type)
 {
     BEERTOS_ASSERT(sem != NULL, OS_MODULE_ID_SEMAPHORE, OS_ERROR_NULLPTR);
     BEERTOS_ASSERT((type == SEMAPHORE_TYPE_BINARY && count <= 1U) || (type == SEMAPHORE_TYPE_COUNTING),
@@ -67,9 +69,6 @@ static inline void os_semaphore_init(os_sem_t *sem, uint32_t count, os_sem_type_
     sem->type = type;
 }
 
-/**
- * @brief Initialize semaphores
- */
 void os_semaphore_module_init(void)
 {
     /*! X-Macro to call os_semaphore_init for all semaphores */
@@ -82,17 +81,11 @@ void os_semaphore_module_init(void)
     BEERTOS_SEMPAPHORES_INIT();
 }
 
-/**
- * @brief Wait for semaphore
- *
- * @param id - semaphore id
- * @param timeout - maximum time to wait for semaphore
- *
- * @return true if semaphore was acquired, false if timeout occured
- */
-bool os_semaphore_wait(os_sem_id_t id, uint32_t timeout)
+bool os_semaphore_wait(const os_sem_id_t id, const uint32_t timeout)
 {
-    BEERTOS_ASSERT(id < BEERTOS_SEMAPHORE_ID_MAX, OS_MODULE_ID_SEMAPHORE, OS_ERROR_INVALID_PARAM);
+    BEERTOS_ASSERT(id < BEERTOS_SEMAPHORE_ID_MAX,
+                   OS_MODULE_ID_SEMAPHORE,
+                   OS_ERROR_INVALID_PARAM);
 
     os_sem_t *sem = &semaphores[id];
 
@@ -104,22 +97,19 @@ bool os_semaphore_wait(os_sem_id_t id, uint32_t timeout)
         os_enable_all_interrupts();
         return true;
     }
-    else
+    else if (0U != timeout)
     {
-        if (0U != timeout)
-        {
-            sem->tasks_blocked |= (1U << os_get_current_task()->priority - 1U);
-            os_enable_all_interrupts();
+        sem->tasks_blocked |= (1U << os_get_current_task()->priority - 1U);
+        os_enable_all_interrupts();
 
-           os_delay_internal(timeout, OS_MODULE_ID_SEMAPHORE);
+        os_delay_internal(timeout, OS_MODULE_ID_SEMAPHORE);
 
-            os_disable_all_interrupts();
-            bool task_released = (sem->tasks_blocked & (1U << os_get_current_task()->priority - 1U)) == 0U;
-            sem->tasks_blocked &= ~(1U << os_get_current_task()->priority - 1U);
-            os_enable_all_interrupts();
+        os_disable_all_interrupts();
+        bool task_released = (sem->tasks_blocked & (1U << os_get_current_task()->priority - 1U)) == 0U;
+        sem->tasks_blocked &= ~(1U << os_get_current_task()->priority - 1U);
+        os_enable_all_interrupts();
 
-            return task_released;
-        }
+        return task_released;
     }
 
     os_enable_all_interrupts();
@@ -127,14 +117,7 @@ bool os_semaphore_wait(os_sem_id_t id, uint32_t timeout)
     return false;
 }
 
-/**
- * @brief Signal semaphore
- *
- * @param id - semaphore id
- *
- * @return true if semaphore was signaled, false otherwise
- */
-bool os_semaphore_signal(os_sem_id_t id)
+bool os_semaphore_signal(const os_sem_id_t id)
 {
     BEERTOS_ASSERT(id < BEERTOS_SEMAPHORE_ID_MAX, OS_MODULE_ID_SEMAPHORE, OS_ERROR_INVALID_PARAM);
 
