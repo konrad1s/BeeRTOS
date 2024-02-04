@@ -64,6 +64,19 @@ static os_alarm_active_mask_t os_alarm_pending_mask;
 /******************************************************************************************
  *                                        FUNCTIONS                                       *
  ******************************************************************************************/
+static void os_alarm_init(os_alarm_t *const alarm,
+                          const uint32_t period,
+                          const bool periodic,
+                          void (*callback)(void))
+{
+    BEERTOS_ASSERT(callback != NULL, OS_MODULE_ID_ALARM, OS_ERROR_NULLPTR);
+
+    alarm->period = period;
+    alarm->periodic = periodic;
+    alarm->callback = callback;
+    alarm->remaining_time = 0U;
+}
+
 void os_alarm_module_init(void)
 {
     os_alarm_active_mask = 0U;
@@ -72,21 +85,14 @@ void os_alarm_module_init(void)
     /*! X-Macro to initialize all alarms */
     #undef BEERTOS_ALARM
     #define BEERTOS_ALARM(name, _callback, _autostart, _period, _periodic)  \
-        BEERTOS_ASSERT(_callback != NULL,                                   \
-                       OS_MODULE_ID_ALARM,                                  \
-                       OS_ERROR_NULLPTR);                                   \
-        os_alarms[name].period = _period;                                   \
-        os_alarms[name].periodic = _periodic;                               \
-        os_alarms[name].callback = _callback;                               \
-        os_alarms[name].remaining_time = 0U;                                \
+        os_alarm_init(&os_alarms[name], _period, _periodic, _callback);     \
         if (true == _autostart)                                             \
         {                                                                   \
             os_alarm_start(name, _period, _periodic);                       \
         }
     
-    #define BEERTOS_ALARMS_INIT_ALL() BEERTOS_ALARM_LIST()
-
-    BEERTOS_ALARMS_INIT_ALL();
+    #define OS_ALARM_INIT_ALL() BEERTOS_ALARM_LIST()
+    OS_ALARM_INIT_ALL();
 }
 
 void os_alarm_start(const os_alarm_id_t alarm_id, const uint32_t period, const bool periodic)
