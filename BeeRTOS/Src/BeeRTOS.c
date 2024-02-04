@@ -103,5 +103,9 @@ void os_tick(void)
 
 uint32_t os_get_tick_count(void)
 {
-    return os_tick_counter;
+    os_enter_critical_section();
+    uint32_t tick_count = os_tick_counter;
+    os_leave_critical_section();
+
+    return tick_count;
 }

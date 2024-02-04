@@ -175,7 +175,7 @@ void os_alarm_tick(void)
     os_leave_critical_section();
 }
 
-void os_alarm_task(void *arg)
+void os_alarm_task(void *const arg)
 {
     (void)arg;
 
