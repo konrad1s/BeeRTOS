@@ -109,7 +109,7 @@ void os_task_module_init(void);
  * @param task_id - id of the task to be started
  * @return None
  */
-bool os_task_start(os_task_id_t task_id);
+bool os_task_start(const os_task_id_t task_id);
 
 /**
  * @brief This function stops the specified task.
@@ -117,7 +117,7 @@ bool os_task_start(os_task_id_t task_id);
  * @param task_id - id of the task to be stopped
  * @return None
  */
-bool os_task_stop(os_task_id_t task_id);
+bool os_task_stop(const os_task_id_t task_id);
 
 /**
  * @brief Release the task that was previously suspended (for example by a mutex or a semaphore)
@@ -125,7 +125,7 @@ bool os_task_stop(os_task_id_t task_id);
  *
  * @param task_id - id of the task to be released
  */
-void os_task_release(os_task_id_t task_id);
+void os_task_release(const os_task_id_t task_id);
 
 /**
  * @brief This function deletes (removes from scheduler) the current task.
@@ -147,7 +147,7 @@ void os_task_delete(void);
  * @param ticks - number of ticks to delay, must be > 0
  * @return None
  */
-void os_delay(uint32_t ticks);
+void os_delay(const uint32_t ticks);
 
 /**
  * @brief Process ticks for all tasks. This function is called by the system tick handler.
