@@ -73,7 +73,7 @@
  * @param mutex_id - mutex id (created in os_mutex_id_t enum), must be unique
  * @param initial_count - initial count of the mutex
  */
-#define BEERTOS_TASK_LIST()                                                 \
+#define BEERTOS_PRIORITY_LIST()                                             \
     BEERTOS_TASK(OS_TASK_UT_MAIN, ut_beertos_main_task, 128, true, NULL)    \
     BEERTOS_ALARM_TASK(OS_ALARM_TASK, 128)                                  \
     /* Priority test tasks */                                               \

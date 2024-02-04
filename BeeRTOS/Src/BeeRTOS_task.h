@@ -49,11 +49,11 @@ typedef void (*os_task_handler)(void *args);
 #define BEERTOS_TASK(task_name, ...) task_name,
 #define BEERTOS_MUTEX(task_name, ...) PRIO_CELLING_TASK_##task_name,
 #define BEERTOS_ALARM_TASK(task_name, ...) task_name,
-/*! Task IDs - generated from BEERTOS_TASK_LIST() in BeeRTOS_task_cfg.h */
+/*! Task IDs - generated from BEERTOS_PRIORITY_LIST() in BeeRTOS_task_cfg.h */
 typedef enum
 {
     OS_TASK_IDLE = 0, /* Reserved for idle task! */
-    BEERTOS_TASK_LIST()
+    BEERTOS_PRIORITY_LIST()
     OS_TASK_MAX
 } os_task_id_t;
 
@@ -65,7 +65,7 @@ typedef enum
 #define BEERTOS_ALARM_TASK(...) +1U
 /*! Returns the number of tasks, OS_TASK_MAX cannot be used in preprocessor expressions,
     because enum is known only after the preprocessor is done */
-#define OS_TASK_COUNT (1U + BEERTOS_TASK_LIST())
+#define OS_TASK_COUNT (1U + BEERTOS_PRIORITY_LIST())
 
 /*! Check and select the proper mask type for the number of configured tasks */
 #if OS_TASK_COUNT <= 8U

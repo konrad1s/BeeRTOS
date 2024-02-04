@@ -27,7 +27,7 @@
 #undef BEERTOS_ALARM_TASK
 #define BEERTOS_ALARM_TASK(...)
 
-#define BEERTOS_MUTEX_LIST() BEERTOS_TASK_LIST()
+#define BEERTOS_MUTEX_LIST() BEERTOS_PRIORITY_LIST()
 
 /*! Mutex IDs - generated from BEERTOS_MUTEX_LIST() in BeeRTOS_mutex_cfg.h */
 typedef enum 

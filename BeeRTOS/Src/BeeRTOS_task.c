@@ -42,7 +42,7 @@
 #define BEERTOS_ALARM_TASK(name, stack) \
     static os_stack_t name##_stack[stack];
 
-#define BEERTOS_STACK_VAR BEERTOS_TASK_LIST()
+#define BEERTOS_STACK_VAR BEERTOS_PRIORITY_LIST()
 
 static os_stack_t os_idle_task_stack[BEERTOS_IDLE_TASK_STACK_SIZE];
 BEERTOS_STACK_VAR;
@@ -58,7 +58,7 @@ BEERTOS_STACK_VAR;
 #define BEERTOS_ALARM_TASK(name, stack) \
     name##_stack,
 
-#define BEERTOS_STACK_PTR_VAR BEERTOS_TASK_LIST()
+#define BEERTOS_STACK_PTR_VAR BEERTOS_PRIORITY_LIST()
 
 static os_stack_t *task_stacks[] = {
     os_idle_task_stack,
@@ -75,7 +75,7 @@ static os_stack_t *task_stacks[] = {
 #define BEERTOS_ALARM_TASK(name, ...) \
     static os_task_t name##_control;
 
-#define BEERTOS_TASK_CONTROL_VAR BEERTOS_TASK_LIST()
+#define BEERTOS_TASK_CONTROL_VAR BEERTOS_PRIORITY_LIST()
 
 static os_task_t os_idle_task_control;
 BEERTOS_TASK_CONTROL_VAR;
@@ -156,7 +156,7 @@ static void os_task_create(os_task_t *task, os_task_handler task_handler,
     //         BEERTOS_TRACE_TASK_CREATE(task, #name, stack); \
     //     }
 
-    // #define BEERTOS_TASK_TRACE_INIT() BEERTOS_TASK_LIST()
+    // #define BEERTOS_TASK_TRACE_INIT() BEERTOS_PRIORITY_LIST()
     // BEERTOS_TASK_TRACE_INIT();
 }
 
@@ -196,7 +196,7 @@ void os_task_module_init(void)
     os_tasks[prio]->sp = NULL;        \
     prio--;
 
-#define BEERTOS_TASK_INIT_ALL() BEERTOS_TASK_LIST()
+#define BEERTOS_TASK_INIT_ALL() BEERTOS_PRIORITY_LIST()
 
     os_task_create(&os_idle_task_control, BeeRTOS_Idle_Task, os_idle_task_stack, sizeof(os_idle_task_stack), 0U, NULL);
     BEERTOS_TRACE_TASK_CREATE(&os_idle_task_control, "IDLE", sizeof(os_idle_task_stack));
@@ -221,7 +221,7 @@ void os_task_module_init(void)
 #define BEERTOS_ALARM_TASK(name, ...) \
     task_id++;
 
-#define BEERTOS_TASK_START_ALL() BEERTOS_TASK_LIST()
+#define BEERTOS_TASK_START_ALL() BEERTOS_PRIORITY_LIST()
 
     BEERTOS_TASK_START_ALL();
 }
