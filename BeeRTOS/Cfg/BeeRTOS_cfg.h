@@ -1,7 +1,14 @@
 /******************************************************************************************
- * @brief 
- * @file 
- * ****************************************************************************************/
+ * @brief Configuration Header for BeeRTOS
+ * @file BeeRTOS_cfg.h
+ * This configuration header file provides comprehensive settings for customizing the BeeRTOS
+ * operating system to fit specific application requirements. It allows for enabling or disabling
+ * various OS modules such as alarms, messages, queues, mutexes, and semaphores, configuring the
+ * system's task list including priorities, stack sizes, and auto-start options, and setting up
+ * other critical parameters like idle task stack size and stack overflow detection. Additionally,
+ * it defines the structure and initialization parameters for semaphores, queues, messages, and alarms
+ * within the system, offering a flexible framework for real-time multitasking applications.
+ ******************************************************************************************/
 
 #ifndef __BEERTOS_CFG_H__
 #define __BEERTOS_CFG_H__

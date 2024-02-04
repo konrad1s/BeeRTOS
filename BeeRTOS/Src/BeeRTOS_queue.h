@@ -1,7 +1,11 @@
 /******************************************************************************************
- * @brief OS queue header file
+ * @brief Header file for BeeRTOS queue management system
  * @file BeeRTOS_queue.h
- * ****************************************************************************************/
+ * This header file defines the interface for managing queues within BeeRTOS. Queues facilitate
+ * thread-safe communication between tasks via FIFO (First In, First Out) data structures. This
+ * file declares the structure for queues, enumerates queue identifiers, and provides prototypes
+ * for queue management functions including initialization, reset, and data push/pop operations.
+ ******************************************************************************************/
 
 #ifndef __BEERTOS_QUEUE_H__
 #define __BEERTOS_QUEUE_H__

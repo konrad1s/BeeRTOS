@@ -1,7 +1,14 @@
 /******************************************************************************************
- * @brief OS header file
+ * @brief Main header file for BeeRTOS
  * @file BeeRTOS.h
- * ****************************************************************************************/
+ * This header file provides the primary interface for interacting with the BeeRTOS operating
+ * system. It includes the interfaces for task management, alarms, semaphores, mutexes,
+ * messages, and queues, offering a comprehensive suite of functionalities for real-time
+ * multitasking applications. The file declares the initialization function for the operating
+ * system, functions for entering and leaving critical sections to ensure atomic operations,
+ * and a function to retrieve the current system tick count, which is essential for timing
+ * and delay operations within the OS.
+ ******************************************************************************************/
 
 #ifndef __BEERTOS_H__
 #define __BEERTOS_H__

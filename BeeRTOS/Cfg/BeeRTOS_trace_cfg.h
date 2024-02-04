@@ -1,7 +1,9 @@
 /******************************************************************************************
- * @brief BeeRTOS Trace Configuration File
- * @file  BeeRTOS_trace_cfg.h
- * ****************************************************************************************/
+ * @brief Trace Configuration Header for BeeRTOS
+ * @file BeeRTOS_trace_cfg.h
+ * This header file provides the configuration interface for real-time tracing in BeeRTOS,
+ * facilitating the monitoring of system behavior, task scheduling, and inter-task communication.
+ ******************************************************************************************/
 
 #ifndef __BEERTOS_TRACE_CFG_H__
 #define __BEERTOS_TRACE_CFG_H__

@@ -1,7 +1,13 @@
 /******************************************************************************************
- * @brief 
- * @file 
- * ****************************************************************************************/
+ * @brief Configuration Header for BeeRTOS Assertions
+ * @file BeeRTOS_assert_cfg.h
+ * This configuration header file allows for customization of the BeeRTOS assertion mechanism,
+ * including enabling an assertion history log to track recent assertion failures and defining
+ * a custom error handler for assertions. It supports the definition of application-specific
+ * error codes and module IDs to extend the assertion functionality beyond the OS internals,
+ * facilitating debugging and system integrity verification in both development and production
+ * environments.
+ ******************************************************************************************/
 
 #ifndef __BEERTOS_ASSERT_CFG_H__
 #define __BEERTOS_ASSERT_CFG_H__

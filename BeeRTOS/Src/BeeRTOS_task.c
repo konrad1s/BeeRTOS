@@ -1,7 +1,12 @@
 /******************************************************************************************
- * @brief OS task source file
+ * @brief Source file for BeeRTOS task management
  * @file BeeRTOS_task.c
- * ****************************************************************************************/
+ * This file implements the task management functionality for BeeRTOS, providing mechanisms
+ * for creating tasks, managing their execution state, and scheduling them based on priority.
+ * It includes operations for initializing tasks, starting and stopping tasks, delaying tasks,
+ * and processing system ticks to manage task delays and scheduling. The file also implements
+ * the idle task and supports task stack monitoring for detecting stack overflows.
+ ******************************************************************************************/
 
 /******************************************************************************************
  *                                        INCLUDES                                        *
@@ -49,7 +54,7 @@
 static os_stack_t os_idle_task_stack[BEERTOS_IDLE_TASK_STACK_SIZE];
 OS_CREATE_STACK_VAR();
 
-/* ****************************************************************************************** */
+/******************************************************************************************/
 
 #undef BEERTOS_TASK
 #undef BEERTOS_MUTEX
@@ -72,7 +77,7 @@ static os_stack_t *os_task_stacks[] =
     OS_CREATE_STACK_ARRAY()
 };
 
-/* ****************************************************************************************** */
+/******************************************************************************************/
 
 #undef BEERTOS_TASK
 #undef BEERTOS_MUTEX
@@ -91,7 +96,7 @@ static os_stack_t *os_task_stacks[] =
 static os_task_t os_idle_task_control;
 OS_CREATE_TASK_CONTROL_BLOCK();
 
-/* ****************************************************************************************** */
+/******************************************************************************************/
 
 /*! Pointer to the current task */
 os_task_t *volatile os_task_current;

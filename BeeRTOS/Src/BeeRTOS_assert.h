@@ -1,7 +1,12 @@
 /******************************************************************************************
- * @brief
- * @file 
- * ****************************************************************************************/
+ * @brief Header File for BeeRTOS Assertion and Error Handling
+ * @file BeeRTOS_assert.h
+ * This header file defines the assertion mechanism and error handling interface for BeeRTOS.
+ * It includes macros for performing assertions within the OS and user-defined modules, structures
+ * for logging errors, and enumerations for module and error identifiers. The file facilitates
+ * debugging and system integrity checks by allowing for conditional error reporting based on
+ * expression evaluation and supports optional logging of error history for analysis.
+ ******************************************************************************************/
 
 #ifndef __BEERTOS_ASSERT_H__
 #define __BEERTOS_ASSERT_H__
@@ -21,7 +26,7 @@
 #define BEERTOS_ASSERT(expr, module_id, error_id)   \
     if (!(expr))                                    \
     {                                               \
-        os_report_error(module_id, error_id);       \
+        os_report_error((module_id), (error_id));   \
     }
 
 /******************************************************************************************
@@ -87,7 +92,7 @@ typedef enum
 /******************************************************************************************
  *                                   FUNCTION PROTOTYPES                                  *
  ******************************************************************************************/
-void os_report_error(uint8_t module_id, uint8_t error_id);
+void os_report_error(const uint8_t module_id, const uint8_t error_id);
 os_error_t* os_assert_get_history_log(void);
 
 #endif /* __BEERTOS_ASSERT_H__ */

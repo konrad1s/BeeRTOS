@@ -1,7 +1,10 @@
 /******************************************************************************************
- * @brief OS alarm header file
+ * @brief Header file for BeeRTOS alarm functionality
  * @file BeeRTOS_alarm.h
- * ****************************************************************************************/
+ * This header file defines the interface for the BeeRTOS alarm system, which allows tasks to
+ * schedule actions for specific times or after specific intervals. It includes definitions
+ * for alarm IDs, function prototypes for alarm management, and the initialization function.
+ ******************************************************************************************/
 
 #ifndef __BEERTOS_ALARM_H__
 #define __BEERTOS_ALARM_H__
@@ -22,7 +25,9 @@
 
 #undef BEERTOS_ALARM
 #define BEERTOS_ALARM(name, callback, autostart, period, periodic) name,
-/*! Alarms IDs - generated from BEERTOS_ALARM_LIST() in BeeRTOS_alarm_cfg.h */
+/*! Enumerates alarm IDs generated from the BEERTOS_ALARM_LIST macro. 
+ *  This enumeration provides a unique identifier for each alarm defined using the BEERTOS_ALARM
+ *  macro within the BEERTOS_ALARM_LIST macro expansion. */
 typedef enum
 {
     BEERTOS_ALARM_LIST()

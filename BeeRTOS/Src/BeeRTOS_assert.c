@@ -1,8 +1,13 @@
-
 /******************************************************************************************
- * @brief 
- * @file 
- * ****************************************************************************************/
+ * @brief OS Assertion and Error Handling Source File
+ * @file BeeRTOS_assert.c
+ * This file implements the assertion and error handling mechanisms for BeeRTOS. It provides
+ * functionalities to report errors encountered within the operating system components and, if
+ * enabled, log a history of recent errors for debugging purposes. The implementation includes
+ * storing error details such as the module ID and error ID, and optionally, the system tick count
+ * when the error occurred. It leverages the BEERTOS_ASSERT macro for error detection and the
+ * BEERTOS_ASSERT_ERROR_HANDLER for customizable error handling strategies.
+ ******************************************************************************************/
 
 /******************************************************************************************
  *                                        INCLUDES                                        *
@@ -40,7 +45,7 @@ static os_error_t errors[BEERTOS_ASSERT_HISTORY_LOG_SIZE];
  * @param error_id Error ID of the error that occurred
  * @return None
  */
-void os_report_error(uint8_t module_id, uint8_t error_id)
+void os_report_error(const uint8_t module_id, const uint8_t error_id)
 {
 #if (BEERTOS_USE_ASSERT_HISTORY_LOG == true)
     static uint8_t index = 0U;

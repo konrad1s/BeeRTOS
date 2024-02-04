@@ -1,7 +1,10 @@
 /******************************************************************************************
- * @brief OS queue source file
+ * @brief Source file for BeeRTOS queue management
  * @file BeeRTOS_queue.c
- * ****************************************************************************************/
+ * This file implements the functionality for managing queues in BeeRTOS. Queues allow for
+ * thread-safe communication between tasks through FIFO data structures. This implementation
+ * supports data pushing and popping, queue resetting, and checks for full or empty states.
+ ******************************************************************************************/
 
 /******************************************************************************************
  *                                        INCLUDES                                        *
@@ -24,23 +27,27 @@
  *                                        VARIABLES                                       *
  ******************************************************************************************/
 
-/*! X-Macro to create buffers for all queues */
+/*! Macro expansions to create static buffers for queues based on configurations. */
 #undef OS_QUEUE
 #define OS_QUEUE(name, size) \
     static uint8_t name##_buffer[size];
 
-#define BEERTOS_QUEUE_CREATE_BUFFERS() BEERTOS_QUEUE_LIST()
-BEERTOS_QUEUE_CREATE_BUFFERS();
+#define OS_QUEUE_CREATE_BUFFERS() BEERTOS_QUEUE_LIST()
+OS_QUEUE_CREATE_BUFFERS();
 
-/*! X-Macro to create buffers for all messages */
+/******************************************************************************************/
+
+/*! Macro expansions to create static buffers for messages based on configurations. */
 #undef OS_MESSAGE
 #define OS_MESSAGE(name, size, count) \
     static uint8_t name##_buffer[size * count];
 
-#define BEERTOS_MESSAGE_CREATE_BUFFERS() OS_MESSAGES_LIST()
-BEERTOS_MESSAGE_CREATE_BUFFERS();
+#define OS_MESSAGE_CREATE_BUFFERS() OS_MESSAGES_LIST()
+OS_MESSAGE_CREATE_BUFFERS();
 
-/*! List of all queues (including messages) */
+/******************************************************************************************/
+
+/*! Array of queue structures for managing all queues, including message queues. */
 os_queue_t os_queues[OS_MSG_QUEUE_ID_MAX];
 
 /******************************************************************************************

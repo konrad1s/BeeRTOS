@@ -1,7 +1,12 @@
 /******************************************************************************************
- * @brief OS mutex source file
+ * @brief Source file for BeeRTOS mutex management
  * @file BeeRTOS_mutex.c
- * ****************************************************************************************/
+ * This file implements mutex functionality for BeeRTOS, providing mechanisms for mutual
+ * exclusion and synchronization among tasks. It includes operations for initializing
+ * mutexes, locking and unlocking mutexes with support for recursive locking,
+ * and priority inheritance through the priority ceiling protocol to prevent
+ * priority inversion issues.
+ ******************************************************************************************/
 
 /******************************************************************************************
  *                                        INCLUDES                                        *
@@ -51,25 +56,28 @@ static os_mutex_t os_mutexes[BEERTOS_MUTEX_ID_MAX];
 void os_mutex_module_init(void)
 {
     uint32_t idx = OS_TASK_MAX - 1U;
+
+    #undef BEERTOS_MUTEX
+    #undef BEERTOS_TASK
+    #undef BEERTOS_ALARM_TASK
+
     /* Here is the X-Macro to initialize all mutexes, from user configuration */
-#undef BEERTOS_MUTEX
-#define BEERTOS_MUTEX(name, initial_count)      \
-    os_mutexes[name].locks_nb = initial_count;  \
-    os_mutexes[name].owner = NULL;              \
-    os_mutexes[name].pcp_task = &os_tasks[idx]; \
-    os_mutexes[name].owner_priority = 0U;       \
-    os_mutexes[name].pcp_priority = idx;        \
-    idx--;
-#undef BEERTOS_TASK
-#define BEERTOS_TASK(...) \
-    idx--;
-#undef BEERTOS_ALARM_TASK
-#define BEERTOS_ALARM_TASK(...) \
-    idx--;
+    #define BEERTOS_MUTEX(name, initial_count)      \
+        os_mutexes[name].locks_nb = initial_count;  \
+        os_mutexes[name].owner = NULL;              \
+        os_mutexes[name].pcp_task = &os_tasks[idx]; \
+        os_mutexes[name].owner_priority = 0U;       \
+        os_mutexes[name].pcp_priority = idx;        \
+        idx--;
 
-#define BEERTOS_MUTEXES_INIT_ALL() BEERTOS_MUTEX_LIST()
+    #define BEERTOS_TASK(...) \
+        idx--;
 
-    BEERTOS_MUTEXES_INIT_ALL();
+    #define BEERTOS_ALARM_TASK(...) \
+        idx--;
+
+    #define OS_MUTEXES_INIT_ALL() BEERTOS_MUTEX_LIST()
+    OS_MUTEXES_INIT_ALL();
 }
 
 /**

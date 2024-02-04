@@ -1,7 +1,11 @@
 /******************************************************************************************
- * @brief OS main source file
+ * @brief Core source file for BeeRTOS
  * @file BeeRTOS.c
- * ****************************************************************************************/
+ * This file implements the core functionality of BeeRTOS, including the initialization of
+ * the operating system and its modules, handling of system ticks, and management of critical
+ * sections. It provides the essential infrastructure for task scheduling, inter-task
+ * communication, and system services.
+ ******************************************************************************************/
 
 /******************************************************************************************
  *                                        INCLUDES                                        *

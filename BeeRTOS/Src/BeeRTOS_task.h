@@ -1,6 +1,12 @@
 /******************************************************************************************
- * @brief OS task header file
+ * @brief Header file for BeeRTOS task management
  * @file BeeRTOS_task.h
+ * This header file defines the interface for managing tasks within BeeRTOS. It declares
+ * the structure for task control blocks, task identifiers, and provides prototypes for
+ * functions to initialize the task system, create tasks, start and stop tasks, delay tasks,
+ * and process task scheduling. The file supports task stack monitoring configurations to
+ * ensure stack integrity and prevent stack overflows. It also defines utility macros for
+ * task management and scheduling.
  * ****************************************************************************************/
 
 #ifndef __BEERTOS_TASK_H__
@@ -46,9 +52,11 @@ typedef void (*os_task_handler)(void *args);
 #undef BEERTOS_TASK
 #undef BEERTOS_MUTEX
 #undef BEERTOS_ALARM_TASK
+
 #define BEERTOS_TASK(task_name, ...) task_name,
 #define BEERTOS_MUTEX(task_name, ...) PRIO_CELLING_TASK_##task_name,
 #define BEERTOS_ALARM_TASK(task_name, ...) task_name,
+
 /*! Task IDs - generated from BEERTOS_PRIORITY_LIST() in BeeRTOS_task_cfg.h */
 typedef enum
 {
@@ -57,15 +65,21 @@ typedef enum
     OS_TASK_MAX
 } os_task_id_t;
 
+/******************************************************************************************/
+
 #undef BEERTOS_TASK
 #undef BEERTOS_MUTEX
 #undef BEERTOS_ALARM_TASK
+
 #define BEERTOS_TASK(...) +1U
 #define BEERTOS_MUTEX(...) +1U
 #define BEERTOS_ALARM_TASK(...) +1U
+
 /*! Returns the number of tasks, OS_TASK_MAX cannot be used in preprocessor expressions,
     because enum is known only after the preprocessor is done */
 #define OS_TASK_COUNT (1U + BEERTOS_PRIORITY_LIST())
+
+/******************************************************************************************/
 
 /*! Check and select the proper mask type for the number of configured tasks */
 #if OS_TASK_COUNT <= 8U

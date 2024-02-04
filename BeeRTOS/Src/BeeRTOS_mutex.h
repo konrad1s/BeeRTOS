@@ -1,7 +1,11 @@
 /******************************************************************************************
-* @brief OS mutex header file
-* @file BeeRTOS_mutex.h
-* ****************************************************************************************/
+ * @brief Header file for BeeRTOS mutex management
+ * @file BeeRTOS_mutex.h
+ * This header file defines the interface for managing mutexes within BeeRTOS, facilitating
+ * synchronization and mutual exclusion among tasks. It declares the enumeration for mutex
+ * identifiers, based on the system configuration, and provides prototypes for functions to
+ * initialize mutexes, lock and unlock them, with support for timeouts and recursive locking.
+ ******************************************************************************************/
 
 #ifndef __BEERTOS_MUTEX_H__
 #define __BEERTOS_MUTEX_H__
@@ -21,18 +25,20 @@
 ******************************************************************************************/
 
 #undef BEERTOS_MUTEX
-#define BEERTOS_MUTEX(name, initial_count) name,
 #undef BEERTOS_TASK
-#define BEERTOS_TASK(...)
 #undef BEERTOS_ALARM_TASK
+
+#define BEERTOS_MUTEX(name, initial_count) name,
+#define BEERTOS_TASK(...)
 #define BEERTOS_ALARM_TASK(...)
 
-#define BEERTOS_MUTEX_LIST() BEERTOS_PRIORITY_LIST()
+#define OS_MUTEX_LIST() BEERTOS_PRIORITY_LIST()
 
-/*! Mutex IDs - generated from BEERTOS_MUTEX_LIST() in BeeRTOS_mutex_cfg.h */
+/*! Enumerates mutex identifiers generated from the BEERTOS_PRIORITY_LIST macro expansion,
+ *  providing unique identifiers for each mutex configured in the system. */
 typedef enum 
 {
-    BEERTOS_MUTEX_LIST()
+    OS_MUTEX_LIST()
     BEERTOS_MUTEX_ID_MAX
 } os_mutex_id_t; 
 

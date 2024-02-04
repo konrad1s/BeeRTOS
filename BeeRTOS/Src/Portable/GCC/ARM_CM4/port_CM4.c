@@ -1,7 +1,13 @@
 /******************************************************************************************
-* @brief
-* @file
-* ****************************************************************************************/
+ * @brief OS Portable Layer Source File
+ * @file os_portable.c
+ * This file implements the platform-specific functionalities required by BeeRTOS, including
+ * system tick handling, context switching, and stack initialization for tasks. It contains
+ * the implementations for the PendSV and SysTick handlers, functions to enable and disable
+ * interrupts globally, and the stack initialization routine for new tasks. The file is crucial
+ * for the BeeRTOS kernel to operate correctly on specific hardware, providing the necessary
+ * abstraction from the underlying processor or microcontroller architecture.
+ ******************************************************************************************/
 
 /******************************************************************************************
 *                                        INCLUDES                                        *

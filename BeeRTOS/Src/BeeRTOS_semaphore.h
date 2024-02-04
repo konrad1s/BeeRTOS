@@ -1,7 +1,13 @@
 /******************************************************************************************
-* @brief OS semaphore header file
-* @file BeeRTOS_semaphore.h
-* ****************************************************************************************/
+ * @brief Header file for BeeRTOS semaphore management
+ * @file BeeRTOS_semaphore.h
+ * This header file defines the interface for managing semaphores within BeeRTOS, facilitating
+ * synchronization and coordination among tasks. It declares the enumeration for semaphore
+ * identifiers, based on the system configuration, and provides prototypes for functions to
+ * initialize semaphores, wait on (acquire) semaphores with optional timeout, and signal
+ * (release) semaphores. Supports both binary and counting semaphores, configurable through
+ * the system configuration.
+ ******************************************************************************************/
 
 #ifndef __BEERTOS_SEMAPHORE_H__
 #define __BEERTOS_SEMAPHORE_H__

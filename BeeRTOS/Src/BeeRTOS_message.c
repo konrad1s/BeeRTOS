@@ -1,10 +1,11 @@
 /******************************************************************************************
- * @brief OS message source file for BeeRTOS
- * Implements the operations for message queue management including initialization,
- * sending, and receiving messages. This file contains the core functionality for
- * inter-task communication via messages within the BeeRTOS operating system.
- *
+ * @brief Source file for BeeRTOS message management
  * @file BeeRTOS_message.c
+ * This file implements the core functionality for message-based inter-task communication within
+ * the BeeRTOS operating system. It defines operations for initializing message queues, sending
+ * messages between tasks, and receiving messages. These operations allow for efficient and
+ * thread-safe communication across different parts of the system, leveraging the underlying
+ * queue management mechanisms.
  ******************************************************************************************/
 
 /******************************************************************************************
@@ -103,16 +104,15 @@ static bool os_message_handle_timeout(os_message_t *msg,
  */
 void os_message_module_init(void)
 {
-/*! X-Macro to initialize all messages */
-#undef OS_MESSAGE
-#define OS_MESSAGE(name, count, size)                                  \
-    os_messages[name].queue = &os_queues[name + BEERTOS_QUEUE_ID_MAX]; \
-    os_messages[name].item_size = size;                                \
-    os_messages[name].send_waiting_tasks = 0U;
+    /*! X-Macro to initialize all messages */
+    #undef OS_MESSAGE
+    #define OS_MESSAGE(name, count, size)                                  \
+        os_messages[name].queue = &os_queues[name + BEERTOS_QUEUE_ID_MAX]; \
+        os_messages[name].item_size = size;                                \
+        os_messages[name].send_waiting_tasks = 0U;
 
-#define BEERTOS_MESSAGES_INIT_ALL() OS_MESSAGES_LIST()
-
-    BEERTOS_MESSAGES_INIT_ALL();
+    #define OS_MESSAGE_INIT_ALL() OS_MESSAGES_LIST()
+    OS_MESSAGE_INIT_ALL();
 }
 
 /**

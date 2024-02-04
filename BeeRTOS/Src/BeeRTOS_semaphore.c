@@ -1,7 +1,12 @@
 /******************************************************************************************
- * @brief OS semaphore source file
+ * @brief Source file for BeeRTOS semaphore management
  * @file BeeRTOS_semaphore.c
- * ****************************************************************************************/
+ * This file implements semaphore functionality for BeeRTOS, providing a mechanism for
+ * synchronizing tasks and managing access to shared resources. It includes operations for
+ * initializing semaphores, waiting on (acquiring) semaphores with optional timeout, and
+ * signaling (releasing) semaphores. Supports both binary and counting semaphores, configurable
+ * through the system configuration.
+ ******************************************************************************************/
 
 /******************************************************************************************
  *                                        INCLUDES                                        *
@@ -87,14 +92,14 @@ static void os_sem_unlock_waiting_task(os_sem_t *const sem)
  */
 void os_semaphore_module_init(void)
 {
-/*! X-Macro to call os_semaphore_init for all semaphores */
-#undef BEERTOS_SEMAPHORE
-#define BEERTOS_SEMAPHORE(name, initial_count, type) \
-    os_semaphore_init(&semaphores[name], initial_count, type);
+    /*! X-Macro to call os_semaphore_init for all semaphores */
+    #undef BEERTOS_SEMAPHORE
+    #define BEERTOS_SEMAPHORE(name, initial_count, type) \
+        os_semaphore_init(&semaphores[name], initial_count, type);
 
-#define BEERTOS_SEMPAPHORES_INIT() BEERTOS_SEMAPHORE_LIST()
+    #define OS_SEMPAPHORES_INIT() BEERTOS_SEMAPHORE_LIST()
 
-    BEERTOS_SEMPAPHORES_INIT();
+    OS_SEMPAPHORES_INIT();
 }
 
 /**

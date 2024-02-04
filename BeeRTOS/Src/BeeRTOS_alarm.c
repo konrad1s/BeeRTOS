@@ -1,7 +1,9 @@
 /******************************************************************************************
- * @brief OS alarm source file
+ * @brief Source file for the BeeRTOS alarm system
  * @file BeeRTOS_alarm.c
- * ****************************************************************************************/
+ * This file implements the alarm functionality in BeeRTOS, allowing tasks to schedule actions
+ * to be performed at specific times or after specific intervals.
+ ******************************************************************************************/
 
 /******************************************************************************************
  *                                        INCLUDES                                        *
@@ -64,6 +66,13 @@ static os_alarm_active_mask_t os_alarm_pending_mask;
 /******************************************************************************************
  *                                        FUNCTIONS                                       *
  ******************************************************************************************/
+/**
+ * @brief Initializes an alarm object.
+ * @param alarm Pointer to the alarm structure to initialize.
+ * @param period The period of the alarm in ticks.
+ * @param periodic Boolean indicating whether the alarm is periodic.
+ * @param callback Function pointer to the callback to be called when the alarm expires.
+ */
 static void os_alarm_init(os_alarm_t *const alarm,
                           const uint32_t period,
                           const bool periodic,
@@ -178,9 +187,8 @@ uint32_t os_alarm_get_remaining_time(const os_alarm_id_t alarm_id)
 }
 
 /**
- * @brief This function is called by the OS tick handler. It is responsible for decrementing the
- * remaining time of the active alarms and calling the alarm callbacks when the remaining time
- * reaches 0.
+ * @brief This function is called by the OS tick handler.
+ * Decrements remaining time of active alarms and schedules callbacks.
  * 
  * @param None
  * @return None
