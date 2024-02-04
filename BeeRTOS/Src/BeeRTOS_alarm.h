@@ -88,6 +88,12 @@ uint32_t os_alarm_get_remaining_time(const os_alarm_id_t alarm_id);
  */
 void os_alarm_tick(void);
 
+/**
+ * @brief This function is the task that is responsible for calling the alarm callbacks.
+ * 
+ * @param arg - not used
+ * @return None
+ */
 void os_alarm_task(void *arg);
 
 #endif /* __BEERTOS_ALARM_H__ */

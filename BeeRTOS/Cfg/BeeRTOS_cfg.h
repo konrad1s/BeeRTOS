@@ -40,38 +40,46 @@
 #define OS_TASK_STACK_CHECK_BYTE_COUNT  (10U)
 
 /*!
- *  @brief OS tasks configuration list - define your tasks here
- *  In the current implementation all tasks are created statically.
- *  The priority of the tasks is defined by the order of the tasks in the list -
- *  the first task in the list has the highest priority.
- *  You can create up to 32 tasks, but one is reserved for the idle task.
- * 
- *  Structure: BEERTOS_TASK(task_id, function, stacksize, autostart, task_arg)
- * @param task_id - task id (created in os_task_id_t enum), must be unique
- * @param function - task function
- * @param stacksize - task stack size in bytes
- * @param autostart - if TRUE, task will be started automatically after OS initialization
- * @param task_arg - argument passed to the task function
- * 
- * @note If you want to use the task argument, you must define the task function with void* argument
- *       and cast it to the desired type inside the function.
- *          Example: void task_function(void* arg)
- *              {
- *                  uint32_t my_arg = (uint32_t)arg;
- *              }
+ *  @brief OS tasks configuration list - define your tasks here.
+ *  In the current implementation, all tasks are created statically.
+ *  The priority of the tasks is defined by their order in this list -
+ *  the first task has the highest priority. Up to 64 tasks can be created,
+ *  but one is reserved for the idle task.
+ *
+ *  Structure for defining a task: BEERTOS_TASK(task_id, function, stacksize, autostart, task_arg)
+ *  @param task_id - Unique task identifier, created in the os_task_id_t enum.
+ *  @param function - The task function to be executed.
+ *  @param stacksize - The stack size for the task in bytes.
+ *  @param autostart - If TRUE, the task is automatically started after OS initialization.
+ *  @param task_arg - Argument passed to the task function. Use a void* pointer and cast
+ *                    to the required type within the task function.
+ *
+ *  Example of defining a task function:
+ *      void task_function(void* arg) {
+ *          uint32_t my_arg = (uint32_t)arg; // Casting argument to the expected type
+ *      }
+ *
+ *  @brief BeeRTOS mutex list - define your mutexes here.
+ *  Mutexes are used to protect critical sections from concurrent access by multiple tasks.
+ *  They are recursive, allowing the same task to lock the mutex multiple times, requiring
+ *  an equal number of unlocks. Mutexes support priority inheritance to prevent priority inversion.
+ *
+ *  Structure for defining a mutex: BEERTOS_MUTEX(mutex_id, initial_count)
+ *  @param mutex_id - Unique mutex identifier, created in the os_mutex_id_t enum.
+ *  @param initial_count - The initial count for the mutex. For binary mutexes, this is usually 0 or 1.
+ *
+ *  @brief BeeRTOS alarm task configuration - define the alarm task here.
+ *  There can only be one alarm task defined in the system. This task is responsible for
+ *  handling all alarms.
+ *
+ *  Structure for defining the alarm task: BEERTOS_ALARM_TASK(task_id, stacksize)
+ *  @param task_id - Task identifier for the alarm task, created in the os_task_id_t enum.
+ *  @param stacksize - The stack size for the alarm task in bytes.
  */
-/*! @brief BeeRTOS mutex list - define your mutexes here
- *  Mutexes are used to protect critical sections of code from being executed by more than
- *  one task at the same time. In the current implementation, mutexes are recursive, which
- * means that the same task can lock the same mutex multiple times, but it must be unlocked
- * the same number of times.
- * Compared to semaphores, mutexes uses priority inheritance, which means that if a task
- * with higher priority is blocked on a mutex, the priority of the task that owns the mutex
- * will be raised to the priority of the blocked task. This prevents priority inversion.
- * 
- *  Structure: BEERTOS_MUTEX(mutex_id, initial_count)
- * @param mutex_id - mutex id (created in os_mutex_id_t enum), must be unique
- * @param initial_count - initial count of the mutex
+/*! @brief BeeRTOS priority list - define tasks, mutexes, and alarm task here
+ *
+ *  This configuration defines system tasks, mutexes, and a single alarm task as per
+ *  the new capabilities of the BeeRTOS system.
  */
 #define BEERTOS_PRIORITY_LIST()                                             \
     BEERTOS_TASK(OS_TASK_UT_MAIN, ut_beertos_main_task, 128, true, NULL)    \
@@ -91,6 +99,7 @@
     BEERTOS_TASK(OS_TASK_MSG_2, ut_task_msg_2, 128, false, NULL)            \
     BEERTOS_TASK(OS_TASK_MSG_1, ut_task_msg_1, 128, false, NULL)
 
+
 /*! @brief BeeRTOS message list - define your messages here
  * Messages are more specific than queues, they can store only one type of data
  * Messages in BeeRTOS are implemented as circular buffers, if message is full, new elements
@@ -107,6 +116,7 @@
     OS_MESSAGE(MESSAGE_TWO,   10, 4)    \
     OS_MESSAGE(MESSAGE_THREE, 10, 4)
 
+
 /*! @brief BeeRTOS queue list - define your queues here
  *  Queues are more general than messages, they can store any type of data
  *  There can be pushed any number of elements to queue, as long as queue is not full.
@@ -121,6 +131,7 @@
 #define BEERTOS_QUEUE_LIST()    \
     OS_QUEUE(QUEUE_1, 10U)      \
     OS_QUEUE(QUEUE_2, 10U)      \
+
 
 /*! @brief BeeRTOS semaphore list - define your semaphores here
  * Semaphores are used to synchronize tasks and to protect shared resources from being
@@ -137,6 +148,7 @@
     BEERTOS_SEMAPHORE(SEMAPHORE_UT1,     10U,   SEMAPHORE_TYPE_COUNTING) \
     BEERTOS_SEMAPHORE(SEMAPHORE_UT2,     0U,    SEMAPHORE_TYPE_BINARY)   \
     BEERTOS_SEMAPHORE(SEMAPHORE_TWO,     0U,    SEMAPHORE_TYPE_BINARY)
+
 
 /*!
  *  @brief Define your alarms here
