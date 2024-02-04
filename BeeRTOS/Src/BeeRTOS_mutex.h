@@ -24,6 +24,8 @@
 #define BEERTOS_MUTEX(name, initial_count) name,
 #undef BEERTOS_TASK
 #define BEERTOS_TASK(...)
+#undef BEERTOS_ALARM_TASK
+#define BEERTOS_ALARM_TASK(...)
 
 #define BEERTOS_MUTEX_LIST() BEERTOS_TASK_LIST()
 

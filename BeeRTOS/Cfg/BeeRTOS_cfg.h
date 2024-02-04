@@ -75,6 +75,7 @@
  */
 #define BEERTOS_TASK_LIST()                                                 \
     BEERTOS_TASK(OS_TASK_UT_MAIN, ut_beertos_main_task, 128, true, NULL)    \
+    BEERTOS_ALARM_TASK(OS_ALARM_TASK, 128)                                  \
     /* Priority test tasks */                                               \
     BEERTOS_TASK(OS_TASK_PRIO_3, ut_task_priority_highest, 128, true, NULL) \
     BEERTOS_TASK(OS_TASK_PRIO_2, ut_task_priority_medium, 128, true, NULL)  \

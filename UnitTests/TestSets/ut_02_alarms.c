@@ -58,7 +58,7 @@ void TEST_alarms(void)
     TEST_ASSERT_EQUAL(1, alarms_cnt[ALARM_THREE]);
 
     os_alarm_start(ALARM_TWO, 20, true);
-    os_delay(100);
+    os_delay(101);
 
     TEST_ASSERT_EQUAL(1, alarms_cnt[ALARM_ONE]);
     TEST_ASSERT_EQUAL(12, alarms_cnt[ALARM_TWO]);

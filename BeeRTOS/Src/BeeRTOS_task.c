@@ -35,8 +35,11 @@
 /*! X-Macro to create task stack array for all tasks */
 #undef BEERTOS_TASK
 #undef BEERTOS_MUTEX
+#undef BEERTOS_ALARM_TASK
 #define BEERTOS_MUTEX(...)
 #define BEERTOS_TASK(name, cb, stack, autostart, argv) \
+    static os_stack_t name##_stack[stack];
+#define BEERTOS_ALARM_TASK(name, stack) \
     static os_stack_t name##_stack[stack];
 
 #define BEERTOS_STACK_VAR BEERTOS_TASK_LIST()
@@ -51,6 +54,9 @@ BEERTOS_STACK_VAR;
 #undef BEERTOS_MUTEX
 #define BEERTOS_MUTEX(...) \
     NULL,
+#undef BEERTOS_ALARM_TASK
+#define BEERTOS_ALARM_TASK(name, stack) \
+    name##_stack,
 
 #define BEERTOS_STACK_PTR_VAR BEERTOS_TASK_LIST()
 
@@ -61,9 +67,12 @@ static os_stack_t *task_stacks[] = {
 /*! X-Macro to create task control structure for all tasks */
 #undef BEERTOS_TASK
 #undef BEERTOS_MUTEX
+#undef BEERTOS_ALARM_TASK
 #define BEERTOS_MUTEX(name, ...) \
     static os_task_t name##_control;
 #define BEERTOS_TASK(name, ...) \
+    static os_task_t name##_control;
+#define BEERTOS_ALARM_TASK(name, ...) \
     static os_task_t name##_control;
 
 #define BEERTOS_TASK_CONTROL_VAR BEERTOS_TASK_LIST()
@@ -174,6 +183,11 @@ void os_task_module_init(void)
     os_task_create(&name##_control, cb, name##_stack, sizeof(name##_stack), prio, argv); \
     prio--;
 
+#undef BEERTOS_ALARM_TASK
+#define BEERTOS_ALARM_TASK(name, stack) \
+    os_task_create(&name##_control, os_alarm_task, name##_stack, sizeof(name##_stack), prio, NULL); \
+    prio--;
+
 #undef BEERTOS_MUTEX
 #define BEERTOS_MUTEX(name, ...)      \
     os_tasks[prio] = &name##_control; \
@@ -201,6 +215,10 @@ void os_task_module_init(void)
 
 #undef BEERTOS_MUTEX
 #define BEERTOS_MUTEX(name, ...) \
+    task_id++;
+
+#undef BEERTOS_ALARM_TASK
+#define BEERTOS_ALARM_TASK(name, ...) \
     task_id++;
 
 #define BEERTOS_TASK_START_ALL() BEERTOS_TASK_LIST()
