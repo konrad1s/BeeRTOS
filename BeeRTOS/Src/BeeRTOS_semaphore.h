@@ -53,28 +53,8 @@ typedef enum
 /******************************************************************************************
 *                                   FUNCTION PROTOTYPES                                  *
 ******************************************************************************************/
-/**
- * @brief Initialize semaphores
- */
 void os_semaphore_module_init(void);
-
-/**
- * @brief Wait for semaphore
- *
- * @param id - semaphore id
- * @param timeout - maximum time to wait for semaphore
- *
- * @return true if semaphore was acquired, false if timeout occured
- */
 bool os_semaphore_wait(const os_sem_id_t id, const uint32_t timeout);
-
-/**
- * @brief Signal semaphore
- *
- * @param id - semaphore id
- *
- * @return true if semaphore was signaled, false otherwise
- */
 bool os_semaphore_signal(const os_sem_id_t id);
 
 #endif /* __BEERTOS_SEMAPHORE_H__ */

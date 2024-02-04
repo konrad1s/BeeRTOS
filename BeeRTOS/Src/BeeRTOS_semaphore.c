@@ -82,6 +82,9 @@ static void os_sem_unlock_waiting_task(os_sem_t *const sem)
     BEERTOS_TRACE_SEMAPHORE_UNBLOCKED(task);
 }
 
+/**
+ * @brief Initialize semaphores
+ */
 void os_semaphore_module_init(void)
 {
 /*! X-Macro to call os_semaphore_init for all semaphores */
@@ -94,6 +97,14 @@ void os_semaphore_module_init(void)
     BEERTOS_SEMPAPHORES_INIT();
 }
 
+/**
+ * @brief Wait for semaphore
+ *
+ * @param id - semaphore id
+ * @param timeout - maximum time to wait for semaphore
+ *
+ * @return true if semaphore was acquired, false if timeout occured
+ */
 bool os_semaphore_wait(const os_sem_id_t id, const uint32_t timeout)
 {
     BEERTOS_ASSERT(id < BEERTOS_SEMAPHORE_ID_MAX,
@@ -138,6 +149,13 @@ bool os_semaphore_wait(const os_sem_id_t id, const uint32_t timeout)
     return s_got;
 }
 
+/**
+ * @brief Signal semaphore
+ *
+ * @param id - semaphore id
+ *
+ * @return true if semaphore was signaled, false otherwise
+ */
 bool os_semaphore_signal(const os_sem_id_t id)
 {
     BEERTOS_ASSERT(id < BEERTOS_SEMAPHORE_ID_MAX,

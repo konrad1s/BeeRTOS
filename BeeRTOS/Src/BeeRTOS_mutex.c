@@ -43,7 +43,11 @@ static os_mutex_t os_mutexes[BEERTOS_MUTEX_ID_MAX];
 /******************************************************************************************
  *                                        FUNCTIONS                                       *
  ******************************************************************************************/
-
+/**
+ * @brief This function initializes all mutexes.
+ * 
+ * @return None
+ */
 void os_mutex_module_init(void)
 {
     uint32_t idx = OS_TASK_MAX - 1U;
@@ -68,6 +72,16 @@ void os_mutex_module_init(void)
     BEERTOS_MUTEXES_INIT_ALL();
 }
 
+/**
+ * @brief This function locks the specified mutex. If the mutex is already locked, the function
+ * will wait until the mutex is unlocked (with timeout). If the mutex is already locked by the
+ * calling task, recursive locking is performed. The mutex must be unlocked as many times as it
+ * was locked.
+ * 
+ * @param id - mutex id
+ * @param timeout - maximum time to wait for the mutex to be unlocked. If timeout is 0, the function
+ *                  will return immediately false if the mutex is locked.
+ */
 bool os_mutex_lock(const os_mutex_id_t id, const uint32_t timeout)
 {
     BEERTOS_ASSERT(id < BEERTOS_MUTEX_ID_MAX,
@@ -149,6 +163,14 @@ bool os_mutex_lock(const os_mutex_id_t id, const uint32_t timeout)
     return (mutex->owner == current_task);
 }
 
+/**
+ * @brief This function unlocks the specified mutex. Can be called only if the mutex is locked.
+ * If the mutex is locked by another task, the function will rise an error. If the mutex was
+ * locked multiple times, it must be unlocked the same number of times.
+ *
+ * @param id - mutex id
+ * @return None
+ */
 void os_mutex_unlock(const os_mutex_id_t id)
 {
     BEERTOS_ASSERT(id < BEERTOS_MUTEX_ID_MAX,

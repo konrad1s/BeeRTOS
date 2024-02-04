@@ -247,6 +247,15 @@ static void os_tasks_start(void)
     OS_TASK_START_ALL();
 }
 
+/**
+ * @brief This function initializes the operating system's tasks.
+ * It is responsible for setting up any necessary data structures.
+ * Called once (automatically) in os system initialization.
+ * If the task auto start is enabled, the task will be started.
+ *
+ * @param id - None
+ * @return None
+ */
 void os_task_module_init(void)
 {
     os_ready_mask = 0U;
@@ -255,6 +264,12 @@ void os_task_module_init(void)
     os_tasks_start();
 }
 
+/**
+ * @brief This function starts the specified task.
+ *
+ * @param task_id - id of the task to be started
+ * @return None
+ */
 bool os_task_start(const os_task_id_t id)
 {
     BEERTOS_ASSERT(id > OS_TASK_IDLE, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
@@ -274,6 +289,12 @@ bool os_task_start(const os_task_id_t id)
     return true;
 }
 
+/**
+ * @brief This function stops the specified task.
+ *
+ * @param task_id - id of the task to be stopped
+ * @return None
+ */
 bool os_task_stop(const os_task_id_t id)
 {
     BEERTOS_ASSERT(id < OS_TASK_MAX, OS_MODULE_ID_TASK, OS_ERROR_INVALID_PARAM);
@@ -291,6 +312,12 @@ bool os_task_stop(const os_task_id_t id)
     return true;
 }
 
+/**
+ * @brief Release the task that was previously suspended (for example by a mutex or a semaphore)
+ * After calling this function, the scheduler is called to switch context to another task.
+ *
+ * @param task_id - id of the task to be released
+ */
 void os_task_release(const os_task_id_t id)
 {
     os_enter_critical_section();
@@ -301,6 +328,16 @@ void os_task_release(const os_task_id_t id)
     os_leave_critical_section();
 }
 
+/**
+ * @brief This function deletes (removes from scheduler) the current task.
+ * Becasue current implementation does not support dynamic memory allocation,
+ * the task stack is not freed. This function only removes the task from the
+ * list of tasks to be scheduled.
+ * After calling this function, the scheduler is called to switch context to another task.
+ *
+ * @param None
+ * @return None
+ */
 void os_task_delete(void)
 {
     os_enter_critical_section();
@@ -312,6 +349,14 @@ void os_task_delete(void)
     os_leave_critical_section();
 }
 
+/**
+ * @brief Delay the current task for the specified number of ticks.
+ * After the specified number of ticks, the task will be ready to run again.
+ * After calling this function, the scheduler is called to switch context to another task.
+ *
+ * @param ticks - number of ticks to delay, must be > 0
+ * @return None
+ */
 void os_delay(const uint32_t ticks)
 {
     os_enter_critical_section();
@@ -326,6 +371,12 @@ void os_delay(const uint32_t ticks)
     os_leave_critical_section();
 }
 
+/**
+ * @brief Process ticks for all tasks. This function is called by the system tick handler.
+ *
+ * @param None
+ * @return None
+ */
 void os_task_tick(void)
 {
     uint32_t mask = os_delay_mask;
@@ -348,6 +399,12 @@ void os_task_tick(void)
     }
 }
 
+/**
+ * @brief Function used for scheduling tasks. This function is called by the system tick handler.
+ *
+ * @param None
+ * @return None
+ */
 void os_sched(void)
 {
     os_enter_critical_section();
