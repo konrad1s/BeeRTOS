@@ -76,7 +76,7 @@ void os_mutex_module_init(void)
     #define BEERTOS_ALARM_TASK(...) \
         idx--;
 
-    #define OS_MUTEXES_INIT_ALL() BEERTOS_MUTEX_LIST()
+    #define OS_MUTEXES_INIT_ALL() BEERTOS_PRIORITY_LIST()
     OS_MUTEXES_INIT_ALL();
 }
 
