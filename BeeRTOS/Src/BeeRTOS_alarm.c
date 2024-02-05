@@ -161,6 +161,7 @@ void os_alarm_cancel(const os_alarm_id_t alarm_id)
     os_enter_critical_section();
     os_alarms[alarm_id].remaining_time = 0U;
     OS_ALARM_CLEAR_MASK(os_alarm_active_mask, alarm_id);
+    OS_ALARM_CLEAR_MASK(os_alarm_pending_mask, alarm_id);
     os_leave_critical_section();
 
     BEERTOS_TRACE_ALARM_CANCEL(alarm_id);
