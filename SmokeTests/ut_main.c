@@ -1,7 +1,7 @@
 #include "unity.h"
 #include "BeeRTOS.h"
 
-extern void TEST_kernel(void);
+extern void TEST_delay(void);
 extern void TEST_rtos_task_core(void);
 extern void TEST_semaphores(void);
 extern void TEST_alarms(void);
@@ -10,7 +10,7 @@ extern void TEST_messages(void);
 extern void TEST_queues(void);
 
 void (*test_functions[])(void) = {
-    TEST_kernel,
+    TEST_delay,
     TEST_rtos_task_core,
     TEST_alarms,
     TEST_semaphores,
