@@ -1,69 +1,79 @@
 #include "ut_utils.h"
 
-void TEST_couting_semaphores(void)
+static uint32_t start_tick, end_tick;
+
+static void reset_tick_counter(void)
+{
+    start_tick = os_get_tick_count();
+}
+
+static uint32_t get_elapsed_ticks(void)
+{
+    end_tick = os_get_tick_count();
+    return end_tick - start_tick;
+}
+
+void TEST_counting_semaphores(void)
 {
     bool ret;
-    /* Test 1: wait for semaphore with timeout 0, SEMAPHORE_UT1_INITIAL_COUNT (10) times
-       Expected result: true */
-    for (int i = 0; i < 10U; i++)
+
+    /* Test semaphore availability and exhaustion */
+    for (int i = 0; i < 10; i++)
     {
         ret = os_semaphore_wait(SEMAPHORE_UT1, 0);
-        TEST_ASSERT(ret == true);
+        TEST_ASSERT_TRUE_MESSAGE(ret, "Semaphore should be available.");
     }
 
-    /* Test 2: wait for semaphore with timeout 0, one more time
-       Expected result: false */
+    /* Test semaphore unavailability after exhaustion */
     ret = os_semaphore_wait(SEMAPHORE_UT1, 0);
-    TEST_ASSERT(ret == false);
+    TEST_ASSERT_FALSE_MESSAGE(ret, "Semaphore should be unavailable after 10 waits.");
 
-     /* Test 2: wait for semaphore with timeout 1000, one more time
-       Expected result: false and task blocked for 1000 ticks */
-    uint32_t start = os_get_tick_count();
+    /* Test semaphore wait with timeout, expecting timeout */
+    reset_tick_counter();
     ret = os_semaphore_wait(SEMAPHORE_UT1, 1000);
-    uint32_t end = os_get_tick_count();
-    TEST_ASSERT(ret == false);
-    TEST_ASSERT(end - start == 1000);
+    TEST_ASSERT_FALSE_MESSAGE(ret, "Semaphore wait should timeout.");
+    TEST_ASSERT_EQUAL_MESSAGE(1000, get_elapsed_ticks(), "Task should be blocked for 1000 ticks.");
 
-    /* Test 3: signal semaphore
-       Expected result: true */
+    /* Test signaling semaphore to make it available again */
     ret = os_semaphore_signal(SEMAPHORE_UT1);
-    TEST_ASSERT(ret == true);
+    TEST_ASSERT_TRUE_MESSAGE(ret, "Semaphore signal should succeed.");
 
-    /* Test 4: wait for semaphore with timeout 0, one more time
-       Expected result: true */
+    /* Test semaphore availability after signaling */
     ret = os_semaphore_wait(SEMAPHORE_UT1, 0);
-    TEST_ASSERT(ret == true);
+    TEST_ASSERT_TRUE_MESSAGE(ret, "Semaphore should be available after signaling.");
 }
 
 void TEST_binary_semaphores(void)
 {
     bool ret;
 
-    /* Test 1: wait for semaphore with timeout 0, 1 time
-       Expected result: false */
+    /* Test initial semaphore wait with no signal, expecting failure */
     ret = os_semaphore_wait(SEMAPHORE_UT2, 0);
-    TEST_ASSERT(ret == false);
+    TEST_ASSERT_FALSE_MESSAGE(ret, "Initial semaphore wait should fail without signal.");
 
-    /* Test 2: signal semaphore
-       Expected result: true */
+    /* Test signaling semaphore to make it available */
     ret = os_semaphore_signal(SEMAPHORE_UT2);
+    TEST_ASSERT_TRUE_MESSAGE(ret, "Semaphore signal should succeed.");
 
-    /* Test 3: signal semaphore
-       Expected result: false */
-    ret = os_semaphore_signal(SEMAPHORE_UT2);
-    TEST_ASSERT(ret == false);
-
-    /* Test 4: wait for semaphore with timeout 0, 1 time
-       Expected result: true */
+    /* Test semaphore availability after signaling */
     ret = os_semaphore_wait(SEMAPHORE_UT2, 0);
-    TEST_ASSERT(ret == true);
+    TEST_ASSERT_TRUE_MESSAGE(ret, "Semaphore should be available after signaling.");
+
+    /* Test signaling semaphore again, expecting failure for binary semaphore */
+    (void)os_semaphore_signal(SEMAPHORE_UT2);
+    ret = os_semaphore_signal(SEMAPHORE_UT2);
+    TEST_ASSERT_FALSE_MESSAGE(ret, "Double signaling of binary semaphore should fail.");
+
+    /* Test semaphore unavailability after wait */
+    (void)os_semaphore_wait(SEMAPHORE_UT2, 0);
+    ret = os_semaphore_wait(SEMAPHORE_UT2, 0);
+    TEST_ASSERT_FALSE_MESSAGE(ret, "Semaphore should be unavailable after wait.");
 }
 
 void TEST_semaphores(void)
 {
     PRINT_UT_BEGIN();
 
-
-    TEST_couting_semaphores();
+    TEST_counting_semaphores();
     TEST_binary_semaphores();
 }
