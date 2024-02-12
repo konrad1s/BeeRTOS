@@ -311,6 +311,7 @@ bool os_task_stop(const os_task_id_t id)
 
     BEERTOS_TASK_STOP(priority);
     BEERTOS_TASK_DELAY_CLEAR(priority);
+    os_sched();
 
     os_leave_critical_section();
 
