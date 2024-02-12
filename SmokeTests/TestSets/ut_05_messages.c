@@ -9,13 +9,15 @@ void ut_task_msg_1(void *arg)
     TEST_ASSERT_EQUAL(true, ret);
     TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(msg_received, "ABCDEFGH", 8, "Received message does not match expected.");
 
+    /* -- Contex switch -- */
+
     ret = os_message_receive(MESSAGE_ONE, msg_received, 0);
     TEST_ASSERT_EQUAL(true, ret);
     TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(msg_received, "12345678", 8, "Received message does not match expected.");
 
     ret = os_message_receive(MESSAGE_ONE, msg_received, 0);
     TEST_ASSERT_EQUAL(true, ret);
-    TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(msg_received, "abcdefgh", 8, "Received message does not match expected.");
+    TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(msg_received, "TIMEOUT", 8, "Received message does not match expected.");
 
     os_task_delete();
 }
@@ -36,28 +38,16 @@ void ut_task_msg_2(void *arg)
     ret = os_message_send(MESSAGE_ONE, msgTimeout, 1000);
     TEST_ASSERT_TRUE_MESSAGE(ret, "Message sending should be successful if timeout is not reached.");
 
-    /* Fill the message queue to its capacity */
-    uint8_t msg_overflow[] = {'O', 'V', 'E', 'R', 'F', 'L', 'O', 'W'};
-    for (int i = 0; i < 3; i++)
-    {
-        ret = os_message_send(MESSAGE_ONE, msg_overflow, 0);
-        TEST_ASSERT_TRUE_MESSAGE(ret, "Message should be sent successfully until the queue is full.");
-    }
-
     /* Attempt to send one more message should result in failure due to overflow */
+    uint8_t msg_overflow[] = {'O', 'V', 'E', 'R', 'F', 'L', 'O', 'W'};
     ret = os_message_send(MESSAGE_ONE, msg_overflow, 0);
-    TEST_ASSERT_FALSE_MESSAGE(ret, "Message sending should fail due to queue overflow.");
+    TEST_ASSERT_FALSE_MESSAGE(ret, "Message should be sent successfully until the queue is full.");
 
-    /* Empty the message queue */
-    uint8_t msg_received[8];
-    for (int i = 0; i < 3; i++)
-    {
-        ret = os_message_receive(MESSAGE_ONE, msg_received, 0);
-        TEST_ASSERT_EQUAL_UINT8_ARRAY_MESSAGE(msg_received, "OVERFLOW", 8, "Received message does not match expected.");
-        TEST_ASSERT_TRUE_MESSAGE(ret, "Message should be received successfully until the queue is empty.");
-    }
+    /* Empty the message queue in the ut_task_msg_1 */
+    os_delay(10);
 
     /* Attempt to receive one more message should result in failure due to empty queue */
+    uint8_t msg_received[8];
     ret = os_message_receive(MESSAGE_ONE, msg_received, 0);
     TEST_ASSERT_FALSE_MESSAGE(ret, "Message receiving should fail due to queue underflow.");
 

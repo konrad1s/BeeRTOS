@@ -46,6 +46,7 @@ void mutex_high_priority_task(void *arg)
     os_mutex_lock(MUTEX_ONE, 2000);
     tasks_cnt[UT_TASK_PRIORITY_HIGHEST]++;
     ut_blocking_delay(10);
+    os_mutex_unlock(MUTEX_ONE);
 
     while(1)
     {
