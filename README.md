@@ -80,3 +80,45 @@ BEERTOS_ALARM_TASK(task_id, stacksize)
 - **stacksize:** The size of the stack allocated for the alarm task.
 
 ### Inter-task communication mechanisms configuration
+
+#### Semaphore Configuration
+Within *BeeRTOS_cfg.h*, semaphores are defined using the BEERTOS_SEMAPHORE_LIST() macro. This macro allows for the declaration of both binary and counting semaphores, specifying their initial count and, optionally, their type (binary or counting).
+
+
+```c
+BEERTOS_SEMAPHORE(semaphore_id, initial_count, type)
+```
+- **semaphore_id:** Unique identifier for the semaphore.
+- **initial_count:** Initial semaphore count. For binary semaphores, this is typically set to 0 (locked) or 1 (unlocked).
+- **type:** Specifies the semaphore type, which can be either binary (*SEMAPHORE_TYPE_BINARY*) or counting (*SEMAPHORE_TYPE_COUNTING*). This parameter dictates how the semaphore behaves when incremented beyond 1.
+
+#### Message Configuration
+Messages allow for the passing of data between tasks, facilitating inter-task communication. Messages are more specific than queues in that they are designed to transfer discrete data items rather than streams of bytes. Messages provide a structured way to exchange data between tasks, encapsulating the data in defined formats.
+
+```c
+OS_MESSAGE(message_id, messages_count, message_size)
+```
+- **message_id:** Unique identifier for the message queue.
+- **messages_count:** The maximum number of messages that the queue can hold.
+- **message_size:** The size of each message in bytes. This defines how large an individual message can be.
+
+#### Queue Configuration
+Queues in BeeRTOS are versatile data structures that enable FIFO (First In, First Out) communication between tasks. They can be used to transfer byte streams, data structures, or pointers between tasks, supporting a wide range of communication patterns.
+
+```c
+OS_QUEUE(queue_id, queue_size)
+```
+- **queue_id:** Unique identifier for the queue.
+- **queue_size:** Specifies the maximum number of elements (or bytes, depending on the queue implementation) that the queue can store. This defines the capacity of the queue.
+
+#### Alarm Configuration
+Alarm tasks are specialized tasks used for timing and scheduling purposes. They can be used to trigger actions at specific intervals or after a certain amount of time has elapsed.
+```c
+BEERTOS_ALARM(alarm_id, callback, autostart, default_period, periodic)
+```
+
+- **alarm_id:** Unique identifier for the alarm.
+- **callback:** The function to be called when the alarm expires.
+- **autostart:** Determines whether the alarm starts automatically upon system initialization. Set to true for automatic start.
+- **default_period:** The default period of the alarm in system ticks. This is relevant only if autostart is true.
+- **periodic:** Indicates whether the alarm is periodic (true) or one-shot (false). Periodic alarms reset after expiration, whereas one-shot alarms need to be manually restarted.
