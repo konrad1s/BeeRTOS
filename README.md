@@ -2,6 +2,21 @@
 
 BeeRTOS is a lightweight, efficient, and scalable real-time operating system (RTOS) specifically designed for embedded systems. With a focus on simplicity, low memory consumption, and speed of operation, BeeRTOS provides a robust solution for managing concurrent tasks in microcontroller-based applications. It provides multitasking, synchronization primitives, inter-task communication, and timing services, all configurable to fit specific application requirements.
 
+# Table of Contents
+  - [Key Features](#key-features)
+  - [Configuration Overview](#configuration-overview)
+    - [Enabling OS Features](#enabling-os-features)
+    - [System Task Configuration](#system-task-configuration)
+      - [Task configuration](#task-configuration)
+      - [Mutex configuration](#mutex-configuration)
+      - [Alarm configuration](#alarm-configuration)
+    - [Inter-task communication mechanisms configuration](#inter-task-communication-mechanisms-configuration)
+      - [Semaphore Configuration](#semaphore-configuration)
+      - [Message Configuration](#message-configuration)
+      - [Queue Configuration](#queue-configuration)
+      - [Alarm Configuration](#alarm-configuration-1)
+
+
 ## Key Features
 
 - **Simplicity:** BeeRTOS offers an intuitive API and straightforward task management, making it accessible for developers of all experience levels.
