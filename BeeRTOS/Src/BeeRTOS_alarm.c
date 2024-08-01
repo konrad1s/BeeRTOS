@@ -25,11 +25,11 @@
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
 
-#undef BEERTOS_ALARM
-#define BEERTOS_ALARM(...) +1U
-/*! Returns the number of alarms, BEERTOS_ALARM_ID_MAX cannot be used in preprocessor expressions,
+#undef OS_ALARM
+#define OS_ALARM(...) +1U
+/*! Returns the number of alarms, OS_ALARM_ID_MAX cannot be used in preprocessor expressions,
     because enum is known only after the preprocessor is done */
-#define OS_ALARM_COUNT (0U + BEERTOS_ALARM_LIST())
+#define OS_ALARM_COUNT (0U + OS_ALARM_LIST())
 
 /*! Check and select the proper mask type for the number of configured alarms */
 #if (OS_ALARM_COUNT <= 8U)
@@ -41,7 +41,7 @@
 #elif (OS_ALARM_COUNT <= 64U)
     typedef uint64_t os_alarm_active_mask_t;
 #else
-    #error "BEERTOS_ALARM_ID_MAX must be less or equal to 64"
+    #error "OS_ALARM_ID_MAX must be less or equal to 64"
 #endif
 
 /*! Structure to hold alarm data */
@@ -58,7 +58,7 @@ typedef struct
  ******************************************************************************************/
 
 /*! List of all alarms */
-static os_alarm_t os_alarms[BEERTOS_ALARM_ID_MAX];
+static os_alarm_t os_alarms[OS_ALARM_ID_MAX];
 /*! Mask of all active alarms */
 static os_alarm_active_mask_t os_alarm_active_mask;
 static os_alarm_active_mask_t os_alarm_pending_mask;
@@ -78,7 +78,7 @@ static void os_alarm_init(os_alarm_t *const alarm,
                           const bool periodic,
                           void (*callback)(void))
 {
-    BEERTOS_ASSERT(callback != NULL, OS_MODULE_ID_ALARM, OS_ERROR_NULLPTR);
+    OS_ASSERT(callback != NULL, OS_MODULE_ID_ALARM, OS_ERROR_NULLPTR);
 
     alarm->period = period;
     alarm->periodic = periodic;
@@ -101,15 +101,15 @@ void os_alarm_module_init(void)
     os_alarm_pending_mask = 0U;
 
     /*! X-Macro to initialize all alarms */
-    #undef BEERTOS_ALARM
-    #define BEERTOS_ALARM(name, _callback, _autostart, _period, _periodic)  \
-        os_alarm_init(&os_alarms[name], _period, _periodic, _callback);     \
-        if (true == _autostart)                                             \
-        {                                                                   \
-            os_alarm_start(name, _period, _periodic);                       \
+    #undef OS_ALARM
+    #define OS_ALARM(name, _callback, _autostart, _period, _periodic)   \
+        os_alarm_init(&os_alarms[name], _period, _periodic, _callback); \
+        if (true == _autostart)                                         \
+        {                                                               \
+            os_alarm_start(name, _period, _periodic);                   \
         }
-    
-    #define OS_ALARM_INIT_ALL() BEERTOS_ALARM_LIST()
+
+    #define OS_ALARM_INIT_ALL() OS_ALARM_LIST()
     OS_ALARM_INIT_ALL();
 }
 
@@ -125,7 +125,7 @@ void os_alarm_module_init(void)
  */
 void os_alarm_start(const os_alarm_id_t alarm_id, const uint32_t period, const bool periodic)
 {
-    BEERTOS_ASSERT(alarm_id < BEERTOS_ALARM_ID_MAX,
+    OS_ASSERT(alarm_id < OS_ALARM_ID_MAX,
                    OS_MODULE_ID_ALARM,
                    OS_ERROR_INVALID_PARAM);
 
@@ -139,7 +139,7 @@ void os_alarm_start(const os_alarm_id_t alarm_id, const uint32_t period, const b
     OS_ALARM_SET_MASK(os_alarm_active_mask, alarm_id);
     os_leave_critical_section();
 
-    BEERTOS_TRACE_ALARM_START(alarm_id, period, periodic);
+    OS_TRACE_ALARM_START(alarm_id, period, periodic);
 }
 
 /**
@@ -151,12 +151,12 @@ void os_alarm_start(const os_alarm_id_t alarm_id, const uint32_t period, const b
  */
 void os_alarm_cancel(const os_alarm_id_t alarm_id)
 {
-    BEERTOS_ASSERT(alarm_id < BEERTOS_ALARM_ID_MAX,
-                   OS_MODULE_ID_ALARM,
-                   OS_ERROR_INVALID_PARAM);
-    BEERTOS_ASSERT(os_alarm_active_mask & (1U << alarm_id),
-                   OS_MODULE_ID_ALARM,
-                   OS_ERROR_INVALID_PARAM);
+    OS_ASSERT(alarm_id < OS_ALARM_ID_MAX,
+              OS_MODULE_ID_ALARM,
+              OS_ERROR_INVALID_PARAM);
+    OS_ASSERT(os_alarm_active_mask & (1U << alarm_id),
+              OS_MODULE_ID_ALARM,
+              OS_ERROR_INVALID_PARAM);
 
     os_enter_critical_section();
     os_alarms[alarm_id].remaining_time = 0U;
@@ -164,7 +164,7 @@ void os_alarm_cancel(const os_alarm_id_t alarm_id)
     OS_ALARM_CLEAR_MASK(os_alarm_pending_mask, alarm_id);
     os_leave_critical_section();
 
-    BEERTOS_TRACE_ALARM_CANCEL(alarm_id);
+    OS_TRACE_ALARM_CANCEL(alarm_id);
 }
 
 /**
@@ -176,9 +176,9 @@ void os_alarm_cancel(const os_alarm_id_t alarm_id)
  */
 uint32_t os_alarm_get_remaining_time(const os_alarm_id_t alarm_id)
 {
-    BEERTOS_ASSERT(alarm_id < BEERTOS_ALARM_ID_MAX,
-                   OS_MODULE_ID_ALARM,
-                   OS_ERROR_INVALID_PARAM);
+    OS_ASSERT(alarm_id < OS_ALARM_ID_MAX,
+              OS_MODULE_ID_ALARM,
+              OS_ERROR_INVALID_PARAM);
 
     os_enter_critical_section();
     const uint32_t remaining_time = os_alarms[alarm_id].remaining_time;
@@ -202,7 +202,7 @@ void os_alarm_tick(void)
     if (0U != os_alarm_active_mask)
     {
         /* Find all active alarms and decrement their remaining time */
-        for (os_alarm_id_t id = 0U; id < BEERTOS_ALARM_ID_MAX; id++)
+        for (os_alarm_id_t id = 0U; id < OS_ALARM_ID_MAX; id++)
         {
             if (os_alarm_active_mask & (1ULL << id))
             {
@@ -253,7 +253,7 @@ void os_alarm_task(void *const arg)
         {
             const os_alarm_id_t id = OS_GET_HIGHEST_PRIO_TASK_FROM_MASK(mask) - 1U;
             os_alarm_t *const alarm = &os_alarms[id];
-            BEERTOS_ASSERT(alarm->callback != NULL,
+            OS_ASSERT(alarm->callback != NULL,
                            OS_MODULE_ID_ALARM,
                            OS_ERROR_NULLPTR);
 

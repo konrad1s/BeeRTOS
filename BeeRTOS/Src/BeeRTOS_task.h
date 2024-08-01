@@ -29,9 +29,9 @@
 /*! Task stack pattern used for stack monitoring */
 #define OS_TASK_STACK_PATTERN ((os_stack_t)0xA5A5A5A5U)
 
-#if (BEERTOS_USE_TASK_STACK_MONITOR == true) && \
-    (BEERTOS_USE_FAST_STACK_MONITOR == true) && \
-    (BEERTOS_USE_USER_STACK_MONITOR == true)
+#if (OS_USE_TASK_STACK_MONITOR == true) && \
+    (OS_USE_FAST_STACK_MONITOR == true) && \
+    (OS_USE_USER_STACK_MONITOR == true)
 #error "Only one stack monitor can be used at a time!"
 #endif
 
@@ -49,35 +49,35 @@ typedef struct
 
 typedef void (*os_task_handler)(void *args);
 
-#undef BEERTOS_TASK
-#undef BEERTOS_MUTEX
-#undef BEERTOS_ALARM_TASK
+#undef OS_TASK
+#undef OS_MUTEX
+#undef OS_ALARM_TASK
 
-#define BEERTOS_TASK(task_name, ...) task_name,
-#define BEERTOS_MUTEX(task_name, ...) PRIO_CELLING_TASK_##task_name,
-#define BEERTOS_ALARM_TASK(task_name, ...) task_name,
+#define OS_TASK(task_name, ...) task_name,
+#define OS_MUTEX(task_name, ...) PRIO_CELLING_TASK_##task_name,
+#define OS_ALARM_TASK(task_name, ...) task_name,
 
-/*! Task IDs - generated from BEERTOS_PRIORITY_LIST() in BeeRTOS_task_cfg.h */
+/*! Task IDs - generated from OS_PRIORITY_LIST() in BeeRTOS_task_cfg.h */
 typedef enum
 {
     OS_TASK_IDLE = 0, /* Reserved for idle task! */
-    BEERTOS_PRIORITY_LIST()
+    OS_PRIORITY_LIST()
     OS_TASK_MAX
 } os_task_id_t;
 
 /******************************************************************************************/
 
-#undef BEERTOS_TASK
-#undef BEERTOS_MUTEX
-#undef BEERTOS_ALARM_TASK
+#undef OS_TASK
+#undef OS_MUTEX
+#undef OS_ALARM_TASK
 
-#define BEERTOS_TASK(...) +1U
-#define BEERTOS_MUTEX(...) +1U
-#define BEERTOS_ALARM_TASK(...) +1U
+#define OS_TASK(...) +1U
+#define OS_MUTEX(...) +1U
+#define OS_ALARM_TASK(...) +1U
 
 /*! Returns the number of tasks, OS_TASK_MAX cannot be used in preprocessor expressions,
     because enum is known only after the preprocessor is done */
-#define OS_TASK_COUNT (1U + BEERTOS_PRIORITY_LIST())
+#define OS_TASK_COUNT (1U + OS_PRIORITY_LIST())
 
 /******************************************************************************************/
 

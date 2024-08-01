@@ -29,7 +29,7 @@ typedef uint8_t os_sem_type_t;
 
 typedef struct
 {
-#if (BEERTOS_SEMAPHORE_COUNTING_USED == true)
+#if (OS_SEMAPHORE_COUNTING_USED == true)
     uint32_t count;
 #else
     uint8_t count;
@@ -38,7 +38,7 @@ typedef struct
     os_task_mask_t tasks_blocked; /* one bit represents one task */
 
 /* If counting semaphores are not used, all semaphores are binary */
-#if (BEERTOS_SEMAPHORE_COUNTING_USED == true)
+#if (OS_SEMAPHORE_COUNTING_USED == true)
     os_sem_type_t type;
 #endif
 
@@ -51,12 +51,12 @@ typedef struct
 extern os_task_t *os_tasks[OS_TASK_MAX];
 extern os_task_t *volatile os_task_current;
 
-#undef BEERTOS_SEMAPHORE
-#define BEERTOS_SEMAPHORE(name, initial_count) \
+#undef OS_SEMAPHORE
+#define OS_SEMAPHORE(name, initial_count) \
     /* count, tasks_blocked */                 \
     {0U, 0U},
 
-static os_sem_t semaphores[BEERTOS_SEMAPHORE_ID_MAX];
+static os_sem_t semaphores[OS_SEMAPHORE_ID_MAX];
 
 /******************************************************************************************
  *                                        FUNCTIONS                                       *
@@ -66,10 +66,10 @@ static inline void os_semaphore_init(os_sem_t *const sem,
                                      const uint32_t count,
                                      const os_sem_type_t type)
 {
-    BEERTOS_ASSERT(sem != NULL, OS_MODULE_ID_SEMAPHORE, OS_ERROR_NULLPTR);
-    BEERTOS_ASSERT((type == SEMAPHORE_TYPE_BINARY && count <= 1U) || (type == SEMAPHORE_TYPE_COUNTING),
-                   OS_MODULE_ID_SEMAPHORE,
-                   OS_ERROR_INVALID_PARAM);
+    OS_ASSERT(sem != NULL, OS_MODULE_ID_SEMAPHORE, OS_ERROR_NULLPTR);
+    OS_ASSERT((type == SEMAPHORE_TYPE_BINARY && count <= 1U) || (type == SEMAPHORE_TYPE_COUNTING),
+              OS_MODULE_ID_SEMAPHORE,
+              OS_ERROR_INVALID_PARAM);
 
     sem->count = count;
     sem->tasks_blocked = 0U;
@@ -84,7 +84,7 @@ static void os_sem_unlock_waiting_task(os_sem_t *const sem)
 
     sem->tasks_blocked &= ~(1U << (task->priority - 1U));
     os_task_release(OS_GET_TASK_ID_FROM_PRIORITY(task->priority));
-    BEERTOS_TRACE_SEMAPHORE_UNBLOCKED(task);
+    OS_TRACE_SEMAPHORE_UNBLOCKED(task);
 }
 
 /**
@@ -93,11 +93,11 @@ static void os_sem_unlock_waiting_task(os_sem_t *const sem)
 void os_semaphore_module_init(void)
 {
     /*! X-Macro to call os_semaphore_init for all semaphores */
-    #undef BEERTOS_SEMAPHORE
-    #define BEERTOS_SEMAPHORE(name, initial_count, type) \
+    #undef OS_SEMAPHORE
+    #define OS_SEMAPHORE(name, initial_count, type) \
         os_semaphore_init(&semaphores[name], initial_count, type);
 
-    #define OS_SEMPAPHORES_INIT() BEERTOS_SEMAPHORE_LIST()
+    #define OS_SEMPAPHORES_INIT() OS_SEMAPHORE_LIST()
 
     OS_SEMPAPHORES_INIT();
 }
@@ -112,9 +112,9 @@ void os_semaphore_module_init(void)
  */
 bool os_semaphore_wait(const os_sem_id_t id, const uint32_t timeout)
 {
-    BEERTOS_ASSERT(id < BEERTOS_SEMAPHORE_ID_MAX,
-                   OS_MODULE_ID_SEMAPHORE,
-                   OS_ERROR_INVALID_PARAM);
+    OS_ASSERT(id < OS_SEMAPHORE_ID_MAX,
+              OS_MODULE_ID_SEMAPHORE,
+              OS_ERROR_INVALID_PARAM);
 
     bool s_got = true;
     os_sem_t *const sem = &semaphores[id];
@@ -132,7 +132,7 @@ bool os_semaphore_wait(const os_sem_id_t id, const uint32_t timeout)
         /* Block the task and wait for the semaphore */
         sem->tasks_blocked |= (1U << (current_task_priority - 1U));
         os_delay(timeout);
-        BEERTOS_TRACE_SEMAPHORE_BLOCKED(os_task_current);
+        OS_TRACE_SEMAPHORE_BLOCKED(os_task_current);
 
         os_leave_critical_section();
         /* Potencial context switch is right here */
@@ -163,9 +163,9 @@ bool os_semaphore_wait(const os_sem_id_t id, const uint32_t timeout)
  */
 bool os_semaphore_signal(const os_sem_id_t id)
 {
-    BEERTOS_ASSERT(id < BEERTOS_SEMAPHORE_ID_MAX,
-                   OS_MODULE_ID_SEMAPHORE,
-                   OS_ERROR_INVALID_PARAM);
+    OS_ASSERT(id < OS_SEMAPHORE_ID_MAX,
+              OS_MODULE_ID_SEMAPHORE,
+              OS_ERROR_INVALID_PARAM);
 
     bool s_signaled = true;
     os_sem_t *const sem = &semaphores[id];
@@ -181,7 +181,7 @@ bool os_semaphore_signal(const os_sem_id_t id)
         /* If semaphore is counting, or binary and not signaled
            increment the count */
         if (!sem->count ||
-#if (BEERTOS_SEMAPHORE_COUNTING_USED == true)
+#if (OS_SEMAPHORE_COUNTING_USED == true)
             sem->type == SEMAPHORE_TYPE_COUNTING
 #endif
         )

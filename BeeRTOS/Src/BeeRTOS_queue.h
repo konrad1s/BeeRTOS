@@ -21,7 +21,7 @@
  ******************************************************************************************/
 
 /*! Maximum number of queues (normal queues + message queues) */
-#define OS_MSG_QUEUE_ID_MAX (OS_MESSAGE_ID_MAX + BEERTOS_QUEUE_ID_MAX)
+#define OS_MSG_QUEUE_ID_MAX (OS_MESSAGE_ID_MAX + OS_QUEUE_ID_MAX)
 
 /******************************************************************************************
  *                                        TYPEDEFS                                        *
@@ -40,11 +40,11 @@ typedef struct
 #undef OS_QUEUE
 #define OS_QUEUE(name, ...) name,
 
-/*! Queue IDs - generated from BEERTOS_QUEUE_LIST() in BeeRTOS_queue_cfg.h */
+/*! Queue IDs - generated from OS_QUEUE_LIST() in BeeRTOS_queue_cfg.h */
 typedef enum
 {
-    BEERTOS_QUEUE_LIST()
-    BEERTOS_QUEUE_ID_MAX
+    OS_QUEUE_LIST()
+    OS_QUEUE_ID_MAX
 } os_queue_id_t;
 
 /******************************************************************************************

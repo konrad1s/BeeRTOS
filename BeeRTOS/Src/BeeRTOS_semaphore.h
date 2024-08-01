@@ -30,25 +30,25 @@
 *                                        TYPEDEFS                                        *
 ******************************************************************************************/
 
-#undef BEERTOS_SEMAPHORE
-#define BEERTOS_SEMAPHORE(name, ...) name,
+#undef OS_SEMAPHORE
+#define OS_SEMAPHORE(name, ...) name,
 typedef enum 
 {
-    BEERTOS_SEMAPHORE_LIST()
-    BEERTOS_SEMAPHORE_ID_MAX
+    OS_SEMAPHORE_LIST()
+    OS_SEMAPHORE_ID_MAX
 } os_sem_id_t;
 
 
 /* Counting semaphores are used if at least one counting semaphore is defined.
  * The magic code below sums up all the types of semaphores and if the sum is greater than 0,
  * counting semaphores are used (SEMAPHORE_TYPE_COUNTING is equal to 1U). */
-#undef BEERTOS_SEMAPHORE
-#define BEERTOS_SEMAPHORE(name, initial_count, type) + type
+#undef OS_SEMAPHORE
+#define OS_SEMAPHORE(name, initial_count, type) + type
 
-#if (BEERTOS_SEMAPHORE_LIST() > 0U)
-#define BEERTOS_SEMAPHORE_COUNTING_USED     (true)
+#if (OS_SEMAPHORE_LIST() > 0U)
+#define OS_SEMAPHORE_COUNTING_USED     (true)
 #else
-#define BEERTOS_SEMAPHORE_COUNTING_USED     (false)
+#define OS_SEMAPHORE_COUNTING_USED     (false)
 #endif
 
 

@@ -60,7 +60,7 @@ static void os_message_release_waiting_task(os_task_mask_t *const task_mask)
     *task_mask &= ~(1U << (task->priority - 1U));
     /* Release the task */
     os_task_release(OS_GET_TASK_ID_FROM_PRIORITY(task->priority));
-    BEERTOS_TRACE_MESSAGE_UNBLOCKED(task);
+    OS_TRACE_MESSAGE_UNBLOCKED(task);
 }
 
 static bool os_message_handle_timeout(os_message_t *msg,
@@ -77,7 +77,7 @@ static bool os_message_handle_timeout(os_message_t *msg,
     *waiting_tasks |= (1U << (current_task_priority - 1U));
 
     os_delay(timeout);
-    BEERTOS_TRACE_MESSAGE_BLOCKED(os_task_current);
+    OS_TRACE_MESSAGE_BLOCKED(os_task_current);
     /* Scheduler will be called by the delay function, enable interrupts to
        allow possible context switch */
     os_leave_critical_section();
@@ -86,7 +86,7 @@ static bool os_message_handle_timeout(os_message_t *msg,
     os_enter_critical_section();
 
     /* Try to perform the operation again */
-    bool operation_success = queue_op(id + BEERTOS_QUEUE_ID_MAX, data, msg->item_size);
+    bool operation_success = queue_op(id + OS_QUEUE_ID_MAX, data, msg->item_size);
 
     /* Clear the waiting bit */
     *waiting_tasks &= ~(1U << (current_task_priority - 1U));
@@ -106,13 +106,13 @@ void os_message_module_init(void)
 {
     /*! X-Macro to initialize all messages */
     #undef OS_MESSAGE
-    #define OS_MESSAGE(name, count, size)                                  \
-        os_messages[name].queue = &os_queues[name + BEERTOS_QUEUE_ID_MAX]; \
-        os_messages[name].item_size = size;                                \
+    #define OS_MESSAGE(name, count, size)                             \
+        os_messages[name].queue = &os_queues[name + OS_QUEUE_ID_MAX]; \
+        os_messages[name].item_size = size;                           \
         os_messages[name].send_waiting_tasks = 0U;
 
     #define OS_MESSAGE_INIT_ALL() OS_MESSAGES_LIST()
-    OS_MESSAGE_INIT_ALL();
+        OS_MESSAGE_INIT_ALL();
 }
 
 /**
@@ -127,12 +127,12 @@ void os_message_module_init(void)
  */
 bool os_message_send(const os_message_id_t id, const void *const data, const uint32_t timeout)
 {
-    BEERTOS_ASSERT(id < OS_MESSAGE_ID_MAX,
-                   OS_MODULE_ID_MESSAGE,
-                   OS_ERROR_INVALID_PARAM);
-    BEERTOS_ASSERT(data != NULL,
-                   OS_MODULE_ID_MESSAGE,
-                   OS_ERROR_NULLPTR);
+    OS_ASSERT(id < OS_MESSAGE_ID_MAX,
+              OS_MODULE_ID_MESSAGE,
+              OS_ERROR_INVALID_PARAM);
+    OS_ASSERT(data != NULL,
+              OS_MODULE_ID_MESSAGE,
+              OS_ERROR_NULLPTR);
 
     bool msg_sent = false;
     os_message_t *const msg = &os_messages[id];
@@ -140,7 +140,7 @@ bool os_message_send(const os_message_id_t id, const void *const data, const uin
     os_enter_critical_section();
 
     /* Check if message can be pushed instantly */
-    if (true == os_queue_push(id + BEERTOS_QUEUE_ID_MAX, data, msg->item_size))
+    if (true == os_queue_push(id + OS_QUEUE_ID_MAX, data, msg->item_size))
     {
         msg_sent = true;
 
@@ -176,12 +176,12 @@ bool os_message_send(const os_message_id_t id, const void *const data, const uin
  */
 bool os_message_receive(const os_message_id_t id, void *const data, const uint32_t timeout)
 {
-    BEERTOS_ASSERT(id < OS_MESSAGE_ID_MAX,
-                   OS_MODULE_ID_MESSAGE,
-                   OS_ERROR_INVALID_PARAM);
-    BEERTOS_ASSERT(data != NULL,
-                   OS_MODULE_ID_MESSAGE,
-                   OS_ERROR_NULLPTR);
+    OS_ASSERT(id < OS_MESSAGE_ID_MAX,
+              OS_MODULE_ID_MESSAGE,
+              OS_ERROR_INVALID_PARAM);
+    OS_ASSERT(data != NULL,
+              OS_MODULE_ID_MESSAGE,
+              OS_ERROR_NULLPTR);
 
     bool msg_received = false;
 
@@ -190,7 +190,7 @@ bool os_message_receive(const os_message_id_t id, void *const data, const uint32
     os_enter_critical_section();
 
     /* Check if message can be popped instantly */
-    if (true == os_queue_pop(id + BEERTOS_QUEUE_ID_MAX, data, msg->item_size))
+    if (true == os_queue_pop(id + OS_QUEUE_ID_MAX, data, msg->item_size))
     {
         msg_received = true;
 

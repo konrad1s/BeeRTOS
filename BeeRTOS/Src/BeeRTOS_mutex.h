@@ -24,22 +24,22 @@
 *                                        TYPEDEFS                                        *
 ******************************************************************************************/
 
-#undef BEERTOS_MUTEX
-#undef BEERTOS_TASK
-#undef BEERTOS_ALARM_TASK
+#undef OS_MUTEX
+#undef OS_TASK
+#undef OS_ALARM_TASK
 
-#define BEERTOS_MUTEX(name, initial_count) name,
-#define BEERTOS_TASK(...)
-#define BEERTOS_ALARM_TASK(...)
+#define OS_MUTEX(name, initial_count) name,
+#define OS_TASK(...)
+#define OS_ALARM_TASK(...)
 
-#define OS_MUTEX_LIST() BEERTOS_PRIORITY_LIST()
+#define OS_MUTEX_LIST() OS_PRIORITY_LIST()
 
-/*! Enumerates mutex identifiers generated from the BEERTOS_PRIORITY_LIST macro expansion,
+/*! Enumerates mutex identifiers generated from the OS_PRIORITY_LIST macro expansion,
  *  providing unique identifiers for each mutex configured in the system. */
 typedef enum 
 {
     OS_MUTEX_LIST()
-    BEERTOS_MUTEX_ID_MAX
+    OS_MUTEX_ID_MAX
 } os_mutex_id_t; 
 
 /******************************************************************************************

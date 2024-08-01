@@ -43,7 +43,7 @@ extern os_task_t *os_tasks[OS_TASK_MAX];
 extern os_task_t *volatile os_task_current;
 
 /*! List of all mutexes */
-static os_mutex_t os_mutexes[BEERTOS_MUTEX_ID_MAX];
+static os_mutex_t os_mutexes[OS_MUTEX_ID_MAX];
 
 /******************************************************************************************
  *                                        FUNCTIONS                                       *
@@ -57,12 +57,12 @@ void os_mutex_module_init(void)
 {
     uint32_t idx = OS_TASK_MAX - 1U;
 
-    #undef BEERTOS_MUTEX
-    #undef BEERTOS_TASK
-    #undef BEERTOS_ALARM_TASK
+    #undef OS_MUTEX
+    #undef OS_TASK
+    #undef OS_ALARM_TASK
 
     /* Here is the X-Macro to initialize all mutexes, from user configuration */
-    #define BEERTOS_MUTEX(name, initial_count)      \
+    #define OS_MUTEX(name, initial_count)           \
         os_mutexes[name].locks_nb = initial_count;  \
         os_mutexes[name].owner = NULL;              \
         os_mutexes[name].pcp_task = &os_tasks[idx]; \
@@ -70,14 +70,14 @@ void os_mutex_module_init(void)
         os_mutexes[name].pcp_priority = idx;        \
         idx--;
 
-    #define BEERTOS_TASK(...) \
+    #define OS_TASK(...) \
         idx--;
 
-    #define BEERTOS_ALARM_TASK(...) \
+    #define OS_ALARM_TASK(...) \
         idx--;
 
-    #define OS_MUTEXES_INIT_ALL() BEERTOS_PRIORITY_LIST()
-    OS_MUTEXES_INIT_ALL();
+    #define OS_MUTEXES_INIT_ALL() OS_PRIORITY_LIST()
+        OS_MUTEXES_INIT_ALL();
 }
 
 /**
@@ -92,9 +92,9 @@ void os_mutex_module_init(void)
  */
 bool os_mutex_lock(const os_mutex_id_t id, const uint32_t timeout)
 {
-    BEERTOS_ASSERT(id < BEERTOS_MUTEX_ID_MAX,
-                   OS_MODULE_ID_MUTEX,
-                   OS_ERROR_INVALID_PARAM);
+    OS_ASSERT(id < OS_MUTEX_ID_MAX,
+              OS_MODULE_ID_MUTEX,
+              OS_ERROR_INVALID_PARAM);
 
     os_mutex_t *const mutex = &os_mutexes[id];
     os_task_t *const current_task = os_task_current;
@@ -102,22 +102,22 @@ bool os_mutex_lock(const os_mutex_id_t id, const uint32_t timeout)
     /* The priority ceiling task must have a priority of all
        tasks that can lock the mutex, otherwise priority inversion,
        deadlock or other issues can occur */
-    BEERTOS_ASSERT(current_task->priority <= mutex->pcp_priority,
-                   OS_MODULE_ID_MUTEX,
-                   OS_ERROR_INVALID_PARAM);
+    OS_ASSERT(current_task->priority <= mutex->pcp_priority,
+              OS_MODULE_ID_MUTEX,
+              OS_ERROR_INVALID_PARAM);
 
     /* In the current implementation, there is no option do not use
        priority ceiling protocol, so when this function is called the
        mutex->owner must be equal to NULL because the PCP has always
        higher priority than the task that is trying to lock the mutex */
-    BEERTOS_ASSERT(mutex->owner == NULL,
-                   OS_MODULE_ID_MUTEX,
-                   OS_ERROR_INVALID_PARAM);
+    OS_ASSERT(mutex->owner == NULL,
+              OS_MODULE_ID_MUTEX,
+              OS_ERROR_INVALID_PARAM);
 
     /* The number of locks must be less than 255, otherwise overflow */
-    BEERTOS_ASSERT(mutex->locks_nb < 255U,
-                   OS_MODULE_ID_MUTEX,
-                   OS_ERROR_OVERFLOW);
+    OS_ASSERT(mutex->locks_nb < 255U,
+              OS_MODULE_ID_MUTEX,
+              OS_ERROR_OVERFLOW);
 
     os_enter_critical_section();
 
@@ -136,7 +136,7 @@ bool os_mutex_lock(const os_mutex_id_t id, const uint32_t timeout)
 
         /* Start the priority ceiling task */
         os_task_start(OS_GET_TASK_ID_FROM_PRIORITY((*mutex->pcp_task)->priority));
-        BEERTOS_TRACE_MUTEX_PRIORITY_INHERITANCE(current_task,
+        OS_TRACE_MUTEX_PRIORITY_INHERITANCE(current_task,
                                                  current_task->priority);
         os_sched();
     }
@@ -148,7 +148,7 @@ bool os_mutex_lock(const os_mutex_id_t id, const uint32_t timeout)
     else if (0U != timeout)
     {
         /* Currently this is configuration error, please check the
-           BEERTOS_ASSERT(mutex->owner != current_task... description,
+           OS_ASSERT(mutex->owner != current_task... description,
            left here for future implementation */
 
         if (mutex->owner == current_task)
@@ -181,19 +181,19 @@ bool os_mutex_lock(const os_mutex_id_t id, const uint32_t timeout)
  */
 void os_mutex_unlock(const os_mutex_id_t id)
 {
-    BEERTOS_ASSERT(id < BEERTOS_MUTEX_ID_MAX,
-                   OS_MODULE_ID_MUTEX,
-                   OS_ERROR_INVALID_PARAM);
+    OS_ASSERT(id < OS_MUTEX_ID_MAX,
+              OS_MODULE_ID_MUTEX,
+              OS_ERROR_INVALID_PARAM);
 
     os_mutex_t *const mutex = &os_mutexes[id];
     os_task_t *const current_task = os_task_current;
 
     /* Only the owner of the mutex can unlock it */
-    BEERTOS_ASSERT(mutex->owner == current_task,
+    OS_ASSERT(mutex->owner == current_task,
                    OS_MODULE_ID_MUTEX,
                    OS_ERROR_INVALID_PARAM);
     /* The number of locks must be greater than 0 */
-    BEERTOS_ASSERT(mutex->locks_nb > 0U,
+    OS_ASSERT(mutex->locks_nb > 0U,
                    OS_MODULE_ID_MUTEX,
                    OS_ERROR_INVALID_OPERATION);
 
@@ -209,7 +209,7 @@ void os_mutex_unlock(const os_mutex_id_t id)
             current_task->priority = mutex->owner_priority;
             mutex->owner = NULL;
             os_task_stop(OS_GET_TASK_ID_FROM_PRIORITY(mutex->pcp_priority));
-            BEERTOS_TRACE_MUTEX_PRIORITY_RESTORE(current_task,
+            OS_TRACE_MUTEX_PRIORITY_RESTORE(current_task,
                                                  current_task->priority);
             os_sched();
 

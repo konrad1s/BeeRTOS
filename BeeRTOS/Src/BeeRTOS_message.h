@@ -20,7 +20,7 @@
  *                                         DEFINES                                        *
  ******************************************************************************************/
 
-#if ((BEERTOS_QUEUE_MODULE_EN != true) && (BEERTOS_MESSAGE_MODULE_EN == true))
+#if ((OS_QUEUE_MODULE_EN != true) && (OS_MESSAGE_MODULE_EN == true))
     #error "Message module requires queue module to be enabled"
 #endif
 

@@ -23,15 +23,15 @@
  *                                        TYPEDEFS                                        *
  ******************************************************************************************/
 
-#undef BEERTOS_ALARM
-#define BEERTOS_ALARM(name, callback, autostart, period, periodic) name,
-/*! Enumerates alarm IDs generated from the BEERTOS_ALARM_LIST macro. 
- *  This enumeration provides a unique identifier for each alarm defined using the BEERTOS_ALARM
- *  macro within the BEERTOS_ALARM_LIST macro expansion. */
+#undef OS_ALARM
+#define OS_ALARM(name, callback, autostart, period, periodic) name,
+/*! Enumerates alarm IDs generated from the OS_ALARM_LIST macro. 
+ *  This enumeration provides a unique identifier for each alarm defined using the OS_ALARM
+ *  macro within the OS_ALARM_LIST macro expansion. */
 typedef enum
 {
-    BEERTOS_ALARM_LIST()
-    BEERTOS_ALARM_ID_MAX
+    OS_ALARM_LIST()
+    OS_ALARM_ID_MAX
 } os_alarm_id_t;
 
 /******************************************************************************************

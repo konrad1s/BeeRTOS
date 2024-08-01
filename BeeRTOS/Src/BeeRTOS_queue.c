@@ -32,7 +32,7 @@
 #define OS_QUEUE(name, size) \
     static uint8_t name##_buffer[size];
 
-#define OS_QUEUE_CREATE_BUFFERS() BEERTOS_QUEUE_LIST()
+#define OS_QUEUE_CREATE_BUFFERS() OS_QUEUE_LIST()
 OS_QUEUE_CREATE_BUFFERS();
 
 /******************************************************************************************/
@@ -73,9 +73,9 @@ static inline bool os_queue_can_pop(const os_queue_t *const queue, const uint32_
  */
 void os_queue_reset(const os_queue_id_t id)
 {
-    BEERTOS_ASSERT(id < OS_MSG_QUEUE_ID_MAX,
-                   OS_MODULE_ID_QUEUE,
-                   OS_ERROR_INVALID_PARAM);
+    OS_ASSERT(id < OS_MSG_QUEUE_ID_MAX,
+              OS_MODULE_ID_QUEUE,
+              OS_ERROR_INVALID_PARAM);
 
     os_queue_t *const queue = &os_queues[id];
 
@@ -100,27 +100,27 @@ void os_queue_module_init(void)
 {
     uint32_t id = 0U;
 
-/* X-Macro to initialize all queues with their buffers and sizes */
-#undef OS_QUEUE
-#define OS_QUEUE(name, _size)             \
-    os_queues[id].buffer = name##_buffer; \
-    os_queues[id].size = _size;           \
-    os_queue_reset(id);                   \
-    id++;
+    /* X-Macro to initialize all queues with their buffers and sizes */
+    #undef OS_QUEUE
+    #define OS_QUEUE(name, _size)             \
+        os_queues[id].buffer = name##_buffer; \
+        os_queues[id].size = _size;           \
+        os_queue_reset(id);                   \
+        id++;
 
-#define BEERTOS_QUEUES_INIT_ALL() BEERTOS_QUEUE_LIST()
-    BEERTOS_QUEUES_INIT_ALL();
+    #define OS_QUEUES_INIT_ALL() OS_QUEUE_LIST()
+        OS_QUEUES_INIT_ALL();
 
-/* X-Macro to initialize all messages with their buffers and sizes */
-#undef OS_MESSAGE
-#define OS_MESSAGE(name, count, _size)    \
-    os_queues[id].buffer = name##_buffer; \
-    os_queues[id].size = count * _size;   \
-    os_queue_reset(id);                   \
-    id++;
+    /* X-Macro to initialize all messages with their buffers and sizes */
+    #undef OS_MESSAGE
+    #define OS_MESSAGE(name, count, _size)    \
+        os_queues[id].buffer = name##_buffer; \
+        os_queues[id].size = count * _size;   \
+        os_queue_reset(id);                   \
+        id++;
 
-#define BEERTOS_MESSAGE_INIT_ALL() OS_MESSAGES_LIST()
-    BEERTOS_MESSAGE_INIT_ALL();
+    #define OS_MESSAGE_INIT_ALL() OS_MESSAGES_LIST()
+        OS_MESSAGE_INIT_ALL();
 }
 
 /**
@@ -132,9 +132,9 @@ void os_queue_module_init(void)
  */
 bool os_queue_is_full(const os_queue_id_t id)
 {
-    BEERTOS_ASSERT(id < OS_MSG_QUEUE_ID_MAX,
-                   OS_MODULE_ID_QUEUE,
-                   OS_ERROR_INVALID_PARAM);
+    OS_ASSERT(id < OS_MSG_QUEUE_ID_MAX,
+              OS_MODULE_ID_QUEUE,
+              OS_ERROR_INVALID_PARAM);
 
     return os_queues[id].full;
 }
@@ -148,9 +148,9 @@ bool os_queue_is_full(const os_queue_id_t id)
  */
 bool os_queue_is_empty(const os_queue_id_t id)
 {
-    BEERTOS_ASSERT(id < OS_MSG_QUEUE_ID_MAX,
-                   OS_MODULE_ID_QUEUE,
-                   OS_ERROR_INVALID_PARAM);
+    OS_ASSERT(id < OS_MSG_QUEUE_ID_MAX,
+              OS_MODULE_ID_QUEUE,
+              OS_ERROR_INVALID_PARAM);
 
     const os_queue_t *const queue = &os_queues[id];
 
@@ -176,12 +176,12 @@ bool os_queue_is_empty(const os_queue_id_t id)
  */
 bool os_queue_push(const os_queue_id_t id, const void *const data, const uint32_t len)
 {
-    BEERTOS_ASSERT(id < OS_MSG_QUEUE_ID_MAX,
-                   OS_MODULE_ID_QUEUE,
-                   OS_ERROR_INVALID_PARAM);
-    BEERTOS_ASSERT(data != NULL,
-                   OS_MODULE_ID_QUEUE,
-                   OS_ERROR_NULLPTR);
+    OS_ASSERT(id < OS_MSG_QUEUE_ID_MAX,
+              OS_MODULE_ID_QUEUE,
+              OS_ERROR_INVALID_PARAM);
+    OS_ASSERT(data != NULL,
+              OS_MODULE_ID_QUEUE,
+              OS_ERROR_NULLPTR);
 
     bool ret = false;
     os_queue_t *const queue = &os_queues[id];
@@ -217,12 +217,12 @@ bool os_queue_push(const os_queue_id_t id, const void *const data, const uint32_
  */
 bool os_queue_pop(const os_queue_id_t id, void *const data, const uint32_t len)
 {
-    BEERTOS_ASSERT(id < OS_MSG_QUEUE_ID_MAX,
-                   OS_MODULE_ID_QUEUE,
-                   OS_ERROR_INVALID_PARAM);
-    BEERTOS_ASSERT(data != NULL,
-                   OS_MODULE_ID_QUEUE,
-                   OS_ERROR_NULLPTR);
+    OS_ASSERT(id < OS_MSG_QUEUE_ID_MAX,
+              OS_MODULE_ID_QUEUE,
+              OS_ERROR_INVALID_PARAM);
+    OS_ASSERT(data != NULL,
+              OS_MODULE_ID_QUEUE,
+              OS_ERROR_NULLPTR);
 
     uint8_t ret = false;
     os_queue_t *const queue = &os_queues[id];

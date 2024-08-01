@@ -52,7 +52,7 @@ extern os_task_t *volatile os_task_next;
 ******************************************************************************************/
 void os_context_switched_cb(void)
 {
-    BEERTOS_TRACE_TASK_SWITCHED(os_task_next);
+    OS_TRACE_TASK_SWITCHED(os_task_next);
 }
 
 __attribute__ ((naked, optimize("-fno-stack-protector")))
@@ -92,11 +92,11 @@ void PendSV_Handler(void)
         /* Restore registers */
         "POP            {r4-r11}                \n"
 
-    #ifdef BEERTOS_TRACE_TASK_SWITCHED
+    #ifdef OS_TRACE_TASK_SWITCHED
         "stmdb          sp!, {r4-r11, lr}       \n"
         "bl             os_context_switched_cb  \n"
         "ldmia          sp!, {r4-r11, lr}       \n"
-    #endif /* BEERTOS_TRACE_TASK_SWITCHED */
+    #endif /* OS_TRACE_TASK_SWITCHED */
 
         /* Enable interrupts */
         "CPSIE          i                       \n"
@@ -138,7 +138,7 @@ os_stack_t* os_port_task_stack_init(void (*task)(void *), void *arg, void *stack
 
     stk -= 8U;                            /*!< R11-R4 */
 
-    #if (BEERTOS_USE_TASK_STACK_MONITOR == true)
+    #if (OS_USE_TASK_STACK_MONITOR == true)
         uint32_t* user_stack = stk;
         /* Fill the unused stack space with a known value */
         while (user_stack > (uint32_t *)stack_ptr)
@@ -160,14 +160,14 @@ void os_cpu_init(void)
 
 void os_port_context_switch(void)
 {
-    BEERTOS_TRACE_EXIT_ISR_SCHEDULER();
+    OS_TRACE_EXIT_ISR_SCHEDULER();
     /* Trigger PendSV */
     PORT_NVIC_INT_CTRL |= PORT_NVIC_PENDSV_SET_MSK;
 }
 
 void SysTick_Handler(void)
 {
-    BEERTOS_TRACE_ENTER_ISR();
+    OS_TRACE_ENTER_ISR();
 
     extern void os_tick(void);
     extern void os_sched(void);
@@ -175,5 +175,5 @@ void SysTick_Handler(void)
     os_tick();
     os_sched();
 
-    BEERTOS_TRACE_EXIT_ISR();
+    OS_TRACE_EXIT_ISR();
 }

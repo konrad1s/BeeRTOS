@@ -1,7 +1,7 @@
 #include "ut_utils.h"
 #include <string.h>
 
-static uint32_t alarms_cnt[BEERTOS_ALARM_ID_MAX];
+static uint32_t alarms_cnt[OS_ALARM_ID_MAX];
 
 void alarm1_callback(void) { alarms_cnt[ALARM_ONE]++; }
 void alarm2_callback(void) { alarms_cnt[ALARM_TWO]++; }
